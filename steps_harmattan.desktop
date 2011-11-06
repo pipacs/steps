@@ -3,8 +3,8 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Terminal=false
-Name=steps
-Exec=/usr/bin/invoker --type=d -s /opt/steps/bin/steps
+Name=Steps
+Exec=/usr/bin/single-instance /opt/steps/bin/steps
 Icon=/usr/share/icons/hicolor/80x80/apps/steps80.png
 X-Window-Icon=
 X-HildonDesk-ShowInToolbar=true
