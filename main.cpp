@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     Counter *counter = new Counter(&viewer);
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     viewer.rootContext()->setContextProperty("counter", counter);
-    viewer.setMainQmlFile(QLatin1String("qml/steps/main.qml"));
+    viewer.setMainQmlFile(QLatin1String("qml/steps/meego/main.qml"));
     viewer.showExpanded();
 
     // Install event filter to capture/release volume keys

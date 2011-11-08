@@ -1,5 +1,5 @@
 # Add more folders to ship with the application, here
-folder_01.source = qml/steps
+folder_01.source = qml/steps/meego
 folder_01.target = qml
 DEPLOYMENTFOLDERS = folder_01
 
@@ -59,10 +59,4 @@ HEADERS += \
     counter.h \
     ring.h \
     eventfilter.h
-
-
-
-
-
-
 
