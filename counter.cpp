@@ -14,7 +14,7 @@ const long DefaultPeakTimeDiff = 700; // Default time difference between peaks, 
 // Get time difference in milliseconds
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
-Counter::Counter(QObject *parent): QObject(parent), displayState(0) {
+Counter::Counter(QObject *parent): QObject(parent), displayState(0), calibration_(1.0) {
     ring = new Ring(Span / Interval, MinRise);
     reset();
 
@@ -80,9 +80,14 @@ void Counter::measure() {
     ++peakCount;
 
     if (peakCount % 2) {
-        ++stepCount;
-        qDebug() << stepCount << ": Step after" << peakTimeDiff << "ms";
-        emit step(stepCount);
+        ++rawStepCount;
+        qDebug() << rawCount << ": Step after" << peakTimeDiff << "ms";
+        emit rawCountChanged(rawStepCount);
+        int newStepCount = (int)(rawStepCount * calibration_);
+        if (newStepCount != stepCount) {
+            stepCount = newStepCount;
+            emit step(newStepCount);
+        }
         // QDateTime now = QDateTime::currentDateTimeUtc();
         // logger.log(QString("%1,%2,%3,%4,%5").arg(now.toString("yyyy-MM-ddThh:mm:ss.zzz")).arg(x).arg(y).arg(z).arg(reading));
     }
