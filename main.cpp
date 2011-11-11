@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     viewer.showExpanded();
 
     // Install event filter to capture/release volume keys
-    EventFilter *eventFilter = new EventFilter(&viewer);
+    EventFilter *eventFilter = new EventFilter(0);
     viewer.installEventFilter(eventFilter);
     eventFilter->connect(eventFilter, SIGNAL(activate(bool)), counter, SLOT(applicationActivated(bool)));
 
@@ -28,6 +28,7 @@ int main(int argc, char *argv[]) {
     int ret = app.exec();
 
     // Delete singletons and exit
+    delete eventFilter;
     Preferences::close();
     return ret;
 }
