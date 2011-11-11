@@ -94,7 +94,7 @@ void Counter::measure() {
 }
 
 void Counter::reset() {
-    stepCount = peakCount = 0;
+    stepCount = peakCount = rawStepCount = 0;
     lastPeakTimeDiff = DefaultPeakTimeDiff;
     lastPeakTime.tv_sec = lastPeakTime.tv_usec = 0;
     ring->clear();
@@ -129,6 +129,16 @@ void Counter::applicationActivated(bool active) {
     if (!active) {
         setRunning(false);
     }
+}
+
+void Counter::setCalibration(qreal c) {
+    calibration_ = c;
+    int newStepCount = (int)(rawStepCount * calibration_);
+    if (newStepCount != stepCount) {
+        stepCount = newStepCount;
+        emit step(newStepCount);
+    }
+    emit calibrationChanged();
 }
 
 long timeDiff(const struct timeval &start_time, const struct timeval &end_time) {

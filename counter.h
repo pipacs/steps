@@ -43,7 +43,7 @@ public slots:
     Q_INVOKABLE void reset();
     void setRunning(bool running);
     void applicationActivated(bool active);
-    void setCalibration(qreal c) {calibration_ = c; emit calibrationChanged();}
+    void setCalibration(qreal c);
 
 protected:
     QTimer *timer;

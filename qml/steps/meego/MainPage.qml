@@ -38,7 +38,7 @@ Page {
             topMargin: 37
         }
         width: parent.width
-        text: qsTr("Press Volume Up to start/pause counter, Volume Down to reset step count")
+        text: qsTr("Press Volume Up to start/pause counter, Volume Down to show settings")
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
@@ -65,7 +65,6 @@ Page {
 
     // Handle up/down keys
     Keys.onPressed: {
-        console.log("* ManiPage.Keys.onPressed")
         if (event.key == Qt.Key_VolumeUp) {
             counter.running = !counter.running
         } else if (event.key == Qt.Key_VolumeDown) {
