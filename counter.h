@@ -19,7 +19,7 @@ QTM_USE_NAMESPACE
 class Counter: public QObject {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY step)
-    Q_PROPERTY(int rawCount READ rawCount NOTIFY rawCountChanged)
+    Q_PROPERTY(int rawCount READ rawCount WRITE setRawCount NOTIFY rawCountChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(qreal calibration READ calibration WRITE setCalibration NOTIFY calibrationChanged)
 
@@ -34,8 +34,8 @@ public:
 signals:
     void step(int count);
     void runningChanged();
-    void calibrationChanged();
-    void rawCountChanged(int count);
+    void calibrationChanged(qreal value);
+    void rawCountChanged(int value);
 
 public slots:
     void measure();
@@ -43,7 +43,8 @@ public slots:
     Q_INVOKABLE void reset();
     void setRunning(bool running);
     void applicationActivated(bool active);
-    void setCalibration(qreal c);
+    void setCalibration(qreal value);
+    void setRawCount(int value);
 
 protected:
     QTimer *timer;

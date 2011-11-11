@@ -138,7 +138,17 @@ void Counter::setCalibration(qreal c) {
         stepCount = newStepCount;
         emit step(newStepCount);
     }
-    emit calibrationChanged();
+    emit calibrationChanged(c);
+}
+
+void Counter::setRawCount(int value) {
+    rawStepCount = value;
+    int newStepCount = (int)(rawStepCount * calibration_);
+    if (newStepCount != stepCount) {
+        stepCount = newStepCount;
+        emit step(newStepCount);
+    }
+    emit rawCountChanged(rawStepCount);
 }
 
 long timeDiff(const struct timeval &start_time, const struct timeval &end_time) {

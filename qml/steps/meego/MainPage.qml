@@ -43,22 +43,17 @@ Page {
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 
-    QueryDialog {
-        id: resetQuery
-        // icon: FIXME
-        titleText: qsTr("Reset step count?")
-        acceptButtonText: qsTr("Yes")
-        rejectButtonText: qsTr("No")
-        onAccepted: {
-            counter.reset()
-            counter.running = counterWasRunning
+    SettingsPage {
+        id: settings
+        onStatusChanged: {
+            if (status == DialogStatus.Closed) {
+                counter.running = counterWasRunning
+            }
         }
     }
 
-    SettingsPage {id: settings}
-
     onStatusChanged: {
-        if (status == PageStatus.Activating) {
+        if (status == PageStatus.Active) {
             focus = true
         }
     }
@@ -69,7 +64,7 @@ Page {
             counter.running = !counter.running
         } else if (event.key == Qt.Key_VolumeDown) {
             counterWasRunning = counter.running
-            // resetQuery.open()
+            counter.running = false
             settings.open()
         }
     }

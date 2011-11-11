@@ -40,7 +40,8 @@ unix:!symbian:!maemo5 {
 SOURCES += main.cpp \
     counter.cpp \
     ring.cpp \
-    eventfilter.cpp
+    eventfilter.cpp \
+    preferences.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -62,10 +63,13 @@ OTHER_FILES += \
 HEADERS += \
     counter.h \
     ring.h \
-    eventfilter.h
+    eventfilter.h \
+    preferences.h
 
 RESOURCES += \
     meego.qrc
+
+
 
 
 

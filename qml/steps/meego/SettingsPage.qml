@@ -29,18 +29,18 @@ Sheet {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: "Calibration: Measured " + counter.count + " steps, but it should be:"
-                enabled: counter.count
+                enabled: counter.rawCount
             }
 
             Slider {
                 id: calibrationSlider
                 property bool firstUpdate: true
                 property bool changed: false
-                enabled: counter.count
+                enabled: counter.rawCount
                 stepSize: 1
                 valueIndicatorVisible: true
-                minimumValue: Math.ceil(counter.count - counter.count / 2)
-                maximumValue: Math.ceil(counter.count + counter.count / 2)
+                minimumValue: Math.ceil(counter.count - counter.count / 3)
+                maximumValue: Math.ceil(counter.count + counter.count / 3)
                 value: counter.count
                 onValueChanged: {
                     if (firstUpdate) {
@@ -55,7 +55,7 @@ Sheet {
     }
 
     onAccepted: {
-        if (calibrationSlider.changed) {
+        if (calibrationSlider.changed && counter.rawCount) {
             counter.calibration = calibrationSlider.value / counter.rawCount
         }
         if (resetCounter.checked) {
