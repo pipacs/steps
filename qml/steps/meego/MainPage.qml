@@ -55,6 +55,8 @@ Page {
         }
     }
 
+    SettingsPage {id: settings}
+
     onStatusChanged: {
         if (status == PageStatus.Activating) {
             focus = true
@@ -63,11 +65,13 @@ Page {
 
     // Handle up/down keys
     Keys.onPressed: {
+        console.log("* ManiPage.Keys.onPressed")
         if (event.key == Qt.Key_VolumeUp) {
             counter.running = !counter.running
         } else if (event.key == Qt.Key_VolumeDown) {
             counterWasRunning = counter.running
-            resetQuery.open()
+            // resetQuery.open()
+            settings.open()
         }
     }
 }

@@ -32,10 +32,10 @@ public:
     int rawCount() {return rawStepCount;}
 
 signals:
-    void step(unsigned count);
+    void step(int count);
     void runningChanged();
     void calibrationChanged();
-    void rawCountChanged();
+    void rawCountChanged(int count);
 
 public slots:
     void measure();

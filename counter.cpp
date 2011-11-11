@@ -81,7 +81,7 @@ void Counter::measure() {
 
     if (peakCount % 2) {
         ++rawStepCount;
-        qDebug() << rawCount << ": Step after" << peakTimeDiff << "ms";
+        qDebug() << rawStepCount << ": Step after" << peakTimeDiff << "ms";
         emit rawCountChanged(rawStepCount);
         int newStepCount = (int)(rawStepCount * calibration_);
         if (newStepCount != stepCount) {
