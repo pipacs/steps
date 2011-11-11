@@ -8,13 +8,13 @@
 const int Span = 2000; // Time span for detecting peaks, milliseconds
 const int Interval = 100; // Accelerometer reading interval, milliseconds
 const int BlankingInterval = 5000; // Display blanking timer interval, milliseconds
-const qreal MinRise = 30.0f; // Minimum diff in accelerometer readings (any direction)
+const qreal MinRise = 50.0f; // Minimum diff in accelerometer readings (any direction)
 const long DefaultPeakTimeDiff = 700; // Default time difference between peaks, milliseconds
 
 // Get time difference in milliseconds
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
-Counter::Counter(QObject *parent): QObject(parent), displayState(0), calibration_(1.0) {
+Counter::Counter(QObject *parent): QObject(parent), displayState(0), calibration_(1.0), sensitivity_(100) {
     ring = new Ring(Span / Interval, MinRise);
     reset();
 
@@ -149,6 +149,13 @@ void Counter::setRawCount(int value) {
         emit step(newStepCount);
     }
     emit rawCountChanged(rawStepCount);
+}
+
+void Counter::setSensitivity(int value) {
+    qDebug() << "Counter::setSensitivity" << value;
+    sensitivity_ = value;
+    ring->setMinRise(MinRise + 100 - value);
+    emit sensitivityChanged(value);
 }
 
 long timeDiff(const struct timeval &start_time, const struct timeval &end_time) {

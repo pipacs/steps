@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <QList>
 
+/// Primitive ring buffer that can detect peaks.
 class Ring {
 public:
     explicit Ring(int size, qreal minRise);
@@ -12,6 +13,7 @@ public:
     void clear();
     int findPeak();
     qreal get(int index);
+    void setMinRise(qreal value);
 
 protected:
     QList<qreal> data;

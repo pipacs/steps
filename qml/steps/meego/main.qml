@@ -12,23 +12,19 @@ PageStackWindow {
         id: mainPage
     }
 
-    SoundEffect {
+    Beep {
         id: stepSound
-        source: "file:///usr/share/sounds/ui-tones/snd_camera_shutter.wav"
-    }
-
-    function calibrationChanged(val) {
-        console.log("* main.calibrationChanged")
-        prefs.calibration = val
+        source: "file:///usr/share/sounds/ui-tones/snd_accessory_connected.wav"
     }
 
     function rawCountChanged(val) {
-        console.log("* main.rawCountChanged")
         prefs.rawCount = val
     }
 
-    function step() {
-        // stepSound.play()
+    function countChanged() {
+        if (counter.count) {
+            stepSound.play()
+        }
     }
 
     Component.onCompleted: {
@@ -36,9 +32,9 @@ PageStackWindow {
 
         counter.calibration = prefs.calibration
         counter.rawCount = prefs.rawCount
+        counter.sensitivity = prefs.sensitivity
 
-        counter.calibrationChanged.connect(appWindow.calibrationChanged)
         counter.rawCountChanged.connect(appWindow.rawCountChanged)
-        counter.step.connect(appWindow.step)
+        counter.step.connect(appWindow.countChanged)
     }
 }

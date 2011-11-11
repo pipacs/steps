@@ -58,7 +58,8 @@ OTHER_FILES += \
     README.txt \
     qml/steps/meego/SettingsPage.qml \
     qml/steps/meego/MainPage.qml \
-    qml/steps/meego/main.qml
+    qml/steps/meego/main.qml \
+    qml/steps/meego/Beep.qml
 
 HEADERS += \
     counter.h \
@@ -68,6 +69,7 @@ HEADERS += \
 
 RESOURCES += \
     meego.qrc
+
 
 
 

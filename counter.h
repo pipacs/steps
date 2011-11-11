@@ -22,6 +22,7 @@ class Counter: public QObject {
     Q_PROPERTY(int rawCount READ rawCount WRITE setRawCount NOTIFY rawCountChanged)
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(qreal calibration READ calibration WRITE setCalibration NOTIFY calibrationChanged)
+    Q_PROPERTY(int sensitivity READ sensitivity WRITE setSensitivity NOTIFY sensitivityChanged)
 
 public:
     explicit Counter(QObject *parent = 0);
@@ -30,12 +31,14 @@ public:
     bool running();
     qreal calibration() {return calibration_;}
     int rawCount() {return rawStepCount;}
+    int sensitivity() {return sensitivity_;}
 
 signals:
     void step(int count);
     void runningChanged();
     void calibrationChanged(qreal value);
     void rawCountChanged(int value);
+    void sensitivityChanged(int value);
 
 public slots:
     void measure();
@@ -45,6 +48,7 @@ public slots:
     void applicationActivated(bool active);
     void setCalibration(qreal value);
     void setRawCount(int value);
+    void setSensitivity(int value);
 
 protected:
     QTimer *timer;
@@ -57,7 +61,8 @@ protected:
     int stepCount; ///< Calibrated step count.
     struct timeval lastPeakTime;
     long lastPeakTimeDiff;
-    qreal calibration_; ///< Calibration coefficient.
+    qreal calibration_; ///< Calibration coefficient. Default: 1.
+    int sensitivity_; ///< Default: 100.
 };
 
 #endif // COUNTER_H

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <policy/resource-set.h>
 
+/// Acquire/release volume keys on activation change.
 class EventFilter: public QObject {
     Q_OBJECT
 

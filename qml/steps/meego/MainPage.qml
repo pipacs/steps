@@ -53,17 +53,17 @@ Page {
         }
     }
 
-    SoundEffect {
+    Beep {
         id: startSound
         source: "file:///usr/share/sounds/ui-tones/snd_camera_video_record_start.wav"
     }
 
-    SoundEffect {
+    Beep {
         id: stopSound
         source: "file:///usr/share/sounds/ui-tones/snd_camera_video_record_stop.wav"
     }
 
-    SoundEffect {
+    Beep {
         id: settingsSound
         source: "file:///usr/share/sounds/ui-tones/snd_information.wav"
     }

@@ -3,7 +3,7 @@
 
 Ring::Ring(int size_, qreal minRise_) {
     size = size_;
-    minRise = minRise_;
+    setMinRise(minRise_);
 }
 
 Ring::~Ring() {
@@ -40,4 +40,11 @@ int Ring::findPeak() {
 
 qreal Ring::get(int index) {
     return data[index];
+}
+
+void Ring::setMinRise(qreal minRise_) {
+    minRise = minRise_;
+    if (minRise < 0.1) {
+        minRise = 0.1;
+    }
 }

@@ -3,5 +3,6 @@
         <file alias="main.qml">qml/steps/meego/main.qml</file>
         <file alias="MainPage.qml">qml/steps/meego/MainPage.qml</file>
         <file alias="SettingsPage.qml">qml/steps/meego/SettingsPage.qml</file>
+        <file alias="Beep.qml">qml/steps/meego/Beep.qml</file>
     </qresource>
 </RCC>

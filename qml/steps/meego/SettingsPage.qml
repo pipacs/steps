@@ -16,12 +16,14 @@ Sheet {
         flickableDirection: Flickable.VerticalFlick
 
         Column {
+            id: col2
             anchors.top: parent.top
-            spacing: 30
+            spacing: 41
+
             CheckBox {
-                id: resetCounter
-                text: "Reset counter"
-                checked: false
+                id: audioFeedback
+                text: "Sound effects"
+                checked: !prefs.muted
             }
 
             Label {
@@ -29,14 +31,14 @@ Sheet {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: "Calibration: Measured " + counter.count + " steps, but it should be:"
-                enabled: counter.rawCount
+                enabled: counter.count
             }
 
             Slider {
                 id: calibrationSlider
                 property bool firstUpdate: true
                 property bool changed: false
-                enabled: counter.rawCount
+                enabled: counter.count
                 stepSize: 1
                 valueIndicatorVisible: true
                 minimumValue: Math.ceil(counter.count - counter.count / 3)
@@ -51,15 +53,41 @@ Sheet {
                     }
                 }
             }
+
+            Label {text: "Sensitivity:"}
+
+            Slider {
+                id: sensitivitySlider
+                stepSize: 10
+                valueIndicatorVisible: true
+                minimumValue: 10
+                maximumValue: 190
+                value: counter.sensitivity
+            }
+
+            CheckBox {
+                id: resetCounter
+                text: "Reset counter"
+                checked: false
+            }
         }
     }
 
     onAccepted: {
         if (calibrationSlider.changed && counter.rawCount) {
             counter.calibration = calibrationSlider.value / counter.rawCount
+            prefs.calibration = counter.calibration
         }
         if (resetCounter.checked) {
             counter.reset()
+            resetCounter.checked = false
         }
+        prefs.muted = !audioFeedback.checked
+        counter.setSensitivity(sensitivitySlider.value)
+        prefs.sensitivity = counter.sensitivity
+    }
+
+    onRejected: {
+        resetCounter.checked = false
     }
 }
