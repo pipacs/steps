@@ -1,3 +1,8 @@
 <RCC>
-    <qresource prefix="/qml"/>
+    <qresource prefix="/qml">
+        <file alias="SettingsPage.qml">qml/steps/symbian/SettingsPage.qml</file>
+        <file alias="Beep.qml">qml/steps/symbian/Beep.qml</file>
+        <file alias="Main.qml">qml/steps/symbian/main.qml</file>
+        <file alias="MainPage.qml">qml/steps/symbian/MainPage.qml</file>
+    </qresource>
 </RCC>
