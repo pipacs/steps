@@ -15,21 +15,18 @@ symbian:TARGET.UID3 = 0xE1584C4E
 # 0x2002CCCF value if protected UID is given to the application
 #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 
-# Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
-
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
 # CONFIG += mobility
 # MOBILITY +=
 CONFIG += mobility
 MOBILITY += sensors
-# MOBILITY += multimedia
+MOBILITY += multimedia
 
 # Add dependency to Symbian components
 # CONFIG += qt-components
 
-# Maemo Harmattan extras
+# Maemo Harmattan
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
     CONFIG += qmsystem2
@@ -37,8 +34,9 @@ contains(MEEGO_EDITION,harmattan) {
     RESOURCES += meego.qrc
 }
 
-# Symbian extras
+# Symbian
 symbian {
+    TARGET.CAPABILITY += NetworkServices
     RESOURCES += symbian.qrc
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
@@ -84,8 +82,3 @@ HEADERS += \
     eventfilter.h \
     preferences.h \
     mediakey.h
-
-
-
-
-
