@@ -74,7 +74,8 @@ OTHER_FILES += \
     qml/steps/symbian/Beep.qml \
     sounds/start.wav \
     sounds/beep.wav \
-    sounds/stop.wav
+    sounds/stop.wav \
+    background.svg
 
 HEADERS += \
     counter.h \
@@ -82,3 +83,4 @@ HEADERS += \
     eventfilter.h \
     preferences.h \
     mediakey.h
+
