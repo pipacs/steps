@@ -4,17 +4,22 @@
 #include "eventfilter.h"
 
 EventFilter::EventFilter(QObject *parent): QObject(parent), active(false) {
+#if defined(MEEGO_EDITION_HARMATTAN)
     resourceSet = new ResourcePolicy::ResourceSet("player");
     resourceSet->addResourceObject(new ResourcePolicy::ScaleButtonResource);
+#endif
 }
 
 EventFilter::~EventFilter() {
+#if defined(MEEGO_EDITION_HARMATTAN)
     resourceSet->release();
     resourceSet->deleteResource(ResourcePolicy::ScaleButtonType);
     delete resourceSet;
+#endif
 }
 
 bool EventFilter::eventFilter(QObject *obj, QEvent *event) {
+#if defined MEEGO_EDITION_HARMATTAN
     if (event->type() == QEvent::ApplicationDeactivate) {
         active = false;
         resourceSet->release();
@@ -32,5 +37,6 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *event) {
         }
         emit activate(active);
     }
+#endif
     return QObject::eventFilter(obj, event);
 }

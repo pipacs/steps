@@ -2,7 +2,10 @@
 #define EVENTFILTER_H
 
 #include <QObject>
+
+#if defined(MEEGO_EDITION_HARMATTAN)
 #include <policy/resource-set.h>
+#endif
 
 /// Acquire/release volume keys on activation change.
 class EventFilter: public QObject {
@@ -18,7 +21,9 @@ signals:
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     bool active;
+#if defined(MEEGO_EDITION_HARMATTAN)
     ResourcePolicy::ResourceSet *resourceSet;
+#endif
 };
 
 #endif // EVENTFILTER_H

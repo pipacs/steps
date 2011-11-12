@@ -102,10 +102,12 @@ void Counter::reset() {
 }
 
 void Counter::pauseBlanking() {
+#if defined(MEEGO_EDITION_HARMATTAN)
     if (!displayState) {
         displayState = new MeeGo::QmDisplayState;
     }
     (void)displayState->setBlankingPause();
+#endif
 }
 
 bool Counter::running() {

@@ -30,10 +30,16 @@ MOBILITY += sensors
 # CONFIG += qt-components
 
 # Maemo Harmattan extras
-unix:!symbian:!maemo5 {
+contains(MEEGO_EDITION,harmattan): {
     CONFIG += link_pkgconfig
     CONFIG += qmsystem2
     PKGCONFIG += libresourceqt1
+    RESOURCES += meego.qrc
+}
+
+# Symbian extras
+symbian: {
+    RESOURCES += symbian.qrc
 }
 
 # The .cpp file which was generated for your project. Feel free to hack it.
@@ -59,7 +65,11 @@ OTHER_FILES += \
     qml/steps/meego/SettingsPage.qml \
     qml/steps/meego/MainPage.qml \
     qml/steps/meego/main.qml \
-    qml/steps/meego/Beep.qml
+    qml/steps/meego/Beep.qml \
+    qml/steps/symbian/SettingsPage.qml \
+    qml/steps/symbian/MainPage.qml \
+    qml/steps/symbian/main.qml \
+    qml/steps/symbian/Beep.qml
 
 HEADERS += \
     counter.h \
@@ -68,11 +78,7 @@ HEADERS += \
     preferences.h
 
 RESOURCES += \
-    meego.qrc
-
-
-
-
+    symbian.qrc
 
 
 

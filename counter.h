@@ -7,7 +7,10 @@
 #include <QAccelerometer>
 #include <QTimer>
 #include <QDebug>
+
+#if defined MEEGO_EDITION_HARMATTAN
 #include <qmsystem2/qmdisplaystate.h>
+#endif
 
 #include "ring.h"
 
@@ -54,7 +57,11 @@ protected:
     QTimer *timer;
     QTimer *blankingTimer;
     QAccelerometer *accelerometer;
+#if defined MEEGO_EDITION_HARMATTAN
     MeeGo::QmDisplayState *displayState;
+#else
+    void *displayState;
+#endif
     Ring *ring;
     int peakCount;
     int rawStepCount; ///< Raw step count.
