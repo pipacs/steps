@@ -1,12 +1,12 @@
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.symbian 1.1
 import QtMultimediaKit 1.1
 
 PageStackWindow {
     id: appWindow
     initialPage: mainPage
     focus: true
-    showStatusBar: false
+    // showStatusBar: false
 
     MainPage {
         id: mainPage

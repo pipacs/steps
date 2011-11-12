@@ -40,6 +40,8 @@ Counter::Counter(QObject *parent): QObject(parent), displayState(0), calibration
 }
 
 Counter::~Counter() {
+    accelerometer->stop();
+    delete accelerometer;
     delete displayState;
     delete ring;
 }
@@ -98,6 +100,7 @@ void Counter::reset() {
     lastPeakTimeDiff = DefaultPeakTimeDiff;
     lastPeakTime.tv_sec = lastPeakTime.tv_usec = 0;
     ring->clear();
+    emit rawCountChanged(0);
     emit step(0);
 }
 

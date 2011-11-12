@@ -1,6 +1,7 @@
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.symbian 1.1
 import QtMultimediaKit 1.1
+import MediaKey 1.0
 
 Page {
     property bool counterWasRunning
@@ -44,28 +45,28 @@ Page {
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 
-    // SettingsPage {
-    //     id: settings
-    //     onStatusChanged: {
-    //         if (status == DialogStatus.Closed) {
-    //             counter.running = counterWasRunning
-    //         }
-    //     }
-    // }
+    SettingsPage {
+        id: settings
+        onStatusChanged: {
+            if (status == DialogStatus.Closed) {
+                counter.running = counterWasRunning
+            }
+        }
+    }
 
     Beep {
         id: startSound
-        source: "file:///usr/share/sounds/ui-tones/snd_camera_video_record_start.wav"
+        source: "/sounds/start.wav"
     }
 
     Beep {
         id: stopSound
-        source: "file:///usr/share/sounds/ui-tones/snd_camera_video_record_stop.wav"
+        source: "/sounds/stop.wav"
     }
 
     Beep {
         id: settingsSound
-        source: "file:///usr/share/sounds/ui-tones/snd_information.wav"
+        source: "/sounds/beep.wav"
     }
 
     onStatusChanged: {
@@ -74,13 +75,13 @@ Page {
         }
     }
 
-    // Handle up/down keys
-    Keys.onPressed: {
-        if (event.key == Qt.Key_VolumeUp) {
+    MediaKey {
+        onVolumeUpPressed: {
             var sound = counter.running? stopSound: startSound
             sound.play()
             counter.running = !counter.running
-        } else if (event.key == Qt.Key_VolumeDown) {
+        }
+        onVolumeDownPressed: {
             counterWasRunning = counter.running
             counter.running = false
             settingsSound.play()

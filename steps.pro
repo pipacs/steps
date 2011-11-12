@@ -30,7 +30,7 @@ MOBILITY += sensors
 # CONFIG += qt-components
 
 # Maemo Harmattan extras
-contains(MEEGO_EDITION,harmattan): {
+contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
     CONFIG += qmsystem2
     PKGCONFIG += libresourceqt1
@@ -38,8 +38,11 @@ contains(MEEGO_EDITION,harmattan): {
 }
 
 # Symbian extras
-symbian: {
+symbian {
     RESOURCES += symbian.qrc
+    INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
 }
 
 # The .cpp file which was generated for your project. Feel free to hack it.
@@ -47,7 +50,8 @@ SOURCES += main.cpp \
     counter.cpp \
     ring.cpp \
     eventfilter.cpp \
-    preferences.cpp
+    preferences.cpp \
+    mediakey.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -69,16 +73,19 @@ OTHER_FILES += \
     qml/steps/symbian/SettingsPage.qml \
     qml/steps/symbian/MainPage.qml \
     qml/steps/symbian/main.qml \
-    qml/steps/symbian/Beep.qml
+    qml/steps/symbian/Beep.qml \
+    sounds/start.wav \
+    sounds/beep.wav \
+    sounds/stop.wav
 
 HEADERS += \
     counter.h \
     ring.h \
     eventfilter.h \
-    preferences.h
+    preferences.h \
+    mediakey.h
 
-RESOURCES += \
-    symbian.qrc
+
 
 
 

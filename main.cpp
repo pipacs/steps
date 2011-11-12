@@ -5,9 +5,14 @@
 #include "counter.h"
 #include "eventfilter.h"
 #include "preferences.h"
+#include "mediakey.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+
+#if defined(Q_WS_S60)
+    qmlRegisterType<MediaKey>("MediaKey", 1, 0, "MediaKey");
+#endif
 
     // Show QML viewer
     QmlApplicationViewer viewer;
