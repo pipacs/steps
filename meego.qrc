@@ -1,7 +1,10 @@
 <RCC>
     <qresource prefix="/qml">
-        <file alias="MainPage.qml">qml/meego/MainPage.qml</file>
-        <file alias="SettingsPage.qml">qml/meego/SettingsPage.qml</file>
-        <file alias="MainWindow.qml">qml/meego/MainWindow.qml</file>
+        <file alias="StepsLabel.qml">qml/meego/StepsLabel.qml</file>
+        <file alias="StepsPage.qml">qml/meego/StepsPage.qml</file>
+        <file alias="StepsPageStackWindow.qml">qml/meego/StepsPageStackWindow.qml</file>
+        <file alias="StepsCheckBox.qml">qml/meego/StepsCheckBox.qml</file>
+        <file alias="StepsSlider.qml">qml/meego/StepsSlider.qml</file>
+        <file alias="StepsDialog.qml">qml/meego/StepsDialog.qml</file>
     </qresource>
 </RCC>

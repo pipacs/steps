@@ -1,11 +1,12 @@
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import "symbian"
+import "meego"
 
-Sheet {
+StepsDialog {
     id: settings
 
-    acceptButtonText: "Save"
-    rejectButtonText: "Cancel"
+    acceptText: "Save"
+    rejectText: "Cancel"
 
     content: Flickable {
         anchors.fill: parent
@@ -20,13 +21,13 @@ Sheet {
             anchors.top: parent.top
             spacing: 41
 
-            CheckBox {
+            StepsCheckBox {
                 id: audioFeedback
                 text: "Sound effects"
                 checked: !prefs.muted
             }
 
-            Label {
+            StepsLabel {
                 id: calibrationLabel
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -34,29 +35,19 @@ Sheet {
                 enabled: counter.count
             }
 
-            Slider {
+            StepsSlider {
                 id: calibrationSlider
-                property bool firstUpdate: true
-                property bool changed: false
                 enabled: counter.count
                 stepSize: 1
                 valueIndicatorVisible: true
                 minimumValue: Math.ceil(counter.count - counter.count / 3)
                 maximumValue: Math.ceil(counter.count + counter.count / 3)
                 value: counter.count
-                onValueChanged: {
-                    if (firstUpdate) {
-                        // Work around a slider bug: The first valueChanged notification is sent too early
-                        firstUpdate = false
-                    } else {
-                        changed = true
-                    }
-                }
             }
 
-            Label {text: "Sensitivity:"}
+            StepsLabel {text: "Sensitivity:"}
 
-            Slider {
+            StepsSlider {
                 id: sensitivitySlider
                 stepSize: 10
                 valueIndicatorVisible: true
@@ -65,7 +56,7 @@ Sheet {
                 value: counter.sensitivity
             }
 
-            CheckBox {
+            StepsCheckBox {
                 id: resetCounter
                 text: "Reset counter"
                 checked: false

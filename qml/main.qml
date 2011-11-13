@@ -1,9 +1,8 @@
 import QtQuick 1.1
-import QtMultimediaKit 1.1
 import "symbian"
 import "meego"
 
-MainWindow {
+StepsPageStackWindow {
     id: appWindow
     initialPage: mainPage
 

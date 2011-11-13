@@ -1,12 +1,11 @@
 import QtQuick 1.1
-import com.nokia.meego 1.0
-import QtMultimediaKit 1.1
-import ".."
+import "symbian"
+import "meego"
 
-Page {
+StepsPage {
     property bool counterWasRunning
 
-    Label {
+    StepsLabel {
         id: label
         anchors {
             centerIn: parent
@@ -17,7 +16,7 @@ Page {
         font.bold: true
     }
 
-    Label {
+    StepsLabel {
         id: pausedLabel
         anchors {
             horizontalCenter: parent.horizontalCenter
@@ -33,7 +32,7 @@ Page {
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 
-    Label {
+    StepsLabel {
         anchors {
             horizontalCenter: parent.horizontalCenter
             top: pausedLabel.bottom
@@ -47,10 +46,9 @@ Page {
 
     SettingsPage {
         id: settings
-        onStatusChanged: {
-            if (status == DialogStatus.Closed) {
-                counter.running = counterWasRunning
-            }
+        onClosed: {
+            console.log("* MainPage.SettingsPage.onClosed")
+            counter.running = counterWasRunning
         }
     }
 
@@ -69,13 +67,7 @@ Page {
         source: "/sounds/settings.wav"
     }
 
-    onStatusChanged: {
-        if (status == PageStatus.Active) {
-            focus = true
-        }
-    }
-
-    Component.onCompleted: {
+   Component.onCompleted: {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
     }

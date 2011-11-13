@@ -65,9 +65,6 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/compat \
     qtc_packaging/debian_harmattan/changelog \
     README.txt \
-    qml/meego/SettingsPage.qml \
-    qml/meego/MainPage.qml \
-    qml/meego/MainWindow.qml \
     qml/symbian/SettingsPage.qml \
     qml/symbian/MainPage.qml \
     qml/symbian/main.qml \
@@ -79,7 +76,15 @@ OTHER_FILES += \
     qml/Beep.qml \
     qml/main.qml \
     qml/Dummy.qml \
-    sounds/settings.wav
+    sounds/settings.wav \
+    qml/MainPage.qml \
+    qml/meego/StepsLabel.qml \
+    qml/meego/StepsPage.qml \
+    qml/meego/StepsPageStackWindow.qml \
+    qml/meego/StepsCheckBox.qml \
+    qml/meego/StepsSlider.qml \
+    qml/meego/StepsDialog.qml \
+    qml/SettingsPage.qml
 
 HEADERS += \
     counter.h \
@@ -90,6 +95,19 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
