@@ -2,11 +2,10 @@
     <qresource prefix="/">
         <file>qml/Beep.qml</file>
         <file>qml/main.qml</file>
-    </qresource>
-    <qresource prefix="/">
         <file>sounds/beep.wav</file>
         <file>sounds/start.wav</file>
         <file>sounds/stop.wav</file>
+        <file>sounds/settings.wav</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

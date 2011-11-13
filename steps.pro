@@ -32,6 +32,7 @@ contains(MEEGO_EDITION,harmattan) {
     CONFIG += qmsystem2
     PKGCONFIG += libresourceqt1
     RESOURCES += meego.qrc
+    SOURCES += mediakeyprivate-meego.cpp
 }
 
 # Symbian
@@ -40,6 +41,7 @@ symbian {
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
+    SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
 }
 
@@ -47,9 +49,8 @@ symbian {
 SOURCES += main.cpp \
     counter.cpp \
     ring.cpp \
-    eventfilter.cpp \
     preferences.cpp \
-    mediakey.cpp
+    mediakey.cpp \
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -77,15 +78,26 @@ OTHER_FILES += \
     background.svg \
     qml/Beep.qml \
     qml/main.qml \
-    qml/Dummy.qml
+    qml/Dummy.qml \
+    sounds/settings.wav
 
 HEADERS += \
     counter.h \
     ring.h \
-    eventfilter.h \
     preferences.h \
-    mediakey.h
+    mediakey.h \
+    mediakeyprivate.h
 
 RESOURCES += \
     common.qrc
+
+
+
+
+
+
+
+
+
+
 

@@ -1,7 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import QtMultimediaKit 1.1
-import MediaKey 1.0
 import ".."
 
 Page {
@@ -67,7 +66,7 @@ Page {
 
     Beep {
         id: settingsSound
-        source: "file:///usr/share/sounds/ui-tones/snd_information.wav"
+        source: "/sounds/settings.wav"
     }
 
     onStatusChanged: {
@@ -76,19 +75,24 @@ Page {
         }
     }
 
-    // Handle up/down keys
-    MediaKey {
-        onVolumeUpPressed: {
-            var sound = counter.running? stopSound: startSound
-            sound.play()
-            counter.running = !counter.running
-        }
-        onVolumeDownPressed: {
-            counterWasRunning = counter.running
-            counter.running = false
-            settingsSound.play()
-            settings.open()
-        }
+    Component.onCompleted: {
+        mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
+        mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+    }
+
+    function onVolumeUpPressed() {
+        console.log("* MainPage.onVolumeUpPressed")
+        var sound = counter.running? stopSound: startSound
+        sound.play()
+        counter.running = !counter.running
+    }
+
+    function onVolumeDownPressed() {
+        console.log("* MainPage.onVolumeDownPressed")
+        counterWasRunning = counter.running
+        counter.running = false
+        settingsSound.play()
+        settings.open()
     }
 
     // Keys.onPressed: {
