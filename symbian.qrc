@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/qml">
-        <file alias="SettingsPage.qml">qml/steps/symbian/SettingsPage.qml</file>
-        <file alias="main.qml">qml/steps/symbian/main.qml</file>
-        <file alias="MainPage.qml">qml/steps/symbian/MainPage.qml</file>
+        <file alias="SettingsPage.qml">qml/symbian/SettingsPage.qml</file>
+        <file alias="main.qml">qml/symbian/main.qml</file>
+        <file alias="MainPage.qml">qml/symbian/MainPage.qml</file>
     </qresource>
 </RCC>

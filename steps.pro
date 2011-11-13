@@ -1,5 +1,5 @@
 # Add more folders to ship with the application, here
-# folder_01.source = qml/steps/meego
+# folder_01.source = qml/meego
 # folder_01.target = qml
 # DEPLOYMENTFOLDERS = folder_01
 
@@ -64,20 +64,20 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/compat \
     qtc_packaging/debian_harmattan/changelog \
     README.txt \
-    qml/steps/meego/SettingsPage.qml \
-    qml/steps/meego/MainPage.qml \
-    qml/steps/symbian/SettingsPage.qml \
-    qml/steps/symbian/MainPage.qml \
-    qml/steps/symbian/main.qml \
-    qml/steps/symbian/Beep.qml \
+    qml/meego/SettingsPage.qml \
+    qml/meego/MainPage.qml \
+    qml/meego/MainWindow.qml \
+    qml/symbian/SettingsPage.qml \
+    qml/symbian/MainPage.qml \
+    qml/symbian/main.qml \
+    qml/symbian/Beep.qml \
     sounds/start.wav \
     sounds/beep.wav \
     sounds/stop.wav \
     background.svg \
-    qml/steps/Beep.qml \
-    qml/steps/meego/MainWindow.qml \
-    qml/steps/main.qml \
-    qml/steps/Dummy.qml
+    qml/Beep.qml \
+    qml/main.qml \
+    qml/Dummy.qml
 
 HEADERS += \
     counter.h \
@@ -88,11 +88,4 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
-
-
-
-
-
-
-
 

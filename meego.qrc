@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/qml">
-        <file alias="MainPage.qml">qml/steps/meego/MainPage.qml</file>
-        <file alias="SettingsPage.qml">qml/steps/meego/SettingsPage.qml</file>
-        <file alias="MainWindow.qml">qml/steps/meego/MainWindow.qml</file>
+        <file alias="MainPage.qml">qml/meego/MainPage.qml</file>
+        <file alias="SettingsPage.qml">qml/meego/SettingsPage.qml</file>
+        <file alias="MainWindow.qml">qml/meego/MainWindow.qml</file>
     </qresource>
 </RCC>
