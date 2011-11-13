@@ -1,6 +1,8 @@
+#include <QKeyEvent>
+
 #include "mediakey.h"
 
-#ifdef Q_WS_S60
+#if defined(Q_WS_S60)
 
 // Access Symbian RemCon API
 class MediaKeyPrivate: public QObject, public MRemConCoreApiTargetObserver {
@@ -14,17 +16,6 @@ private:
     CRemConCoreApiTarget *iCoreTarget;
     MediaKey *d_ptr;
 };
-
-// Constructor
-MediaKey::MediaKey(QDeclarativeItem *parent): QDeclarativeItem(parent) {
-    d_ptr = new MediaKeyPrivate(this);
-}
-
-// The paint method
-// void MediaKey::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-// {
-    // This item has no visual
-// }
 
 MediaKeyPrivate::MediaKeyPrivate(MediaKey *parent): d_ptr(parent) {
     QT_TRAP_THROWING(iInterfaceSelector = CRemConInterfaceSelector::NewL());
@@ -52,3 +43,54 @@ void MediaKeyPrivate::MrccatoCommand(TRemConCoreApiOperationId operation, TRemCo
 }
 
 #endif // Q_WS_S60
+
+MediaKey::MediaKey(QDeclarativeItem *parent): QDeclarativeItem(parent) {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    resourceSet = new ResourcePolicy::ResourceSet("player");
+    resourceSet->addResourceObject(new ResourcePolicy::ScaleButtonResource);
+#elif defined(Q_WS_S60)
+    d_ptr = new MediaKeyPrivate(this);
+#endif
+}
+
+MediaKey::~MediaKey() {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    resourceSet->release();
+    resourceSet->deleteResource(ResourcePolicy::ScaleButtonType);
+    delete resourceSet;
+#endif
+}
+
+bool MediaKey::eventFilter(QObject *obj, QEvent *event) {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    if (event->type() == QEvent::ApplicationDeactivate) {
+        active = false;
+        resourceSet->release();
+    } else if (event->type() == QEvent::ApplicationActivate) {
+        active = true;
+        resourceSet->acquire();
+    } else if (event->type() == QEvent::ActivationChange) {
+        qDebug() << "MediaKey::eventFilter: ActivationChange";
+        if (active) {
+            active = false;
+            resourceSet->release();
+        } else {
+            active = true;
+            resourceSet->acquire();
+        }
+        // emit activate(active);
+    } else if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if (keyEvent->key() == Qt::Key_VolumeUp) {
+            qDebug() << "MediaKey::eventFilter: Volume up";
+            emit volumeUpPressed();
+            return true;
+        } else if (keyEvent->key() == Qt::Key_VolumeDown) {
+            qDebug() << "MediaKey::eventFilter: Vlume down";
+            emit volumeDownPressed();
+            return true;
+        }
+    }
+#endif
+    return QDeclarativeItem::eventFilter(obj, event);
+}

@@ -42,7 +42,9 @@ Counter::Counter(QObject *parent): QObject(parent), displayState(0), calibration
 Counter::~Counter() {
     accelerometer->stop();
     delete accelerometer;
+#if defined(MEEGO_EDITION_HARMATTAN)
     delete displayState;
+#endif
     delete ring;
 }
 
@@ -107,7 +109,7 @@ void Counter::reset() {
 void Counter::pauseBlanking() {
 #if defined(MEEGO_EDITION_HARMATTAN)
     if (!displayState) {
-        displayState = new MeeGo::QmDisplayState;
+        displayState = new MeeGo::QmDisplayState();
     }
     (void)displayState->setBlankingPause();
 #endif

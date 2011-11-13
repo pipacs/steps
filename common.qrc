@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file alias="Beep.qml">qml/steps/Beep.qml</file>
+        <file alias="main.qml">qml/steps/main.qml</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>sounds/beep.wav</file>
+        <file>sounds/start.wav</file>
+        <file>sounds/stop.wav</file>
+    </qresource>
+    <qresource prefix="/qml/symbian">
+        <file alias="Dummy.qml">qml/steps/Dummy.qml</file>
+    </qresource>
+    <qresource prefix="/qml/meego">
+        <file alias="Dummy.qml">qml/steps/Dummy.qml</file>
+    </qresource>
+</RCC>

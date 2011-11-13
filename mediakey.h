@@ -2,28 +2,37 @@
 #define MEDIAKEY_H
 
 #include <QDeclarativeItem>
+#include <qplatformdefs.h>
 
-#ifdef Q_WS_S60
+#if defined(MEEGO_EDITION_HARMATTAN)
+#   include <policy/resource-set.h>
+#elif defined(Q_WS_S60)
+#   include <remconcoreapitargetobserver.h>
+#   include <remconcoreapitarget.h>
+#   include <remconinterfaceselector.h>
+    class MediaKeyPrivate;
+#endif
 
-#include <remconcoreapitargetobserver.h>
-#include <remconcoreapitarget.h>
-#include <remconinterfaceselector.h>
-
-class MediaKeyPrivate;
 class MediaKey: public QDeclarativeItem {
     Q_OBJECT
 public:
     MediaKey(QDeclarativeItem *parent = 0);
-    // void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    ~MediaKey();
 
 signals:
     void volumeDownPressed();
     void volumeUpPressed();
+    void activate();
 
-private:
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+#if defined(MEEGO_EDITION_HARMATTAN)
+    bool active;
+    ResourcePolicy::ResourceSet *resourceSet;
+#elif defined(Q_WS_S60)
     MediaKeyPrivate *d_ptr;
     friend class MediaKeyPrivate;
+#endif
 };
 
-#endif // Q_WS_S60
 #endif // MEDIAKEY_H

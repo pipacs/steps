@@ -2,6 +2,7 @@
 #define EVENTFILTER_H
 
 #include <QObject>
+#include <qplatformdefs.h>
 
 #if defined(MEEGO_EDITION_HARMATTAN)
 #include <policy/resource-set.h>

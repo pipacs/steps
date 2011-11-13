@@ -7,8 +7,9 @@
 #include <QAccelerometer>
 #include <QTimer>
 #include <QDebug>
+#include <qplatformdefs.h>
 
-#if defined MEEGO_EDITION_HARMATTAN
+#if defined(MEEGO_EDITION_HARMATTAN)
 #include <qmsystem2/qmdisplaystate.h>
 #endif
 
@@ -57,10 +58,8 @@ protected:
     QTimer *timer;
     QTimer *blankingTimer;
     QAccelerometer *accelerometer;
-#if defined MEEGO_EDITION_HARMATTAN
+#if defined(MEEGO_EDITION_HARMATTAN)
     MeeGo::QmDisplayState *displayState;
-#else
-    void *displayState;
 #endif
     Ring *ring;
     int peakCount;

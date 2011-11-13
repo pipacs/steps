@@ -37,10 +37,10 @@ contains(MEEGO_EDITION,harmattan) {
 # Symbian
 symbian {
     TARGET.CAPABILITY += NetworkServices
-    RESOURCES += symbian.qrc
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
+    RESOURCES += symbian.qrc
 }
 
 # The .cpp file which was generated for your project. Feel free to hack it.
@@ -66,8 +66,6 @@ OTHER_FILES += \
     README.txt \
     qml/steps/meego/SettingsPage.qml \
     qml/steps/meego/MainPage.qml \
-    qml/steps/meego/main.qml \
-    qml/steps/meego/Beep.qml \
     qml/steps/symbian/SettingsPage.qml \
     qml/steps/symbian/MainPage.qml \
     qml/steps/symbian/main.qml \
@@ -75,7 +73,11 @@ OTHER_FILES += \
     sounds/start.wav \
     sounds/beep.wav \
     sounds/stop.wav \
-    background.svg
+    background.svg \
+    qml/steps/Beep.qml \
+    qml/steps/meego/MainWindow.qml \
+    qml/steps/main.qml \
+    qml/steps/Dummy.qml
 
 HEADERS += \
     counter.h \
@@ -83,4 +85,14 @@ HEADERS += \
     eventfilter.h \
     preferences.h \
     mediakey.h
+
+RESOURCES += \
+    common.qrc
+
+
+
+
+
+
+
 

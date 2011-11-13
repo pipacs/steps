@@ -1,13 +1,7 @@
 <RCC>
     <qresource prefix="/qml">
         <file alias="SettingsPage.qml">qml/steps/symbian/SettingsPage.qml</file>
-        <file alias="Beep.qml">qml/steps/symbian/Beep.qml</file>
         <file alias="main.qml">qml/steps/symbian/main.qml</file>
         <file alias="MainPage.qml">qml/steps/symbian/MainPage.qml</file>
-    </qresource>
-    <qresource prefix="/">
-        <file>sounds/stop.wav</file>
-        <file>sounds/beep.wav</file>
-        <file>sounds/start.wav</file>
     </qresource>
 </RCC>

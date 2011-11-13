@@ -1,12 +1,11 @@
 import QtQuick 1.1
-import com.nokia.meego 1.0
 import QtMultimediaKit 1.1
+import "symbian"
+import "meego"
 
-PageStackWindow {
+MainWindow {
     id: appWindow
     initialPage: mainPage
-    focus: true
-    showStatusBar: false
 
     MainPage {
         id: mainPage
@@ -14,7 +13,7 @@ PageStackWindow {
 
     Beep {
         id: stepSound
-        source: "file:///usr/share/sounds/ui-tones/snd_accessory_connected.wav"
+        source: "/sounds/beep.wav"
     }
 
     function rawCountChanged(val) {
@@ -28,8 +27,6 @@ PageStackWindow {
     }
 
     Component.onCompleted: {
-        theme.inverted = true
-
         counter.calibration = prefs.calibration
         counter.rawCount = prefs.rawCount
         counter.sensitivity = prefs.sensitivity

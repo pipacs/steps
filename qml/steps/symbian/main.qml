@@ -14,7 +14,7 @@ PageStackWindow {
 
     Beep {
         id: stepSound
-        source: "file:///usr/share/sounds/ui-tones/snd_accessory_connected.wav"
+        source: "/sounds/beep.wav"
     }
 
     function rawCountChanged(val) {

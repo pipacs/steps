@@ -1,5 +1,6 @@
 #include <QMainWindow>
 #include <QKeyEvent>
+#include <qplatformdefs.h>
 
 #include "eventfilter.h"
 
@@ -19,7 +20,7 @@ EventFilter::~EventFilter() {
 }
 
 bool EventFilter::eventFilter(QObject *obj, QEvent *event) {
-#if defined MEEGO_EDITION_HARMATTAN
+#if defined(MEEGO_EDITION_HARMATTAN)
     if (event->type() == QEvent::ApplicationDeactivate) {
         active = false;
         resourceSet->release();
