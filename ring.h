@@ -16,8 +16,10 @@ public:
     void setMinRise(qreal value);
 
 protected:
-    QList<qreal> data;
-    int size;
+    qreal *data;
+    int size; ///< Maximum number of items.
+    int head; ///< Ring start index.
+    int total; ///< Current number of items.
     qreal minRise;
 };
 
