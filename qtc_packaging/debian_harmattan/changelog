@@ -3,6 +3,7 @@ steps (0.0.2) unstable; urgency=low
   * Add settings
   * Add sound effects
   * Add support to Symbian
+  * Stop sensor while app is paused
 
  -- Akos Polster <akos@pipacs.com>  Sun, 11 Nov 2011 21:07:20 +0100
 

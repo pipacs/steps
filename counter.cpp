@@ -125,9 +125,11 @@ void Counter::setRunning(bool run) {
     }
     if (run) {
         lastPeakTimeDiff = DefaultPeakTimeDiff;
+        accelerometer->start();
         timer->start();
     } else {
         timer->stop();
+        accelerometer->stop();
     }
     emit runningChanged();
 }
