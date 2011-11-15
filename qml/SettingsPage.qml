@@ -5,6 +5,7 @@ import "meego"
 StepsDialog {
     id: settings
 
+    title: "Settings"
     acceptText: "Save"
     rejectText: "Cancel"
 
@@ -64,7 +65,7 @@ StepsDialog {
         }
     }
 
-    onAccepted: {
+    onDialogAccepted: {
         if (calibrationSlider.changed && counter.rawCount) {
             counter.calibration = calibrationSlider.value / counter.rawCount
             prefs.calibration = counter.calibration
@@ -78,7 +79,7 @@ StepsDialog {
         prefs.sensitivity = counter.sensitivity
     }
 
-    onRejected: {
+    onDialogRejected: {
         resetCounter.checked = false
     }
 }

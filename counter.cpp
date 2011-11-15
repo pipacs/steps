@@ -14,7 +14,10 @@ const long DefaultPeakTimeDiff = 700; // Default time difference between peaks, 
 // Get time difference in milliseconds
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
-Counter::Counter(QObject *parent): QObject(parent), displayState(0), calibration_(1.0), sensitivity_(100) {
+Counter::Counter(QObject *parent): QObject(parent),calibration_(1.0), sensitivity_(100) {
+#if defined(MEEGO_EDITON_HARMATTAN)
+    displayState = 0;
+#endif
     ring = new Ring(Span / Interval, MinRise);
     reset();
 

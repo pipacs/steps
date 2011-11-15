@@ -4,6 +4,8 @@
 #include "mediakey.h"
 #include "mediakeyprivate.h"
 
+#if defined(MEEGO_EDITION_HARMATTAN)
+
 MediaKeyPrivate::MediaKeyPrivate(MediaKey *parent): d_ptr(parent), active(false) {
     resourceSet = new ResourcePolicy::ResourceSet("player");
     resourceSet->addResourceObject(new ResourcePolicy::ScaleButtonResource);
@@ -48,3 +50,4 @@ bool MediaKeyPrivate::eventFilter(QObject *obj, QEvent *event) {
     return QObject::eventFilter(obj, event);
 }
 
+#endif

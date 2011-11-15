@@ -3,19 +3,6 @@
 
 #if defined(Q_WS_S60)
 
-// Access Symbian RemCon API
-class MediaKeyPrivate: public QObject, public MRemConCoreApiTargetObserver {
-public:
-    MediaKeyPrivate(MediaKey *parent);
-    ~MediaKeyPrivate();
-    virtual void MrccatoCommand(TRemConCoreApiOperationId aOperationId, TRemConCoreApiButtonAction aButtonAct);
-
-private:
-    CRemConInterfaceSelector *iInterfaceSelector;
-    CRemConCoreApiTarget *iCoreTarget;
-    MediaKey *d_ptr;
-};
-
 MediaKeyPrivate::MediaKeyPrivate(MediaKey *parent): d_ptr(parent) {
     QT_TRAP_THROWING(iInterfaceSelector = CRemConInterfaceSelector::NewL());
     QT_TRAP_THROWING(iCoreTarget = CRemConCoreApiTarget::NewL(*iInterfaceSelector, *this));
@@ -42,7 +29,7 @@ void MediaKeyPrivate::MrccatoCommand(TRemConCoreApiOperationId operation, TRemCo
 }
 
 bool MediaKeyPrivate::eventFilter(QObject *obj, QEvent *event) {
-    return QObject.eventFilter(obj, event);
+    return QObject::eventFilter(obj, event);
 }
 
 #endif // Q_WS_S60

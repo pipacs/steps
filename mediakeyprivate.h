@@ -15,7 +15,11 @@
 
 class MediaKey;
 
-class MediaKeyPrivate: public QObject {
+class MediaKeyPrivate: public QObject
+#if defined(Q_WS_S60)
+    , public MRemConCoreApiTargetObserver
+#endif
+{
 public:
     MediaKeyPrivate(MediaKey *parent);
     ~MediaKeyPrivate();

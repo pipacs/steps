@@ -1,7 +1,10 @@
 <RCC>
     <qresource prefix="/qml">
-        <file alias="SettingsPage.qml">qml/symbian/SettingsPage.qml</file>
-        <file alias="main.qml">qml/symbian/main.qml</file>
-        <file alias="MainPage.qml">qml/symbian/MainPage.qml</file>
+        <file alias="StepsSlider.qml">qml/symbian/StepsSlider.qml</file>
+        <file alias="StepsCheckBox.qml">qml/symbian/StepsCheckBox.qml</file>
+        <file alias="StepsDialog.qml">qml/symbian/StepsDialog.qml</file>
+        <file alias="StepsLabel.qml">qml/symbian/StepsLabel.qml</file>
+        <file alias="StepsPage.qml">qml/symbian/StepsPage.qml</file>
+        <file alias="StepsPageStackWindow.qml">qml/symbian/StepsPageStackWindow.qml</file>
     </qresource>
 </RCC>
