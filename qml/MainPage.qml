@@ -46,25 +46,25 @@ StepsPage {
 
     SettingsPage {
         id: settings
-        onClosed: {
-            console.log("* MainPage.SettingsPage.onClosed")
+        onDialogClosed: {
+            console.log("* MainPage.SettingsPage.onDialogClosed")
             counter.running = counterWasRunning
         }
     }
 
     Beep {
         id: startSound
-        source: "/sounds/start.wav"
+        source: platform.soundUrl("start")
     }
 
     Beep {
         id: stopSound
-        source: "/sounds/stop.wav"
+        source: platform.soundUrl("stop")
     }
 
     Beep {
         id: settingsSound
-        source: "/sounds/settings.wav"
+        source: platform.soundUrl("settings")
     }
 
    Component.onCompleted: {

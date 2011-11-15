@@ -1,7 +1,7 @@
-# Add more folders to ship with the application, here
-# folder_01.source = qml/meego
-# folder_01.target = qml
-# DEPLOYMENTFOLDERS = folder_01
+# Add sounds folder to the application
+folder_01.source = sounds
+folder_01.target = sounds
+DEPLOYMENTFOLDERS = folder_01
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
@@ -51,6 +51,7 @@ SOURCES += main.cpp \
     ring.cpp \
     preferences.cpp \
     mediakey.cpp \
+    platform.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -87,17 +88,22 @@ OTHER_FILES += \
     qml/symbian/StepsLabel.qml \
     qml/symbian/StepsCheckBox.qml \
     qml/symbian/StepsSlider.qml \
-    qml/symbian/StepsDialog.qml
+    qml/symbian/StepsDialog.qml \
+    qtc_packaging/version.txt
 
 HEADERS += \
     counter.h \
     ring.h \
     preferences.h \
     mediakey.h \
-    mediakeyprivate.h
+    mediakeyprivate.h \
+    platform.h
 
 RESOURCES += \
     common.qrc
+
+
+
 
 
 

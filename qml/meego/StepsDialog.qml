@@ -6,18 +6,18 @@ Sheet {
     property string title
     property string acceptText
     property string rejectText
-    signal closed
-    signal accepted
-    signal rejected
+    signal dialogClosed
+    signal dialogAccepted
+    signal dialogRejected
 
     acceptButtonText: acceptText
     rejectButtonText: rejectText
 
     onStatusChanged: {
         if (status == DialogStatus.Closed) {
-            // emit closed
-            closed()
+            dialogClosed()
         }
     }
 
+    // FIXME: emit dialogAccepted/dialogRejected
 }

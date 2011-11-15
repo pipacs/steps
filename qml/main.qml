@@ -12,7 +12,7 @@ StepsPageStackWindow {
 
     Beep {
         id: stepSound
-        source: "/sounds/beep.wav"
+        source: platform.soundUrl("beep")
     }
 
     function rawCountChanged(val) {

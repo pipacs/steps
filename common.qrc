@@ -2,10 +2,6 @@
     <qresource prefix="/">
         <file>qml/Beep.qml</file>
         <file>qml/main.qml</file>
-        <file>sounds/beep.wav</file>
-        <file>sounds/start.wav</file>
-        <file>sounds/stop.wav</file>
-        <file>sounds/settings.wav</file>
         <file>qml/MainPage.qml</file>
         <file>qml/SettingsPage.qml</file>
     </qresource>
