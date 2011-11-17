@@ -1,6 +1,8 @@
 steps (0.0.3) unstable; urgency=low
 
   * Stop sensor while app is paused
+  * Improve resource consumption
+  * Use smaller font for step count
 
  -- Akos Polster <akos@pipacs.com>  Mon, 14 Nov 2011 21:07:20 +0100
 
