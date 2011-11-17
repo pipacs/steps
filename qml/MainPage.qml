@@ -12,7 +12,7 @@ StepsPage {
             bottomMargin: 100
         }
         text: counter.count
-        font.pixelSize: 158
+        font.pixelSize: 116
         font.bold: true
     }
 

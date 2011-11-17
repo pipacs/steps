@@ -1,3 +1,5 @@
+VERSION = 0.0.3
+
 # Add sounds folder to the application
 folder_01.source = sounds
 folder_01.target = sounds
@@ -89,7 +91,8 @@ OTHER_FILES += \
     qml/symbian/StepsCheckBox.qml \
     qml/symbian/StepsSlider.qml \
     qml/symbian/StepsDialog.qml \
-    qtc_packaging/version.txt
+    qtc_packaging/version.txt \
+    steps256.png
 
 HEADERS += \
     counter.h \
@@ -101,39 +104,4 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
