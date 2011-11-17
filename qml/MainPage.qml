@@ -1,6 +1,6 @@
 import QtQuick 1.1
-import "symbian"
 import "meego"
+import "symbian"
 
 StepsPage {
     property bool counterWasRunning
