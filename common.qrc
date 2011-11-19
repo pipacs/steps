@@ -4,6 +4,7 @@
         <file>qml/main.qml</file>
         <file>qml/MainPage.qml</file>
         <file>qml/SettingsPage.qml</file>
+        <file>qml/ActionsPage.qml</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

@@ -43,7 +43,7 @@ void Platform::browse(const QString &url) {
 }
 
 QUrl Platform::soundUrl(const QString &name) {
-    QUrl ret = QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/sounds/" + name + ".wav");
+    QUrl ret = QUrl::fromLocalFile(QString(DATADIR) + "/sounds/" + name + ".wav");
     qDebug() << "Platform::soundUrl" << name << ":" << ret;
     return ret;
 }

@@ -1,9 +1,4 @@
-VERSION = 0.0.3
-
-# Add sounds folder to the application
-folder_01.source = sounds
-folder_01.target = sounds
-DEPLOYMENTFOLDERS = folder_01
+VERSION = 0.0.4
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
@@ -35,6 +30,7 @@ contains(MEEGO_EDITION,harmattan) {
     PKGCONFIG += libresourceqt1
     RESOURCES += meego.qrc
     SOURCES += mediakeyprivate-meego.cpp
+    DATADIR = share
 }
 
 # Symbian
@@ -45,7 +41,21 @@ symbian {
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
+    DATADIR = c:/data/steps
 }
+
+# Location of data files
+DEFINES += DATADIR=\\\"$$DATADIR\\\"
+
+message($$DATADIR)
+message($$DEFINES)
+
+# Add sounds folder to the application
+folder_01.source = sounds
+folder_01.target = $$DATADIR
+DEPLOYMENTFOLDERS = folder_01
+
+message($$folder_01.target)
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -92,7 +102,8 @@ OTHER_FILES += \
     qml/symbian/StepsSlider.qml \
     qml/symbian/StepsDialog.qml \
     qtc_packaging/version.txt \
-    steps256.png
+    steps256.png \
+    qml/ActionsPage.qml
 
 HEADERS += \
     counter.h \
@@ -104,4 +115,5 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
 

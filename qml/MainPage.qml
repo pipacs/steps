@@ -1,6 +1,6 @@
 import QtQuick 1.1
-import "meego"
 import "symbian"
+import "meego"
 
 StepsPage {
     property bool counterWasRunning
@@ -67,6 +67,10 @@ StepsPage {
         source: platform.soundUrl("settings")
     }
 
+    ActionsPage {
+        id: actions
+    }
+
    Component.onCompleted: {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
@@ -84,19 +88,7 @@ StepsPage {
         counterWasRunning = counter.running
         counter.running = false
         settingsSound.play()
-        settings.open()
+        appWindow.pageStack.push(actions)
+        // settings.open()
     }
-
-    // Keys.onPressed: {
-    //     if (event.key == Qt.Key_VolumeUp) {
-    //         var sound = counter.running? stopSound: startSound
-    //         sound.play()
-    //         counter.running = !counter.running
-    //     } else if (event.key == Qt.Key_VolumeDown) {
-    //         counterWasRunning = counter.running
-    //         counter.running = false
-    //         settingsSound.play()
-    //         settings.open()
-    //     }
-    // }
 }
