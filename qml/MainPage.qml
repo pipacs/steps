@@ -90,7 +90,7 @@ StepsPage {
     function onVolumeDownPressed() {
         if (active) {
             console.log("* MainPage.onVolumeDownPressed")
-            // settingsSound.play()
+            settingsSound.play()
             appWindow.pageStack.push(actions)
         }
     }
