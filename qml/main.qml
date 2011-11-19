@@ -10,18 +10,13 @@ StepsPageStackWindow {
         id: mainPage
     }
 
-    Beep {
-        id: stepSound
-        source: platform.soundUrl("beep")
-    }
-
     function rawCountChanged(val) {
         prefs.rawCount = val
     }
 
     function countChanged() {
         if (counter.count) {
-            stepSound.play()
+            // stepSound.play()
         }
     }
 

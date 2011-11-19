@@ -47,15 +47,10 @@ symbian {
 # Location of data files
 DEFINES += DATADIR=\\\"$$DATADIR\\\"
 
-message($$DATADIR)
-message($$DEFINES)
-
 # Add sounds folder to the application
 folder_01.source = sounds
 folder_01.target = $$DATADIR
 DEPLOYMENTFOLDERS = folder_01
-
-message($$folder_01.target)
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
