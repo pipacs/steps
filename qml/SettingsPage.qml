@@ -1,6 +1,6 @@
 import QtQuick 1.1
-import "symbian"
 import "meego"
+import "symbian"
 
 StepsDialog {
     id: settings
@@ -60,6 +60,7 @@ StepsDialog {
     }
 
     onDialogAccepted: {
+        console.log("* SettingsPage.onDialogAccepted")
         if (calibrationSlider.changed && counter.rawCount) {
             counter.calibration = calibrationSlider.value / counter.rawCount
             prefs.calibration = counter.calibration

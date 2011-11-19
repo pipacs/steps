@@ -4,12 +4,16 @@ import "meego"
 
 StepsPage {
     property bool settingsOpen: false
+    id: stepsPage
 
     Column {
         anchors.centerIn: parent
         spacing: 32
+        width: stepsPage.width
         BigButton {
             text: "Reset counter"
+            width: parent.width - 64
+            anchors.horizontalCenter: parent.horizontalCenter
             negative: true
             onClicked: {
                 counter.reset()
@@ -18,6 +22,8 @@ StepsPage {
         }
         BigButton {
             text: "Settings"
+            width: parent.width - 64
+            anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 settingsOpen = true
                 settings.open()
@@ -31,9 +37,12 @@ StepsPage {
 
     SettingsPage {
         id: settings
+        onDialogAccepted: {
+            console.log("* Actions.SettingsPage.onDialogAccepted")
+            appWindow.pageStack.pop()
+        }
         onDialogClosed: {
             console.log("* Actions.SettingsPage.onDialogClosed")
-            appWindow.pageStack.pop()
             settingsOpen = false
         }
     }

@@ -19,6 +19,11 @@ CommonDialog {
         }
     }
 
-    onAccepted: dialogAccepted
-    onRejected: dialogRejected
+    onButtonClicked: {
+        if (index === 0) {
+            dialogAccepted()
+        } else {
+            dialogRejected()
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import QtQuick 1.0
-import "symbian"
 import "meego"
+import "symbian"
 
 StepsButton {
     font.pixelSize: 44
