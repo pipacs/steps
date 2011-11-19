@@ -78,17 +78,21 @@ StepsPage {
 
     function onVolumeUpPressed() {
         console.log("* MainPage.onVolumeUpPressed")
-        var sound = counter.running? stopSound: startSound
-        sound.play()
-        counter.running = !counter.running
+        if (active) {
+            var sound = counter.running? stopSound: startSound
+            sound.play()
+            counter.running = !counter.running
+        }
     }
 
     function onVolumeDownPressed() {
         console.log("* MainPage.onVolumeDownPressed")
-        counterWasRunning = counter.running
-        counter.running = false
-        settingsSound.play()
-        appWindow.pageStack.push(actions)
-        // settings.open()
+        if (active) {
+            counterWasRunning = counter.running
+            counter.running = false
+            settingsSound.play()
+            appWindow.pageStack.push(actions)
+            // settings.open()
+        }
     }
 }
