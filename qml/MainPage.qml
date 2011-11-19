@@ -3,7 +3,7 @@ import "symbian"
 import "meego"
 
 StepsPage {
-    property bool counterWasRunning
+    property bool counterWasRunning: false
 
     StepsLabel {
         id: label
@@ -44,14 +44,6 @@ StepsPage {
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 
-    SettingsPage {
-        id: settings
-        onDialogClosed: {
-            console.log("* MainPage.SettingsPage.onDialogClosed")
-            counter.running = counterWasRunning
-        }
-    }
-
     Beep {
         id: startSound
         source: platform.soundUrl("start")
@@ -71,28 +63,35 @@ StepsPage {
         id: actions
     }
 
-   Component.onCompleted: {
+    Component.onCompleted: {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
     }
 
-    function onVolumeUpPressed() {
-        console.log("* MainPage.onVolumeUpPressed")
+    onActiveChanged: {
+        console.log("* MainPage: onActiveChanged: " + active)
         if (active) {
-            var sound = counter.running? stopSound: startSound
-            sound.play()
+            counter.running = counterWasRunning
+        } else {
+            counterWasRunning = counter.running
+            counter.running = false
+        }
+    }
+
+    function onVolumeUpPressed() {
+        if (active) {
+            console.log("* MainPage.onVolumeUpPressed")
             counter.running = !counter.running
+            var sound = counter.running? startSound: stopSound
+            sound.play()
         }
     }
 
     function onVolumeDownPressed() {
-        console.log("* MainPage.onVolumeDownPressed")
         if (active) {
-            counterWasRunning = counter.running
-            counter.running = false
-            settingsSound.play()
+            console.log("* MainPage.onVolumeDownPressed")
+            // settingsSound.play()
             appWindow.pageStack.push(actions)
-            // settings.open()
         }
     }
 }

@@ -6,5 +6,6 @@
         <file alias="StepsCheckBox.qml">qml/meego/StepsCheckBox.qml</file>
         <file alias="StepsSlider.qml">qml/meego/StepsSlider.qml</file>
         <file alias="StepsDialog.qml">qml/meego/StepsDialog.qml</file>
+        <file alias="StepsButton.qml">qml/meego/StepsButton.qml</file>
     </qresource>
 </RCC>

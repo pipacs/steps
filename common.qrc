@@ -5,6 +5,7 @@
         <file>qml/MainPage.qml</file>
         <file>qml/SettingsPage.qml</file>
         <file>qml/ActionsPage.qml</file>
+        <file>qml/BigButton.qml</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

@@ -11,8 +11,8 @@ StepsDialog {
 
     content: Flickable {
         anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.topMargin: 10
+        anchors.leftMargin: 30
+        anchors.topMargin: 41
         contentWidth: col2.width
         contentHeight: col2.height
         flickableDirection: Flickable.VerticalFlick
@@ -56,12 +56,6 @@ StepsDialog {
                 maximumValue: 190
                 value: counter.sensitivity
             }
-
-            StepsCheckBox {
-                id: resetCounter
-                text: "Reset counter"
-                checked: false
-            }
         }
     }
 
@@ -70,16 +64,8 @@ StepsDialog {
             counter.calibration = calibrationSlider.value / counter.rawCount
             prefs.calibration = counter.calibration
         }
-        if (resetCounter.checked) {
-            counter.reset()
-            resetCounter.checked = false
-        }
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
         prefs.sensitivity = counter.sensitivity
-    }
-
-    onDialogRejected: {
-        resetCounter.checked = false
     }
 }

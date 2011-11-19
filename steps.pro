@@ -98,7 +98,9 @@ OTHER_FILES += \
     qml/symbian/StepsDialog.qml \
     qtc_packaging/version.txt \
     steps256.png \
-    qml/ActionsPage.qml
+    qml/ActionsPage.qml \
+    qml/meego/StepsButton.qml \
+    qml/BigButton.qml
 
 HEADERS += \
     counter.h \
@@ -110,5 +112,7 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
+
 
 
