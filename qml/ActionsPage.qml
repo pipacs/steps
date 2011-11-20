@@ -4,14 +4,15 @@ import "meego"
 
 StepsPage {
     property bool dialogOpen: false
-    id: stepsPage
+    id: actionsPage
 
     Column {
         anchors.centerIn: parent
         spacing: 32
-        width: stepsPage.width
+        width: actionsPage.width
         BigButton {
             text: "Reset counter"
+            // iconSource: "/images/reset.png"
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             negative: true
@@ -22,6 +23,7 @@ StepsPage {
         }
         BigButton {
             text: "Settings"
+            // iconSource: "/images/settings.png"
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
@@ -31,9 +33,15 @@ StepsPage {
         }
     }
 
-    Component.onCompleted: {
-        mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+    BigButton {
+        text: "Back"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        width: actionsPage.width - 64
+        onClicked: appWindow.pageStack.pop()
     }
+
+    Component.onCompleted: mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
 
     StepsYesNoDialog {
         id: confirmDialog
@@ -50,14 +58,8 @@ StepsPage {
 
     SettingsPage {
         id: settings
-        onDialogAccepted: {
-            console.log("* Actions.SettingsPage.onDialogAccepted")
-            appWindow.pageStack.pop()
-        }
-        onDialogClosed: {
-            console.log("* Actions.SettingsPage.onDialogClosed")
-            dialogOpen = false
-        }
+        onDialogAccepted: appWindow.pageStack.pop()
+        onDialogClosed: dialogOpen = false
     }
 
     function onVolumeDownPressed() {

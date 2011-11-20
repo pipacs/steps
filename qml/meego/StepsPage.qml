@@ -5,4 +5,5 @@ import com.nokia.meego 1.0
 Page {
     property bool active
     active: status == PageStatus.Active
+    orientationLock: PageOrientation.LockPortrait
 }
