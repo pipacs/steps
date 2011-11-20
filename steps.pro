@@ -31,7 +31,7 @@ contains(MEEGO_EDITION,harmattan) {
     RESOURCES += meego.qrc
     SOURCES += mediakeyprivate-meego.cpp
     DATADIR = share
-    DEFINES += DATADIR=\\\"$$DATADIR\\\"
+    DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
 }
 
 # Symbian
@@ -43,8 +43,10 @@ symbian {
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
     DATADIR = c:/data/steps
-    DEFINES += DATADIR='"c:/data/steps"'
+    DEFINES += STEPS_DATADIR='"c:/data/steps"'
 }
+
+DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
 
 # Add sounds folder to the application
 folder_01.source = sounds
@@ -95,7 +97,6 @@ OTHER_FILES += \
     qml/symbian/StepsCheckBox.qml \
     qml/symbian/StepsSlider.qml \
     qml/symbian/StepsDialog.qml \
-    qtc_packaging/version.txt \
     steps256.png \
     qml/ActionsPage.qml \
     qml/meego/StepsButton.qml \
@@ -115,6 +116,7 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
 
 
 
