@@ -3,7 +3,7 @@ import "symbian"
 import "meego"
 
 StepsPage {
-    property bool settingsOpen: false
+    property bool dialogOpen: false
     id: stepsPage
 
     Column {
@@ -16,8 +16,8 @@ StepsPage {
             anchors.horizontalCenter: parent.horizontalCenter
             negative: true
             onClicked: {
-                counter.reset()
-                appWindow.pageStack.pop()
+                dialogOpen = true
+                confirmDialog.open()
             }
         }
         BigButton {
@@ -25,7 +25,7 @@ StepsPage {
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                settingsOpen = true
+                dialogOpen = true
                 settings.open()
             }
         }
@@ -33,6 +33,19 @@ StepsPage {
 
     Component.onCompleted: {
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+    }
+
+    StepsYesNoDialog {
+        id: confirmDialog
+        titleText: "Reset counter?"
+        onDialogAccepted: {
+            console.log("* ActionsPage.confirmDialog.onDialogAccepted")
+            counter.reset()
+            appWindow.pageStack.pop()
+        }
+        onDialogClosed: {
+            dialogOpen = false;
+        }
     }
 
     SettingsPage {
@@ -43,12 +56,12 @@ StepsPage {
         }
         onDialogClosed: {
             console.log("* Actions.SettingsPage.onDialogClosed")
-            settingsOpen = false
+            dialogOpen = false
         }
     }
 
     function onVolumeDownPressed() {
-        if (active && !settingsOpen) {
+        if (active && !dialogOpen) {
             console.log("* ActionsPage.onVolumeDownPressed")
             appWindow.pageStack.pop()
         }

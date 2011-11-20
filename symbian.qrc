@@ -7,5 +7,6 @@
         <file alias="StepsPage.qml">qml/symbian/StepsPage.qml</file>
         <file alias="StepsPageStackWindow.qml">qml/symbian/StepsPageStackWindow.qml</file>
         <file alias="StepsButton.qml">qml/symbian/StepsButton.qml</file>
+        <file alias="StepsYesNoDialog.qml">qml/symbian/StepsYesNoDialog.qml</file>
     </qresource>
 </RCC>
