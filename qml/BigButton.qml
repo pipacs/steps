@@ -3,6 +3,6 @@ import "meego"
 import "symbian"
 
 StepsButton {
-    font.pixelSize: 44
-    height: 90
+    font.pixelSize: 36
+    height: 82
 }
