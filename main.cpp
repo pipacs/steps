@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
     viewer.rootContext()->setContextProperty("platform", platform);
     viewer.rootContext()->setContextProperty("mediaKey", mediaKey);
     viewer.setMainQmlFile(QLatin1String("qrc:/qml/main.qml"));
+    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer.showExpanded();
 
     // Install event filter to capture/release volume keys

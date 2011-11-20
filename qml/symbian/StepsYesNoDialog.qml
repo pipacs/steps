@@ -10,7 +10,7 @@ QueryDialog {
     titleText: "Steps"
     message: title
     buttonTexts: ["Yes", "No"]
-    icon: "/images/steps.png"
+    // icon: "/images/steps.png"
 
     onStatusChanged: {
         if (status == DialogStatus.Closed) {

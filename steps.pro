@@ -1,4 +1,4 @@
-VERSION = 0.0.4
+VERSION = 0.0.5
 
 symbian:TARGET.UID3 = 0xE1584C4E
 
@@ -31,6 +31,7 @@ contains(MEEGO_EDITION,harmattan) {
     DATADIR = share
     DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
     QML_IMPORT_PATH = qml/meego
+    DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
 } else:symbian {
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
@@ -41,10 +42,9 @@ contains(MEEGO_EDITION,harmattan) {
     DATADIR = c:/data/steps
     DEFINES += STEPS_DATADIR='"c:/data/steps"'
     QML_IMPORT_PATH = qml/symbian
+    DEFINES += STEPS_VERSION='"$$VERSION"'
 } else {
 }
-
-DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
 
 # Add sounds folder to the application
 folder_01.source = sounds
