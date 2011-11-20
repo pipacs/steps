@@ -1,6 +1,6 @@
 import QtQuick 1.1
-import "symbian"
 import "meego"
+import "symbian"
 
 StepsDialog {
     id: settings
@@ -12,6 +12,7 @@ StepsDialog {
     content: Flickable {
         anchors.fill: parent
         anchors.leftMargin: 30
+        anchors.rightMargin: 30
         anchors.topMargin: 41
         contentWidth: col2.width
         contentHeight: col2.height
@@ -21,6 +22,7 @@ StepsDialog {
             id: col2
             anchors.top: parent.top
             spacing: 41
+            width: settings.width - 60
 
             StepsCheckBox {
                 id: audioFeedback
@@ -38,6 +40,7 @@ StepsDialog {
 
             StepsSlider {
                 id: calibrationSlider
+                width: parent.width - 15
                 enabled: counter.count
                 stepSize: 1
                 valueIndicatorVisible: true
@@ -50,6 +53,7 @@ StepsDialog {
 
             StepsSlider {
                 id: sensitivitySlider
+                width: parent.width - 15
                 stepSize: 10
                 valueIndicatorVisible: true
                 minimumValue: 10
@@ -60,6 +64,7 @@ StepsDialog {
     }
 
     onDialogAccepted: {
+        console.log("* SettingsPage.onDialogAccepted")
         if (calibrationSlider.changed && counter.rawCount) {
             counter.calibration = calibrationSlider.value / counter.rawCount
             prefs.calibration = counter.calibration

@@ -1,31 +1,28 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 
-CommonDialog {
+QueryDialog {
     property string title
-    property string acceptText
-    property string rejectText
     signal dialogClosed
     signal dialogAccepted
     signal dialogRejected
 
-    titleText: title
-    buttonTexts: [acceptText, rejectText]
-    anchors.fill: parent
+    titleText: "Steps"
+    message: title
+    buttonTexts: ["Yes", "No"]
+    icon: "/images/steps.png"
 
     onStatusChanged: {
         if (status == DialogStatus.Closed) {
-            console.log("* StepsDialog.dialogClosed")
             dialogClosed()
         }
     }
 
     onButtonClicked: {
+        console.log("* StepsYesNoDialog.onButtonClicked " + index)
         if (index === 0) {
-            console.log("* StepsDialog.dialogAccepted")
             dialogAccepted()
         } else {
-            console.log("* StepsDialog.dialogRejected")
             dialogRejected()
         }
     }

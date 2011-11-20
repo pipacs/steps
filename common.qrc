@@ -6,6 +6,7 @@
         <file>qml/SettingsPage.qml</file>
         <file>qml/ActionsPage.qml</file>
         <file>qml/BigButton.qml</file>
+        <file>images/steps.png</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>
