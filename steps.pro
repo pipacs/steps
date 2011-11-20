@@ -32,6 +32,7 @@ contains(MEEGO_EDITION,harmattan) {
     SOURCES += mediakeyprivate-meego.cpp
     DATADIR = share
     DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
+    DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
 }
 
 # Symbian
@@ -44,9 +45,9 @@ symbian {
     RESOURCES += symbian.qrc
     DATADIR = c:/data/steps
     DEFINES += STEPS_DATADIR='"c:/data/steps"'
+    DEFINES += STEPS_VERSION='"$$VERSION"'
 }
 
-DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
 
 # Add sounds folder to the application
 folder_01.source = sounds

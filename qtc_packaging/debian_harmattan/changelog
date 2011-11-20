@@ -1,6 +1,9 @@
 steps (0.0.4) unstable; urgency=low
 
   * Ask for confirmation when resetting the counter
+  * Lock to portrait
+  * Improve navigation
+  * Have sound effects on Symbian
 
  -- Akos Polster <akos@pipacs.com>  Mon, 19 Nov 2011 21:07:20 +0100
 
