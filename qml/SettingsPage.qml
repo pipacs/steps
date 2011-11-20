@@ -1,6 +1,6 @@
 import QtQuick 1.1
-import "meego"
 import "symbian"
+import "meego"
 
 StepsDialog {
     id: settings

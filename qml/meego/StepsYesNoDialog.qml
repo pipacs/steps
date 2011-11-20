@@ -1,17 +1,18 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 
-// Simple wrapper for Sheet
-Sheet {
+// Simple wrapper for Yes/No QueryDialog
+QueryDialog {
     property string title
-    property string acceptText
-    property string rejectText
     signal dialogClosed
     signal dialogAccepted
     signal dialogRejected
 
-    acceptButtonText: acceptText
-    rejectButtonText: rejectText
+    acceptButtonText: "Yes"
+    rejectButtonText: "No"
+    message: title
+    titleText: Steps
+    icon: "/images/steps.png"
 
     onStatusChanged: {
         if (status == DialogStatus.Closed) {
@@ -27,4 +28,3 @@ Sheet {
         dialogRejected()
     }
 }
-

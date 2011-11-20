@@ -102,7 +102,8 @@ OTHER_FILES += \
     qml/BigButton.qml \
     qml/symbian/StepsButton.qml \
     qml/symbian/StepsYesNoDialog.qml \
-    images/steps.png
+    images/steps.png \
+    qml/meego/StepsYesNoDialog.qml
 
 HEADERS += \
     counter.h \
@@ -114,6 +115,7 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
 
 
 

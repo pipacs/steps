@@ -7,5 +7,6 @@
         <file alias="StepsSlider.qml">qml/meego/StepsSlider.qml</file>
         <file alias="StepsDialog.qml">qml/meego/StepsDialog.qml</file>
         <file alias="StepsButton.qml">qml/meego/StepsButton.qml</file>
+        <file alias="StepsYesNoDialog.qml">qml/meego/StepsYesNoDialog.qml</file>
     </qresource>
 </RCC>
