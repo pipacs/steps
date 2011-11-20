@@ -1,8 +1,5 @@
 VERSION = 0.0.4
 
-# Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
-
 symbian:TARGET.UID3 = 0xE1584C4E
 
 # Smart Installer package's UID
@@ -19,11 +16,12 @@ symbian:TARGET.UID3 = 0xE1584C4E
 CONFIG += mobility
 MOBILITY += sensors
 MOBILITY += multimedia
+QT += sql
 
 # Add dependency to Symbian components
 # CONFIG += qt-components
 
-# Maemo Harmattan
+# Platform-specific
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
     CONFIG += qmsystem2
@@ -32,10 +30,8 @@ contains(MEEGO_EDITION,harmattan) {
     SOURCES += mediakeyprivate-meego.cpp
     DATADIR = share
     DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
-}
-
-# Symbian
-symbian {
+    QML_IMPORT_PATH = qml/meego
+} else:symbian {
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
@@ -44,6 +40,8 @@ symbian {
     RESOURCES += symbian.qrc
     DATADIR = c:/data/steps
     DEFINES += STEPS_DATADIR='"c:/data/steps"'
+    QML_IMPORT_PATH = qml/symbian
+} else {
 }
 
 DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
@@ -59,7 +57,8 @@ SOURCES += main.cpp \
     ring.cpp \
     preferences.cpp \
     mediakey.cpp \
-    platform.cpp
+    platform.cpp \
+    logger.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -114,10 +113,13 @@ HEADERS += \
     preferences.h \
     mediakey.h \
     mediakeyprivate.h \
-    platform.h
+    platform.h \
+    logger.h
 
 RESOURCES += \
     common.qrc
+
+
 
 
 

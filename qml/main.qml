@@ -1,6 +1,4 @@
 import QtQuick 1.1
-import "symbian"
-import "meego"
 
 StepsPageStackWindow {
     id: appWindow
