@@ -1,4 +1,4 @@
-VERSION = 0.0.4
+VERSION = 0.0.5
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
