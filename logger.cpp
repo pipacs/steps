@@ -27,15 +27,15 @@ void Logger::close() {
 
 Logger::Logger(QObject *parent): QObject(parent) {
     worker = new LoggerWorker();
-    workerThread = new QThread();
+    workerThread = new QThread(this);
     worker->moveToThread(workerThread);
     workerThread->start(QThread::LowestPriority);
 }
 
 Logger::~Logger() {
+    qDebug() << "Logger::~Logger";
     workerThread->quit();
     workerThread->wait();
-    delete workerThread;
     delete worker;
 }
 
@@ -79,6 +79,7 @@ void LoggerWorker::create() {
 }
 
 LoggerWorker::~LoggerWorker() {
+    qDebug() << "LoggerWorker::~LoggerWorker";
     db.close();
 }
 

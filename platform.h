@@ -20,7 +20,7 @@ public:
 
 protected:
     Platform();
-    ~Platform();
+    virtual ~Platform();
 };
 
 #endif // PLATFORM_H

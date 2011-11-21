@@ -6,12 +6,13 @@
 
 #if defined(MEEGO_EDITION_HARMATTAN)
 
-MediaKeyPrivate::MediaKeyPrivate(MediaKey *parent): d_ptr(parent), active(false) {
+MediaKeyPrivate::MediaKeyPrivate(MediaKey *parent): QObject(parent), d_ptr(parent), active(false) {
     resourceSet = new ResourcePolicy::ResourceSet("player");
     resourceSet->addResourceObject(new ResourcePolicy::ScaleButtonResource);
 }
 
 MediaKeyPrivate::~MediaKeyPrivate() {
+    qDebug() << "MediaKeyPrivate::~MediaKeyPrivate";
     resourceSet->release();
     resourceSet->deleteResource(ResourcePolicy::ScaleButtonType);
     delete resourceSet;

@@ -20,7 +20,7 @@ public:
 
 protected:
     explicit Logger(QObject *parent = 0);
-    ~Logger();
+    virtual ~Logger();
     LoggerWorker *worker;
     QThread *workerThread;
 };
@@ -31,7 +31,7 @@ class LoggerWorker: public QObject {
 
 public:
     explicit LoggerWorker(QObject *parent = 0);
-    ~LoggerWorker();
+    virtual ~LoggerWorker();
 
 public slots:
     void doLog(int steps, const QVariantMap &tags);

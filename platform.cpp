@@ -26,6 +26,7 @@ Platform::Platform(): QObject() {
 }
 
 Platform::~Platform() {
+    qDebug() << "Platform::~Platform";
 }
 
 Platform *Platform::instance() {

@@ -18,6 +18,7 @@ class MediaKey: public QObject {
     Q_OBJECT
 public:
     MediaKey(QObject *parent = 0);
+    virtual ~MediaKey();
 
 signals:
     void volumeDownPressed();

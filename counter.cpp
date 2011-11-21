@@ -16,7 +16,7 @@ const long MinimumPeakTimeDiff = 150; // Minimum time difference between peaks, 
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
 Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivity_(100) {
-#if defined(MEEGO_EDITON_HARMATTAN)
+#if defined(MEEGO_EDITION_HARMATTAN)
     displayState = 0;
 #endif
     ring = new Ring(Span / Interval, MinimumRise);
@@ -44,8 +44,9 @@ Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivi
 }
 
 Counter::~Counter() {
+    qDebug() << "Counter::~Counter";
     accelerometer->stop();
-    delete accelerometer;
+    // delete accelerometer;
 #if defined(MEEGO_EDITION_HARMATTAN)
     delete displayState;
 #endif

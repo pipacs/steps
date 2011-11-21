@@ -6,7 +6,7 @@
 
 static Preferences *inst;
 
-Preferences::Preferences(): QObject(0) {
+Preferences::Preferences(): QObject() {
 }
 
 void Preferences::setValue(const QString &key, const QVariant &value) {
