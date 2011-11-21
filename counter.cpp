@@ -8,17 +8,18 @@
 const int Span = 2000; // Time span for detecting peaks, milliseconds
 const int Interval = 100; // Accelerometer reading interval, milliseconds
 const int BlankingInterval = 5000; // Display blanking timer interval, milliseconds
-const qreal MinRise = 50.0f; // Minimum diff in accelerometer readings (any direction)
+const qreal MinimumRise = 50.0f; // Minimum diff in accelerometer readings (any direction)
 const long DefaultPeakTimeDiff = 700; // Default time difference between peaks, milliseconds
+const long MinimumPeakTimeDiff = 150; // Minimum time difference between peaks, milliseconds
 
 // Get time difference in milliseconds
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
-Counter::Counter(QObject *parent): QObject(parent),calibration_(1.0), sensitivity_(100) {
+Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivity_(100) {
 #if defined(MEEGO_EDITON_HARMATTAN)
     displayState = 0;
 #endif
-    ring = new Ring(Span / Interval, MinRise);
+    ring = new Ring(Span / Interval, MinimumRise);
     reset();
 
     accelerometer = new QAccelerometer(this);
@@ -26,7 +27,7 @@ Counter::Counter(QObject *parent): QObject(parent),calibration_(1.0), sensitivit
         accelerometer->start();
     }
     if (!accelerometer->isActive()) {
-        qCritical() << "accelerometer sensor didn't start!" << endl;
+        qCritical() << "Accelerometer sensor didn't start!" << endl;
         return;
     }
 
@@ -77,33 +78,30 @@ void Counter::measure() {
     gettimeofday(&peakTime, 0);
     peakTimeDiff = timeDiff(lastPeakTime, peakTime);
 
-    if (peakTimeDiff < (lastPeakTimeDiff / 2)) {
-        qDebug() << "  Peaked too early: after" << peakTimeDiff << "ms";
+    if (peakTimeDiff < MinimumPeakTimeDiff) {
+        // Peaked too early
+        return;
     }
 
     lastPeakTime.tv_sec = peakTime.tv_sec;
     lastPeakTime.tv_usec = peakTime.tv_usec;
-    lastPeakTimeDiff = (peakTimeDiff > DefaultPeakTimeDiff)? DefaultPeakTimeDiff: peakTimeDiff;
     ++peakCount;
 
     if (peakCount % 2) {
+        // Every second peak is a (raw) step
         ++rawStepCount;
-        qDebug() << rawStepCount << ": Step after" << peakTimeDiff << "ms";
         emit rawCountChanged(rawStepCount);
         int newStepCount = (int)(rawStepCount * calibration_);
         if (newStepCount != stepCount) {
             stepCount = newStepCount;
             emit step(newStepCount);
         }
-        // QDateTime now = QDateTime::currentDateTimeUtc();
-        // logger.log(QString("%1,%2,%3,%4,%5").arg(now.toString("yyyy-MM-ddThh:mm:ss.zzz")).arg(x).arg(y).arg(z).arg(reading));
     }
 }
 
 void Counter::reset() {
     stepCount = peakCount = rawStepCount = 0;
-    lastPeakTimeDiff = DefaultPeakTimeDiff;
-    lastPeakTime.tv_sec = lastPeakTime.tv_usec = 0;
+    gettimeofday(&lastPeakTime, 0);
     ring->clear();
     emit rawCountChanged(0);
     emit step(0);
@@ -127,7 +125,6 @@ void Counter::setRunning(bool run) {
         return;
     }
     if (run) {
-        lastPeakTimeDiff = DefaultPeakTimeDiff;
         accelerometer->start();
         timer->start();
     } else {
@@ -166,7 +163,7 @@ void Counter::setRawCount(int value) {
 void Counter::setSensitivity(int value) {
     qDebug() << "Counter::setSensitivity" << value;
     sensitivity_ = value;
-    ring->setMinRise(MinRise + 100 - value);
+    ring->setMinimumRise(MinimumRise + 100 - value);
     emit sensitivityChanged(value);
 }
 

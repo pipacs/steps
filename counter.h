@@ -66,7 +66,6 @@ protected:
     int rawStepCount; ///< Raw step count.
     int stepCount; ///< Calibrated step count.
     struct timeval lastPeakTime;
-    long lastPeakTimeDiff;
     qreal calibration_; ///< Calibration coefficient. Default: 1.
     int sensitivity_; ///< Default: 100.
 };
