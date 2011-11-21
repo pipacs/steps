@@ -1,18 +1,6 @@
 VERSION = 0.0.5
 
-symbian:TARGET.UID3 = 0xE1584C4E
-
-# Smart Installer package's UID
-# This UID is from the protected range and therefore the package will
-# fail to install if self-signed. By default qmake uses the unprotected
-# range value if unprotected UID is defined for the application and
-# 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-
-# If your application uses the Qt Mobility libraries, uncomment the following
-# lines and add the respective components to the MOBILITY variable.
-# CONFIG += mobility
-# MOBILITY +=
+# Qt packages to use
 CONFIG += mobility
 MOBILITY += sensors
 MOBILITY += multimedia
@@ -30,10 +18,11 @@ contains(MEEGO_EDITION,harmattan) {
     SOURCES += mediakeyprivate-meego.cpp
     DATADIR = share
     DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
-    QML_IMPORT_PATH = qml/meego
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
+    QML_IMPORT_PATH = qml/meego
 } else:symbian {
     TARGET.CAPABILITY += NetworkServices
+    TARGET.UID3 = 0xE1584C4E
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
@@ -41,18 +30,25 @@ contains(MEEGO_EDITION,harmattan) {
     RESOURCES += symbian.qrc
     DATADIR = c:/data/steps
     DEFINES += STEPS_DATADIR='"c:/data/steps"'
-    QML_IMPORT_PATH = qml/symbian
     DEFINES += STEPS_VERSION='"$$VERSION"'
+    QML_IMPORT_PATH = qml/symbian
+    # Smart Installer package's UID
+    # This UID is from the protected range and therefore the package will
+    # fail to install if self-signed. By default qmake uses the unprotected
+    # range value if unprotected UID is defined for the application and
+    # 0x2002CCCF value if protected UID is given to the application
+    #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 } else {
 }
 
-# Add sounds folder to the application
+# Add sounds folder to the application.
+# Sounds cannot be played back from resource on Symbian
 folder_01.source = sounds
 folder_01.target = $$DATADIR
 DEPLOYMENTFOLDERS = folder_01
 
-# The .cpp file which was generated for your project. Feel free to hack it.
-SOURCES += main.cpp \
+SOURCES += \
+    main.cpp \
     counter.cpp \
     ring.cpp \
     preferences.cpp \
@@ -118,6 +114,10 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
+
+
+
 
 
 
