@@ -13,7 +13,7 @@ class Platform: public QObject {
 public:
     static Platform *instance();
     static void close();
-    QString version();
+    Q_INVOKABLE QString version();
     Q_INVOKABLE QUrl soundUrl(const QString &name);
     Q_INVOKABLE void browse(const QString &url);
     Q_INVOKABLE QString dbPath();

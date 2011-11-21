@@ -8,7 +8,7 @@ Ring::Ring(int size_, qreal minRise_) {
     memset(data, 0, size * sizeof(qreal));
     head = 0;
     total = 0;
-    setMinRise(minRise_);
+    setMinimumRise(minRise_);
 }
 
 Ring::~Ring() {
@@ -56,7 +56,7 @@ qreal Ring::get(int index) {
     return data[(head + index) % total];
 }
 
-void Ring::setMinRise(qreal minRise_) {
+void Ring::setMinimumRise(qreal minRise_) {
     minRise = minRise_;
     if (minRise < 0.1) {
         minRise = 0.1;

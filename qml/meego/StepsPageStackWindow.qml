@@ -7,7 +7,7 @@ PageStackWindow {
     showStatusBar: false
     showToolBar: false
     Component.onCompleted: {
-        // Enforce black theme on Meego
+        // Enforce black theme
         theme.inverted = true
     }
 }

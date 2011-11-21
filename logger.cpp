@@ -26,8 +26,8 @@ void Logger::close() {
 }
 
 Logger::Logger(QObject *parent): QObject(parent) {
-    worker = new LoggerWorker(this);
-    workerThread = new QThread(this);
+    worker = new LoggerWorker();
+    workerThread = new QThread();
     worker->moveToThread(workerThread);
     workerThread->start(QThread::LowestPriority);
 }
@@ -35,14 +35,16 @@ Logger::Logger(QObject *parent): QObject(parent) {
 Logger::~Logger() {
     workerThread->quit();
     workerThread->wait();
+    delete workerThread;
+    delete worker;
 }
 
-void Logger::log(int steps, const QVariantHash &tags) {
+void Logger::log(int steps, const QVariantMap &tags) {
     if (!QMetaObject::invokeMethod(
             worker,
             "doLog",
             Q_ARG(int, steps),
-            Q_ARG(QVariantHash, tags))) {
+            Q_ARG(QVariantMap, tags))) {
         qCritical() << "Logger::log: Invoking remote logger failed";
     }
 }
@@ -80,17 +82,18 @@ LoggerWorker::~LoggerWorker() {
     db.close();
 }
 
-void LoggerWorker::doLog(int steps, const QVariantHash &tags) {
+void LoggerWorker::doLog(int steps, const QVariantMap &tags) {
     bool success;
     QDateTime now = QDateTime::currentDateTimeUtc();
 
-    if ((lastSteps == steps) && (lastTags == tags) && (lastDate.secsTo(now) < MinTimeDiff)) {
+    qDebug() << now << ":" << steps;
+    if ((lastSteps == steps) && !tags.size() && (lastDate.secsTo(now) < MinTimeDiff)) {
+        qDebug() << " Nothing new to log";
         return;
     }
 
     lastSteps = steps;
     lastDate = now;
-    lastTags = tags;
 
     if (!db.transaction()) {
         qCritical() << "LoggerWorker::doLog: Can't start transaction:" << db.lastError().text();
@@ -105,6 +108,7 @@ void LoggerWorker::doLog(int steps, const QVariantHash &tags) {
         qlonglong id = query.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
+            qDebug() << "" << key << ":" << value;
             QSqlQuery tagQuery("insert into tags (name, value, logid) values (?, ?, ?)");
             tagQuery.bindValue(0, key);
             tagQuery.bindValue(1, value);

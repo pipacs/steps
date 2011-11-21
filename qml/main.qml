@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "meego"
 
 StepsPageStackWindow {
     id: appWindow
@@ -14,8 +15,12 @@ StepsPageStackWindow {
 
     function countChanged() {
         if (counter.count) {
-            // stepSound.play()
+            logger.log(counter.count, {})
         }
+    }
+
+    function runningChanged() {
+        logger.log(counter.count, {"counting": counter.running})
     }
 
     Component.onCompleted: {
@@ -25,5 +30,12 @@ StepsPageStackWindow {
 
         counter.rawCountChanged.connect(appWindow.rawCountChanged)
         counter.step.connect(appWindow.countChanged)
+        counter.runningChanged.connect(appWindow.runningChanged)
+
+        logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.version})
+    }
+
+    Component.onDestruction: {
+        logger.log(counter.count, {"appStopped": "com.pipacs.steps"})
     }
 }

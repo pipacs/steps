@@ -13,7 +13,7 @@ public:
     void clear();
     int findPeak();
     qreal get(int index);
-    void setMinRise(qreal value);
+    void setMinimumRise(qreal value);
 
 protected:
     qreal *data;
