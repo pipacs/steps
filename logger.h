@@ -4,20 +4,24 @@
 #include <QObject>
 #include <QVariantHash>
 #include <QSqlDatabase>
+#include <QThread>
 
 class LoggerWorker;
 
 /// Log step counts and other events.
 class Logger: public QObject {
     Q_OBJECT
+
 public:
+    static Logger *instance();
+    static void close();
+    Q_INVOKABLE void log(int steps, const QVariantHash &tags);
+
+protected:
     explicit Logger(QObject *parent = 0);
     ~Logger();
-    Q_INVOKABLE void log(int steps, const QVariantHash &tags);
-    LoggerWorker *worker();
-protected:
-    LoggerWorker *worker_;
-
+    LoggerWorker *worker;
+    QThread *workerThread;
 };
 
 /// Do the real logging work.

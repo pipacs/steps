@@ -16,6 +16,7 @@ public:
     QString version();
     Q_INVOKABLE QUrl soundUrl(const QString &name);
     Q_INVOKABLE void browse(const QString &url);
+    Q_INVOKABLE QString dbPath();
 
 protected:
     Platform();
