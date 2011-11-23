@@ -5,9 +5,12 @@ CONFIG += mobility
 MOBILITY += sensors
 MOBILITY += multimedia
 QT += sql
+QT += network
 
 # Add dependency to Symbian components
 # CONFIG += qt-components
+
+DEFINES += KQOAUTH
 
 # Platform-specific
 contains(MEEGO_EDITION,harmattan) {
@@ -39,6 +42,7 @@ contains(MEEGO_EDITION,harmattan) {
     # 0x2002CCCF value if protected UID is given to the application
     #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 } else {
+    error("Unsupported platform")
 }
 
 # Add sounds folder to the application.
@@ -54,7 +58,13 @@ SOURCES += \
     preferences.cpp \
     mediakey.cpp \
     platform.cpp \
-    logger.cpp
+    logger.cpp \
+    kqoauth/kqoauthutils.cpp \
+    kqoauth/kqoauthrequest.cpp \
+    kqoauth/kqoauthrequest_xauth.cpp \
+    kqoauth/kqoauthrequest_1.cpp \
+    kqoauth/kqoauthmanager.cpp \
+    kqoauth/kqoauthauthreplyserver.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -110,10 +120,23 @@ HEADERS += \
     mediakey.h \
     mediakeyprivate.h \
     platform.h \
-    logger.h
+    logger.h \
+    kqoauth/kqoauthutils.h \
+    kqoauth/kqoauthrequest.h \
+    kqoauth/kqoauthrequest_xauth.h \
+    kqoauth/kqoauthrequest_xauth_p.h \
+    kqoauth/kqoauthrequest_p.h \
+    kqoauth/kqoauthrequest_1.h \
+    kqoauth/kqoauthmanager.h \
+    kqoauth/kqoauthmanager_p.h \
+    kqoauth/kqoauthglobals.h \
+    kqoauth/kqoauthauthreplyserver.h \
+    kqoauth/kqoauthauthreplyserver_p.h
 
 RESOURCES += \
     common.qrc
+
+
 
 
 
