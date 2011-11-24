@@ -20,6 +20,15 @@ StepsPage {
             }
         }
         BigButton {
+            text: googleDocs.linked? "Stop sharing": "Share"
+            width: parent.width - 64
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: {
+                googleDocs.linked = !googleDocs.linked
+            }
+        }
+
+        BigButton {
             text: "Settings"
             // iconSource: "/images/settings.png"
             width: parent.width - 64

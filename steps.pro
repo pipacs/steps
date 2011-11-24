@@ -64,7 +64,8 @@ SOURCES += \
     kqoauth/kqoauthrequest_xauth.cpp \
     kqoauth/kqoauthrequest_1.cpp \
     kqoauth/kqoauthmanager.cpp \
-    kqoauth/kqoauthauthreplyserver.cpp
+    kqoauth/kqoauthauthreplyserver.cpp \
+    googledocs.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -131,10 +132,13 @@ HEADERS += \
     kqoauth/kqoauthmanager_p.h \
     kqoauth/kqoauthglobals.h \
     kqoauth/kqoauthauthreplyserver.h \
-    kqoauth/kqoauthauthreplyserver_p.h
+    kqoauth/kqoauthauthreplyserver_p.h \
+    googledocs.h
 
 RESOURCES += \
     common.qrc
+
+
 
 
 
