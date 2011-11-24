@@ -8,5 +8,6 @@
         <file alias="StepsDialog.qml">qml/meego/StepsDialog.qml</file>
         <file alias="StepsButton.qml">qml/meego/StepsButton.qml</file>
         <file alias="StepsYesNoDialog.qml">qml/meego/StepsYesNoDialog.qml</file>
+        <file alias="StepsTextField.qml">qml/meego/StepsTextField.qml</file>
     </qresource>
 </RCC>

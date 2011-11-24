@@ -24,7 +24,8 @@ StepsPage {
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                googleDocs.linked = !googleDocs.linked
+                dialogOpen = true
+                googleLogin.open()
             }
         }
 
@@ -66,6 +67,11 @@ StepsPage {
     SettingsPage {
         id: settings
         onDialogAccepted: appWindow.pageStack.pop()
+        onDialogClosed: dialogOpen = false
+    }
+
+    GoogleLogin {
+        id: googleLogin
         onDialogClosed: dialogOpen = false
     }
 
