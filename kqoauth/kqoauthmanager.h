@@ -58,7 +58,7 @@ public:
      * When the request is done it will emit signal requestReady(QByteArray networkReply).
      * NOTE: At the moment there is no timeout for the request.
      */
-    void executeRequest(KQOAuthRequest *request);    
+    void executeRequest(KQOAuthRequest *request);
     void executeAuthorizedRequest(KQOAuthRequest *request, int id);
     /**
      * Indicates to the user that KQOAuthManager should handle user authorization by
@@ -164,6 +164,12 @@ Q_SIGNALS:
     // This signal is emited when the authorized request is done.
     // This ends the kQOAuth interactions.
     void authorizedRequestDone();
+
+    // This signal is emitted when a URL should be opened in a browser.
+    void openUrl(QString url);
+
+    // This signal is emitted when authorization failed
+    void authorizationFailed();
 
 private Q_SLOTS:
     void onRequestReplyReceived( QNetworkReply *reply );

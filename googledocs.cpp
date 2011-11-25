@@ -35,11 +35,18 @@ bool GoogleDocs::linked() {
     return oauthSettings.value("oauth_token").toString().length() && oauthSettings.value("oauth_token_secret").toString().length();
 }
 
-void GoogleDocs::link(const QString &name, const QString &password) {
+void GoogleDocs::link() {
+    disconnect(oauthManager, SIGNAL(temporaryTokenReceived(QString,QString)));
+    disconnect(oauthManager, SIGNAL(authorizationReceived(QString,QString)));
+    disconnect(oauthManager, SIGNAL(accessTokenReceived(QString,QString)));
+    disconnect(oauthManager, SIGNAL(requestReady(QByteArray)));
+    disconnect(oauthManager, SIGNAL(openUrl(QString)));
+
     connect(oauthManager, SIGNAL(temporaryTokenReceived(QString,QString)), this, SLOT(onTemporaryTokenReceived(QString, QString)));
     connect(oauthManager, SIGNAL(authorizationReceived(QString,QString)), this, SLOT( onAuthorizationReceived(QString, QString)));
     connect(oauthManager, SIGNAL(accessTokenReceived(QString,QString)), this, SLOT(onAccessTokenReceived(QString,QString)));
     connect(oauthManager, SIGNAL(requestReady(QByteArray)), this, SLOT(onRequestReady(QByteArray)));
+    connect(oauthManager, SIGNAL(openUrl(QString)), this, SIGNAL(openUrl(QString)));
 
     oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://api.twitter.com/oauth/request_token"));
     oauthRequest->setConsumerKey("9PqhX2sX7DlmjNJ5j2Q");
@@ -68,7 +75,7 @@ void GoogleDocs::onAccessTokenReceived(QString token, QString tokenSecret) {
     oauthSettings.setValue("oauth_token_secret", tokenSecret);
     emit linkedChanged();
     emit linkingSucceeded();
-    qDebug() << "Access tokens now stored. You are ready to send Tweets from user's account!";
+    qDebug() << " Access tokens now stored. You are ready to send Tweets from user's account!";
 }
 
 void GoogleDocs::onAuthorizedRequestDone() {
@@ -85,7 +92,7 @@ void GoogleDocs::onTemporaryTokenReceived(QString token, QString tokenSecret) {
     QUrl userAuthURL("https://api.twitter.com/oauth/authorize");
 
     if (oauthManager->lastError() == KQOAuthManager::NoError) {
-        qDebug() << "Asking for user's permission to access protected resources. Opening URL: " << userAuthURL;
+        qDebug() << " Asking for user's permission to access protected resources. Opening URL: " << userAuthURL;
         oauthManager->getUserAuthorization(userAuthURL);
     }
 }

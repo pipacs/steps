@@ -249,19 +249,19 @@ void KQOAuthManager::executeAuthorizedRequest(KQOAuthRequest *request, int id) {
     d->r = request;
 
     if (request == 0) {
-        qWarning() << "Request is NULL. Cannot proceed.";
+        qWarning() << "KQOAuthManager::executeAuthorizedRequest: Request is NULL. Cannot proceed.";
         d->error = KQOAuthManager::RequestError;
         return;
     }
 
     if (!request->requestEndpoint().isValid()) {
-        qWarning() << "Request endpoint URL is not valid. Cannot proceed.";
+        qWarning() << "KQOAuthManager::executeAuthorizedRequest: Request endpoint URL is not valid. Cannot proceed.";
         d->error = KQOAuthManager::RequestEndpointError;
         return;
     }
 
     if (!request->isValid()) {
-        qWarning() << "Request is not valid. Cannot proceed.";
+        qWarning() << "KQOAuthManager::executeAuthorizedRequest: Request is not valid. Cannot proceed.";
         d->error = KQOAuthManager::RequestValidationError;
         return;
     }
@@ -272,7 +272,7 @@ void KQOAuthManager::executeAuthorizedRequest(KQOAuthRequest *request, int id) {
     networkRequest.setUrl( request->requestEndpoint() );
 
     if ( d->currentRequestType != KQOAuthRequest::AuthorizedRequest){
-        qWarning() << "Not Authorized Request. Cannot proceed";
+        qWarning() << "KQOAuthManager::executeAuthorizedRequest: Not Authorized Request. Cannot proceed";
         d->error = KQOAuthManager::RequestError;
         return;
     }
@@ -405,13 +405,13 @@ void KQOAuthManager::getUserAuthorization(QUrl authorizationEndpoint) {
     Q_D(KQOAuthManager);
 
     if (!d->hasTemporaryToken) {
-        qWarning() << "No temporary tokens retreieved. Cannot get user authorization.";
+        qWarning() << "KQOAuthManager::getUserAuthorization: No temporary tokens retreieved. Cannot get user authorization.";
         d->error = KQOAuthManager::RequestUnauthorized;
         return;
     }
 
     if (!authorizationEndpoint.isValid()) {
-        qWarning() << "Authorization endpoint not valid. Cannot proceed.";
+        qWarning() << "KQOAuthManager::getUserAuthorization: Authorization endpoint not valid. Cannot proceed.";
         d->error = KQOAuthManager::RequestEndpointError;
         return;
     }
@@ -424,20 +424,21 @@ void KQOAuthManager::getUserAuthorization(QUrl authorizationEndpoint) {
 
     // Open the user's default browser to the resource authorization page provided
     // by the service.
-    QDesktopServices::openUrl(openWebPageUrl);
+    // QDesktopServices::openUrl(openWebPageUrl);
+    emit openUrl(openWebPageUrl.toString());
 }
 
 void KQOAuthManager::getUserAccessTokens(QUrl accessTokenEndpoint) {
     Q_D(KQOAuthManager);
 
     if (!d->isVerified) {
-        qWarning() << "Not verified. Cannot get access tokens.";
+        qWarning() << "KQOAuthManager::getUserAccessTokens: Not verified. Cannot get access tokens.";
         d->error = KQOAuthManager::RequestUnauthorized;
         return;
     }
 
     if (!accessTokenEndpoint.isValid()) {
-        qWarning() << "Endpoint for access token exchange is not valid. Cannot proceed.";
+        qWarning() << "KQOAuthManager::getUserAccessTokens: Endpoint for access token exchange is not valid. Cannot proceed.";
         d->error = KQOAuthManager::RequestEndpointError;
         return;
     }
@@ -459,13 +460,13 @@ void KQOAuthManager::sendAuthorizedRequest(QUrl requestEndpoint, const KQOAuthPa
     Q_D(KQOAuthManager);
 
     if (!d->isAuthorized) {
-        qWarning() << "No access tokens retrieved. Cannot send authorized requests.";
+        qWarning() << "KQOAuthManager::sendAuthorizedRequest: No access tokens retrieved. Cannot send authorized requests.";
         d->error = KQOAuthManager::RequestUnauthorized;
         return;
     }
 
     if (!requestEndpoint.isValid()) {
-        qWarning() << "Endpoint for authorized request is not valid. Cannot proceed.";
+        qWarning() << "KQOAuthManager::sendAuthorizedRequest: Endpoint for authorized request is not valid. Cannot proceed.";
         d->error = KQOAuthManager::RequestEndpointError;
         return;
     }
@@ -537,7 +538,7 @@ void KQOAuthManager::onRequestReplyReceived( QNetworkReply *reply ) {
     d->opaqueRequest->setHttpMethod(KQOAuthRequest::POST);   // XXX FIXME: Convenient API does not support GET
     if (!d->isAuthorized || !d->isVerified) {
         if (d->setSuccessfulRequestToken(responseTokens)) {
-            qDebug() << "Successfully got request tokens.";
+            qDebug() << "KQOAuthManager::onRequestReplyReceived: Successfully got request tokens.";
             d->consumerKey = d->r->consumerKeyForManager();
             d->consumerKeySecret = d->r->consumerKeySecretForManager();
             d->opaqueRequest->setSignatureMethod(KQOAuthRequest::HMAC_SHA1);
@@ -546,7 +547,7 @@ void KQOAuthManager::onRequestReplyReceived( QNetworkReply *reply ) {
             d->emitTokens();
 
         } else if (d->setSuccessfulAuthorized(responseTokens)) {
-              qDebug() << "Successfully got access tokens.";
+              qDebug() << "KQOAuthManager::onRequestReplyReceived: Successfully got access tokens.";
               d->opaqueRequest->setSignatureMethod(KQOAuthRequest::HMAC_SHA1);
 
               d->emitTokens();
@@ -598,7 +599,7 @@ void KQOAuthManager::onAuthorizedRequestReplyReceived( QNetworkReply *reply ) {
 
     // We need to emit the signal even if we got an error.
     if (d->error != KQOAuthManager::NoError) {
-        qWarning() << "Network reply error";
+        qWarning() << "KQOAuthManager::onAuthorizedRequestReplyReceived: Network reply error";
         return;
     }
 

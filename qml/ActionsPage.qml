@@ -24,8 +24,11 @@ StepsPage {
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                dialogOpen = true
-                googleLogin.open()
+                if (googleDocs.linked) {
+                    googleDocs.unlink()
+                } else {
+                    googleDocs.link()
+                }
             }
         }
 
@@ -49,8 +52,6 @@ StepsPage {
         onClicked: appWindow.pageStack.pop()
     }
 
-    Component.onCompleted: mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
-
     StepsYesNoDialog {
         id: confirmDialog
         titleText: "Reset counter?"
@@ -70,9 +71,8 @@ StepsPage {
         onDialogClosed: dialogOpen = false
     }
 
-    GoogleLogin {
-        id: googleLogin
-        onDialogClosed: dialogOpen = false
+    LoginBrowser {
+        id: loginBrowser
     }
 
     function onVolumeDownPressed() {
@@ -80,5 +80,26 @@ StepsPage {
             console.log("* ActionsPage.onVolumeDownPressed")
             appWindow.pageStack.pop()
         }
+    }
+
+    function openUrl(url) {
+        console.log("* ActionsPage.openUrl " + url)
+        loginBrowser.url = url
+        appWindow.pageStack.push(loginBrowser)
+    }
+
+    function onLinkingSucceeded() {
+        console.log("* ActionsPage.onLinkingSucceeded")
+    }
+
+    function onLinkingFailed(error) {
+        console.log("* ActionsPage.onLinkingFailed " + error)
+    }
+
+    Component.onCompleted: {
+        mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        googleDocs.openUrl.connect(openUrl);
+        googleDocs.linkingSucceeded.connect(onLinkingSucceeded)
+        googleDocs.linkingFailed.connect(onLinkingFailed)
     }
 }

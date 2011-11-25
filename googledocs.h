@@ -22,9 +22,10 @@ signals:
     void linkedChanged();
     void linkingSucceeded();
     void linkingFailed(QString error);
+    void openUrl(QString url);
 
 public slots:
-    Q_INVOKABLE void link(const QString &name, const QString &password);
+    Q_INVOKABLE void link();
     Q_INVOKABLE void unlink();
 
 protected slots:

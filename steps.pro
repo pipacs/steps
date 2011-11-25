@@ -113,8 +113,8 @@ OTHER_FILES += \
     qml/meego/StepsYesNoDialog.qml \
     images/settings.png \
     images/reset.png \
-    qml/GoogleLogin.qml \
-    qml/meego/StepsTextField.qml
+    qml/meego/StepsTextField.qml \
+    qml/LoginBrowser.qml
 
 HEADERS += \
     counter.h \
@@ -139,6 +139,10 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
+
+
+
 
 
 
