@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "meego"
 
 StepsPage {
     property bool dialogOpen: false
@@ -16,7 +17,7 @@ StepsPage {
             negative: true
             onClicked: {
                 dialogOpen = true
-                confirmDialog.open()
+                confirmResetDialog.open()
             }
         }
         BigButton {
@@ -25,8 +26,11 @@ StepsPage {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 if (googleDocs.linked) {
-                    googleDocs.unlink()
+                    dialogOpen = true
+                    confirmLogoutDialog.open()
                 } else {
+                    spinner.visible = true
+                    spinner.running = true
                     googleDocs.link()
                 }
             }
@@ -53,7 +57,7 @@ StepsPage {
     }
 
     StepsYesNoDialog {
-        id: confirmDialog
+        id: confirmResetDialog
         titleText: "Reset counter?"
         onDialogAccepted: {
             console.log("* ActionsPage.confirmDialog.onDialogAccepted")
@@ -62,6 +66,17 @@ StepsPage {
         }
         onDialogClosed: {
             dialogOpen = false;
+        }
+    }
+
+    StepsYesNoDialog {
+        id: confirmLogoutDialog
+        titleText: "Are you sure to stop sharing?"
+        onDialogAccepted: {
+            googleDocs.unlink()
+        }
+        onDialogClosed: {
+            dialogOpen = false
         }
     }
 
@@ -75,6 +90,12 @@ StepsPage {
         id: loginBrowser
     }
 
+    StepsSpinner {
+        id: spinner
+        running: false
+        visible: false
+    }
+
     function onVolumeDownPressed() {
         if (active && !dialogOpen) {
             console.log("* ActionsPage.onVolumeDownPressed")
@@ -84,6 +105,8 @@ StepsPage {
 
     function openUrl(url) {
         console.log("* ActionsPage.openUrl " + url)
+        spinner.running = false
+        spinner.visible = false
         loginBrowser.url = url
         appWindow.pageStack.push(loginBrowser)
     }

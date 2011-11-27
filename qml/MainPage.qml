@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import "meego"
 
 StepsPage {
     property bool counterWasRunning: false

@@ -6,11 +6,6 @@ StepsPage {
     property alias url: webView.url
     id: loginBrowser
 
-    TextEdit {
-        id: vkbCloser
-        anchors.top: parent.bottom
-    }
-
     Flickable {
         id: flickable
         width: loginBrowser.width
@@ -25,8 +20,8 @@ StepsPage {
             transformOrigin: Item.TopLeft
             pressGrabTime: 9999
             focus: true
-            settings.defaultFontSize: 26
-            settings.minimumFontSize: 22
+            settings.defaultFontSize: 28
+            settings.minimumFontSize: 26
             settings.javaEnabled: false
             settings.javascriptCanAccessClipboard: false
             settings.javascriptCanOpenWindows: false
@@ -45,17 +40,18 @@ StepsPage {
             onLoadFinished: {
                 // Disable links
                 // webView.evaluateJavaScript("for (var i = 0; i < document.links.length; i++) {l = document.links[i]; l.disabled = true; l.onclick = new Function('return false'); l.style.textDecoration = 'none'}")
+                sipFixer.enabled = true
             }
 
             function onLinkingSucceeded() {
                 console.log("* LoginBrowser.onLinkingSucceeded")
-                vkbCloser.closeSoftwareInputPanel()
+                sipFixer.enabled = false
                 appWindow.pageStack.pop()
             }
 
             function onLinkingFailed(error) {
                 console.log("* LoginBrowser.onLinkingFailed " + error)
-                vkbCloser.closeSoftwareInputPanel()
+                sipFixer.enabled = false;
                 appWindow.pageStack.pop()
             }
 

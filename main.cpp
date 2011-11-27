@@ -8,6 +8,7 @@
 #include "mediakey.h"
 #include "logger.h"
 #include "googledocs.h"
+#include "sipfixer.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
     QmlApplicationViewer *viewer = new QmlApplicationViewer;
     Counter *counter = new Counter(viewer);
     MediaKey *mediaKey = new MediaKey(viewer);
+    SipFixer *sipFixer = SipFixer::instance();
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     viewer->rootContext()->setContextProperty("counter", counter);
     viewer->rootContext()->setContextProperty("prefs", prefs);
@@ -27,12 +29,16 @@ int main(int argc, char *argv[]) {
     viewer->rootContext()->setContextProperty("logger", logger);
     viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
     viewer->rootContext()->setContextProperty("googleDocs", googleDocs);
+    viewer->rootContext()->setContextProperty("sipFixer", sipFixer);
     viewer->setMainQmlFile(QLatin1String("qrc:/qml/main.qml"));
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer->showExpanded();
 
     // Install event filter to capture/release volume keys
     viewer->installEventFilter(mediaKey);
+
+    // Install event filter fixing VKB handing in WebView
+    viewer->installEventFilter(sipFixer);
 
     // De-activate counter if not in the foreground
     // mediaKey->connect(eventFilter, SIGNAL(activate(bool)), counter, SLOT(applicationActivated(bool)));
@@ -42,6 +48,7 @@ int main(int argc, char *argv[]) {
 
     // Delete singletons and exit
     delete viewer;
+    SipFixer::close();
     GoogleDocs::close();
     Logger::close();
     Platform::close();

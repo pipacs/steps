@@ -65,7 +65,8 @@ SOURCES += \
     kqoauth/kqoauthrequest_1.cpp \
     kqoauth/kqoauthmanager.cpp \
     kqoauth/kqoauthauthreplyserver.cpp \
-    googledocs.cpp
+    googledocs.cpp \
+    sipfixer.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -114,7 +115,8 @@ OTHER_FILES += \
     images/settings.png \
     images/reset.png \
     qml/meego/StepsTextField.qml \
-    qml/LoginBrowser.qml
+    qml/LoginBrowser.qml \
+    qml/meego/StepsSpinner.qml
 
 HEADERS += \
     counter.h \
@@ -140,6 +142,8 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
+
 
 
 
