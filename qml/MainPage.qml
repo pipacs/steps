@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "meego"
+import "symbian"
 
 StepsPage {
     property bool counterWasRunning: false
@@ -75,6 +75,10 @@ StepsPage {
             counterWasRunning = counter.running
             counter.running = false
         }
+    }
+
+    onBack: {
+        Qt.quit()
     }
 
     function onVolumeUpPressed() {

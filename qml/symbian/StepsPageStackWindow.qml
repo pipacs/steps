@@ -2,5 +2,5 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 
 PageStackWindow {
-    // showStatusBar: false
+    platformSoftwareInputPanelEnabled: true
 }

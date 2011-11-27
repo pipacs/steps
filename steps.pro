@@ -116,7 +116,8 @@ OTHER_FILES += \
     images/reset.png \
     qml/meego/StepsTextField.qml \
     qml/LoginBrowser.qml \
-    qml/meego/StepsSpinner.qml
+    qml/meego/StepsSpinner.qml \
+    qml/symbian/StepsSpinner.qml
 
 HEADERS += \
     counter.h \
@@ -142,6 +143,7 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
 
 
 

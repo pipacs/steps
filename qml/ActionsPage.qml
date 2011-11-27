@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "meego"
+import "symbian"
 
 StepsPage {
     property bool dialogOpen: false
@@ -31,7 +31,6 @@ StepsPage {
                     dialogOpen = true
                     confirmLogoutDialog.open()
                 } else {
-                    spinner.visible = true
                     spinner.running = true
                     googleDocs.link()
                 }
@@ -76,7 +75,6 @@ StepsPage {
 
     SettingsPage {
         id: settings
-        onDialogAccepted: appWindow.pageStack.pop()
         onDialogClosed: dialogOpen = false
     }
 
@@ -86,8 +84,6 @@ StepsPage {
 
     StepsSpinner {
         id: spinner
-        running: false
-        visible: false
     }
 
     onBack: {
@@ -105,7 +101,6 @@ StepsPage {
     function openUrl(url) {
         console.log("* ActionsPage.openUrl " + url)
         spinner.running = false
-        spinner.visible = false
         appWindow.pageStack.push(loginBrowser)
         loginBrowser.openUrl(url)
     }
