@@ -3,7 +3,6 @@ import QtWebKit 1.0
 import "meego"
 
 StepsPage {
-    property alias url: webView.url
     id: loginBrowser
 
     Flickable {
@@ -40,26 +39,22 @@ StepsPage {
             onLoadFinished: {
                 // Disable links
                 // webView.evaluateJavaScript("for (var i = 0; i < document.links.length; i++) {l = document.links[i]; l.disabled = true; l.onclick = new Function('return false'); l.style.textDecoration = 'none'}")
+                // Enable fix for the software input panel
                 sipFixer.enabled = true
             }
-
-            function onLinkingSucceeded() {
-                console.log("* LoginBrowser.onLinkingSucceeded")
-                sipFixer.enabled = false
-                appWindow.pageStack.pop()
-            }
-
-            function onLinkingFailed(error) {
-                console.log("* LoginBrowser.onLinkingFailed " + error)
-                sipFixer.enabled = false;
-                appWindow.pageStack.pop()
-            }
-
-            Component.onCompleted: {
-                googleDocs.linkingSucceeded.connect(onLinkingSucceeded)
-                googleDocs.linkingFailed.connect(onLinkingFailed)
-                loadFinished.connect(flickable.loadFinished)
-            }
         }
+    }
+
+    function closeUrl() {
+        sipFixer.enabled = false
+        googleDocs.linkingSucceeded.disconnect(closeUrl)
+        googleDocs.linkingFailed.disconnect(closeUrl)
+        appWindow.pageStack.pop()
+    }
+
+    function openUrl(url) {
+        googleDocs.linkingSucceeded.connect(closeUrl)
+        googleDocs.linkingFailed.connect(closeUrl)
+        webView.url = url
     }
 }

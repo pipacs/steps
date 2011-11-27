@@ -107,22 +107,12 @@ StepsPage {
         console.log("* ActionsPage.openUrl " + url)
         spinner.running = false
         spinner.visible = false
-        loginBrowser.url = url
         appWindow.pageStack.push(loginBrowser)
-    }
-
-    function onLinkingSucceeded() {
-        console.log("* ActionsPage.onLinkingSucceeded")
-    }
-
-    function onLinkingFailed(error) {
-        console.log("* ActionsPage.onLinkingFailed " + error)
+        loginBrowser.openUrl(url)
     }
 
     Component.onCompleted: {
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
         googleDocs.openUrl.connect(openUrl);
-        googleDocs.linkingSucceeded.connect(onLinkingSucceeded)
-        googleDocs.linkingFailed.connect(onLinkingFailed)
     }
 }
