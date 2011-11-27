@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QInputContext>
+#include <QDebug>
 
 #include "sipfixer.h"
 
@@ -21,19 +22,24 @@ SipFixer::SipFixer(QObject *parent): QObject(parent), prevFocusWidget(0), enable
 }
 
 bool SipFixer::eventFilter(QObject *obj, QEvent *event) {
-    QInputContext *ic = qApp->inputContext();
-    if (ic) {
-        if (enabled_) {
-            if (ic->focusWidget() == 0 && prevFocusWidget) {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    if (enabled_) {
+        QInputContext *ic = qApp->inputContext();
+        if (ic) {
+            QWidget *focusWidget = ic->focusWidget();
+            if (!focusWidget && prevFocusWidget) {
+                qDebug() << "SipFixer::eventFilter: Close SIP";
                 QEvent closeSIPEvent(QEvent::CloseSoftwareInputPanel);
                 ic->filterEvent(&closeSIPEvent);
-            } else if (prevFocusWidget == 0 && ic->focusWidget()) {
+            } else if (!prevFocusWidget && focusWidget) {
+                qDebug() << "SipFixer::eventFilter: Open SIP";
                 QEvent openSIPEvent(QEvent::RequestSoftwareInputPanel);
                 ic->filterEvent(&openSIPEvent);
             }
+            prevFocusWidget = focusWidget;
         }
-        prevFocusWidget = ic->focusWidget();
     }
+#endif
     return QObject::eventFilter(obj, event);
 }
 
@@ -42,6 +48,7 @@ bool SipFixer::enabled() {
 }
 
 void SipFixer::setEnabled(bool v) {
+    qDebug() << "SipFixer::setEnabled" << v;
     enabled_ = v;
     if (!enabled_) {
         QInputContext *ic = qApp->inputContext();
