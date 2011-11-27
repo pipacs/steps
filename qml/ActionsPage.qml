@@ -3,7 +3,9 @@ import "meego"
 
 StepsPage {
     property bool dialogOpen: false
+
     id: actionsPage
+    showBack: true
 
     Column {
         anchors.centerIn: parent
@@ -48,14 +50,6 @@ StepsPage {
         }
     }
 
-    BigButton {
-        text: "Back"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        width: actionsPage.width - 64
-        onClicked: appWindow.pageStack.pop()
-    }
-
     StepsYesNoDialog {
         id: confirmResetDialog
         titleText: "Reset counter?"
@@ -94,6 +88,11 @@ StepsPage {
         id: spinner
         running: false
         visible: false
+    }
+
+    onBack: {
+        console.log("* ActionsPage.onBack")
+        appWindow.pageStack.pop()
     }
 
     function onVolumeDownPressed() {

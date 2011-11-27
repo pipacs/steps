@@ -4,6 +4,8 @@ import "meego"
 
 StepsPage {
     id: loginBrowser
+    lockOrientation: false
+    showBack: true
 
     Flickable {
         id: flickable
@@ -45,11 +47,15 @@ StepsPage {
         }
     }
 
+    onBack: {
+        closeUrl()
+    }
+
     function closeUrl() {
         sipFixer.enabled = false
         googleDocs.linkingSucceeded.disconnect(closeUrl)
         googleDocs.linkingFailed.disconnect(closeUrl)
-        appWindow.pageStack.pop()
+        pageStack.pop()
     }
 
     function openUrl(url) {
