@@ -2,24 +2,35 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 
 // Simple wrapper for BusyIndicator
-Dialog {
+Item {
     property bool running: false
     id: spinner
-    opacity: 0.5
+    visible: running
 
-    onRunningChanged: {
-        if (running) {
-            open()
-        } else {
-            close()
+    Rectangle {
+        width: screen.width
+        height: screen.height
+        id: cover
+        opacity: 0.5
+        color: "black"
+        MouseArea {
+            anchors.fill: parent
         }
     }
 
     BusyIndicator {
-        anchors.centerIn: parent
+        anchors.centerIn: cover
         width: 150
         height: 150
         running: spinner.running
+    }
+
+    Component.onCompleted: {
+        var root = spinner.parent;
+        while (root.parent) {
+            root = root.parent;
+        }
+        spinner.parent = root;
     }
 }
 
