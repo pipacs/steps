@@ -135,10 +135,12 @@ HEADERS += \
     kqoauth/kqoauthglobals.h \
     kqoauth/kqoauthauthreplyserver.h \
     kqoauth/kqoauthauthreplyserver_p.h \
-    googledocs.h
+    googledocs.h \
+    sipfixer.h
 
 RESOURCES += \
     common.qrc
+
 
 
 

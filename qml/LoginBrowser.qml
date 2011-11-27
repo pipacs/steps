@@ -8,7 +8,7 @@ StepsPage {
 
     TextEdit {
         id: vkbCloser
-        visible: false
+        anchors.top: parent.bottom
     }
 
     Flickable {
