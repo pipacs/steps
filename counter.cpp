@@ -144,6 +144,7 @@ void Counter::applicationActivated(bool active) {
 void Counter::setCalibration(qreal c) {
     calibration_ = c;
     int newStepCount = (int)(rawStepCount * calibration_);
+    qDebug() << "Counter::setCalibration:" << c << "," << stepCount << "-->" << newStepCount;
     if (newStepCount != stepCount) {
         stepCount = newStepCount;
         emit step(newStepCount);

@@ -64,6 +64,7 @@ StepsDialog {
     onDialogAccepted: {
         console.log("* SettingsPage.onDialogAccepted")
         if (calibrationSlider.changed && counter.rawCount) {
+            console.log("*  New calibration value " + calibrationSlider.value)
             counter.calibration = calibrationSlider.value / counter.rawCount
             prefs.calibration = counter.calibration
         }
