@@ -1,12 +1,20 @@
 import QtQuick 1.1
+import QtMultimediaKit 1.1
 import "meego"
 
 StepsPageStackWindow {
     id: appWindow
     initialPage: mainPage
+    property int prevCount: 99
 
     MainPage {
         id: mainPage
+    }
+
+    Beep {
+        id: applause
+        source: platform.soundUrl("applause")
+        //muted: prefs.muted
     }
 
     function rawCountChanged(val) {
@@ -14,8 +22,14 @@ StepsPageStackWindow {
     }
 
     function countChanged() {
-        if (counter.count) {
-            logger.log(counter.count, {})
+        var count = counter.count
+        if (count) {
+            logger.log(count, {})
+            if ((count % 10000) < (prevCount % 100)) {
+                console.log("* main.countChanged: Play applause")
+                applause.play()
+            }
+            prevCount = count
         }
     }
 

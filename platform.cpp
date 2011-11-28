@@ -50,7 +50,17 @@ void Platform::browse(const QString &url) {
 }
 
 QUrl Platform::soundUrl(const QString &name) {
-    QUrl ret = QUrl::fromLocalFile(QString(STEPS_DATADIR) + "/sounds/" + name + ".wav");
+    QUrl ret;
+    QString base = QString(STEPS_DATADIR) + "/sounds/" + name;
+    QString wav = base + ".wav";
+    QString mp3 = base + ".mp3";
+    if (QFileInfo(wav).exists()) {
+        ret = QUrl::fromLocalFile(wav);
+    } else if (QFileInfo(mp3).exists()) {
+        ret = QUrl::fromLocalFile(mp3);
+    } else {
+        qWarning() << "Platform.soundUrl: No file for" << name;
+    }
     qDebug() << "Platform::soundUrl" << name << ":" << ret;
     return ret;
 }
