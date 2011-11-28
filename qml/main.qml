@@ -25,7 +25,7 @@ StepsPageStackWindow {
         var count = counter.count
         if (count) {
             logger.log(count, {})
-            if ((count % 10000) < (prevCount % 100)) {
+            if ((count % 10000) < (prevCount % 10000)) {
                 console.log("* main.countChanged: Play applause")
                 applause.play()
             }
