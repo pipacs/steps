@@ -59,14 +59,14 @@ SOURCES += \
     mediakey.cpp \
     platform.cpp \
     logger.cpp \
-    kqoauth/kqoauthutils.cpp \
-    kqoauth/kqoauthrequest.cpp \
-    kqoauth/kqoauthrequest_xauth.cpp \
-    kqoauth/kqoauthrequest_1.cpp \
-    kqoauth/kqoauthmanager.cpp \
-    kqoauth/kqoauthauthreplyserver.cpp \
     googledocs.cpp \
-    sipfixer.cpp
+    sipfixer.cpp \
+    kqoauth/kqoauthauthreplyserver.cpp \
+    kqoauth/kqoauthmanager.cpp \
+    kqoauth/kqoauthrequest.cpp \
+    kqoauth/kqoauthrequest_1.cpp \
+    kqoauth/kqoauthrequest_xauth.cpp \
+    kqoauth/kqoauthutils.cpp 
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -127,53 +127,19 @@ HEADERS += \
     mediakeyprivate.h \
     platform.h \
     logger.h \
-    kqoauth/kqoauthutils.h \
-    kqoauth/kqoauthrequest.h \
-    kqoauth/kqoauthrequest_xauth.h \
-    kqoauth/kqoauthrequest_xauth_p.h \
-    kqoauth/kqoauthrequest_p.h \
-    kqoauth/kqoauthrequest_1.h \
-    kqoauth/kqoauthmanager.h \
-    kqoauth/kqoauthmanager_p.h \
-    kqoauth/kqoauthglobals.h \
+    googledocs.h \
+    sipfixer.h \
     kqoauth/kqoauthauthreplyserver.h \
     kqoauth/kqoauthauthreplyserver_p.h \
-    googledocs.h \
-    sipfixer.h
+    kqoauth/kqoauthglobals.h \
+    kqoauth/kqoauthmanager.h \
+    kqoauth/kqoauthmanager_p.h \
+    kqoauth/kqoauthrequest.h \
+    kqoauth/kqoauthrequest_1.h \
+    kqoauth/kqoauthrequest_p.h \
+    kqoauth/kqoauthrequest_xauth.h \
+    kqoauth/kqoauthrequest_xauth_p.h \
+    kqoauth/kqoauthutils.h
 
 RESOURCES += \
     common.qrc
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

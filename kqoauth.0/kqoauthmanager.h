@@ -59,6 +59,7 @@ public:
      * NOTE: At the moment there is no timeout for the request.
      */
     void executeRequest(KQOAuthRequest *request);
+    void executeAuthorizedRequest(KQOAuthRequest *request, int id);
     /**
      * Indicates to the user that KQOAuthManager should handle user authorization by
      * opening the user's default browser and parsing the reply from the service.
@@ -140,6 +141,8 @@ Q_SIGNALS:
     // Parameter is the raw response from the service.
     void requestReady(QByteArray networkReply);
 
+    void authorizedRequestReady(QByteArray networkReply, int id);
+
     // This signal will be emited when we have an request tokens available
     // (either temporary resource tokens, or authorization tokens).
     void receivedToken(QString oauth_token, QString oauth_token_secret);   // oauth_token, oauth_token_secret
@@ -162,10 +165,15 @@ Q_SIGNALS:
     // This ends the kQOAuth interactions.
     void authorizedRequestDone();
 
+    // This signal is emitted when a URL should be opened in a browser.
+    void openUrl(QString url);
 
+    // This signal is emitted when authorization failed
+    void authorizationFailed();
 
 private Q_SLOTS:
     void onRequestReplyReceived( QNetworkReply *reply );
+    void onAuthorizedRequestReplyReceived( QNetworkReply *reply );
     void onVerificationReceived(QMultiMap<QString, QString> response);
     void slotError(QNetworkReply::NetworkError error);
 
