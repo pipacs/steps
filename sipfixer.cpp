@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QInputContext>
 #include <QDebug>
+#include <qplatformdefs.h>
 
 #include "sipfixer.h"
 

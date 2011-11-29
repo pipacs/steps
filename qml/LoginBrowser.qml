@@ -41,8 +41,6 @@ StepsPage {
             onLoadFinished: {
                 // Disable links
                 // webView.evaluateJavaScript("for (var i = 0; i < document.links.length; i++) {l = document.links[i]; l.disabled = true; l.onclick = new Function('return false'); l.style.textDecoration = 'none'}")
-                // Enable fix for the software input panel
-                sipFixer.enabled = true
             }
         }
     }
@@ -59,6 +57,7 @@ StepsPage {
     }
 
     function openUrl(url) {
+        sipFixer.enabled = true
         googleDocs.linkingSucceeded.connect(closeUrl)
         googleDocs.linkingFailed.connect(closeUrl)
         webView.url = url

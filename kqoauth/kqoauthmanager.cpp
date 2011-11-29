@@ -324,7 +324,8 @@ void KQOAuthManager::getUserAuthorization(QUrl authorizationEndpoint) {
 
     // Open the user's default browser to the resource authorization page provided
     // by the service.
-    QDesktopServices::openUrl(openWebPageUrl);
+    // QDesktopServices::openUrl(openWebPageUrl);
+    emit openUrl(openWebPageUrl.toString());
 }
 
 void KQOAuthManager::getUserAccessTokens(QUrl accessTokenEndpoint) {

@@ -162,7 +162,8 @@ Q_SIGNALS:
     // This ends the kQOAuth interactions.
     void authorizedRequestDone();
 
-
+    // This signal is emitted when a URL should be opened in a browser.
+    void openUrl(QString url);
 
 private Q_SLOTS:
     void onRequestReplyReceived( QNetworkReply *reply );
