@@ -14,7 +14,7 @@ StepsPage {
         contentHeight: Math.max(parent.height, webView.height)
         anchors.fill: parent
         pressDelay: 0
-        flickableDirection: Flickable.VerticalFlick
+        flickableDirection: Flickable.HorizontalAndVerticalFlick
 
         WebView {
             id: webView
@@ -29,9 +29,9 @@ StepsPage {
             settings.javascriptEnabled: true
             settings.linksIncludedInFocusChain: false
             settings.localContentCanAccessRemoteUrls: false
-            settings.localStorageDatabaseEnabled: false
-            settings.offlineStorageDatabaseEnabled: false
-            settings.offlineWebApplicationCacheEnabled: false
+            settings.localStorageDatabaseEnabled: true
+            settings.offlineStorageDatabaseEnabled: true
+            settings.offlineWebApplicationCacheEnabled: true5
             settings.pluginsEnabled: false
             smooth: false
             preferredWidth: loginBrowser.width
