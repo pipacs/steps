@@ -20,16 +20,16 @@ StepsPageStackWindow {
         prefs.rawCount = val
     }
 
-    function countChanged() {
-        var count = counter.count
-        if (count) {
-            logger.log(count, {})
-            if ((count % 10000) < (prevCount % 10000)) {
-                console.log("* main.countChanged: Play applause")
-                applause.play()
-            }
-            prevCount = count
+    function countChanged(count) {
+        if (count === 0) {
+            return
         }
+
+        logger.log(count, {})
+        if ((count % 10000) < (prevCount % 10000)) {
+            applause.play()
+        }
+        prevCount = count
     }
 
     function runningChanged() {
