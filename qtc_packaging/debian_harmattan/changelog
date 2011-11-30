@@ -2,6 +2,7 @@ steps (0.0.5) unstable; urgency=low
 
   * Log essential events locally
   * Fix shutdown crash on Meego
+  * Maintain daily step count
 
  -- Akos Polster <akos@pipacs.com>  Sun, 20 Nov 2011 22:43:20 +0100
 
