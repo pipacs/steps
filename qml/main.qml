@@ -5,7 +5,7 @@ import "meego"
 StepsPageStackWindow {
     id: appWindow
     initialPage: mainPage
-    property int prevCount: 99
+    property int prevCount: counter.count
 
     MainPage {
         id: mainPage
@@ -14,7 +14,6 @@ StepsPageStackWindow {
     Beep {
         id: applause
         source: platform.soundUrl("applause")
-        //muted: prefs.muted
     }
 
     function rawCountChanged(val) {
