@@ -31,7 +31,7 @@ StepsPage {
             settings.localContentCanAccessRemoteUrls: false
             settings.localStorageDatabaseEnabled: true
             settings.offlineStorageDatabaseEnabled: true
-            settings.offlineWebApplicationCacheEnabled: true5
+            settings.offlineWebApplicationCacheEnabled: true
             settings.pluginsEnabled: false
             smooth: false
             preferredWidth: loginBrowser.width

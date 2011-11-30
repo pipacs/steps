@@ -7,7 +7,7 @@ PageStackWindow {
 
     focus: true
     showStatusBar: false
-    showToolBar: toolbar
+    showToolBar: toolBar
 
     Component.onCompleted: {
         // Enforce black theme
