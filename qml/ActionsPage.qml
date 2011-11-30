@@ -11,9 +11,20 @@ StepsPage {
         anchors.centerIn: parent
         spacing: 32
         width: actionsPage.width
+
         BigButton {
-            text: "Reset counter"
-            // iconSource: "/images/reset.png"
+            text: "Reset daily"
+            width: parent.width - 64
+            anchors.horizontalCenter: parent.horizontalCenter
+            negative: true
+            onClicked: {
+                dialogOpen = true
+                confirmResetDailyDialog.open()
+            }
+        }
+
+        BigButton {
+            text: "Reset total"
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             negative: true
@@ -22,6 +33,7 @@ StepsPage {
                 confirmResetDialog.open()
             }
         }
+
         BigButton {
             text: googleDocs.linked? "Stop sharing": "Share"
             width: parent.width - 64
@@ -51,11 +63,24 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmResetDialog
-        titleText: "Reset counter?"
+        titleText: "Reset total step count?"
         onDialogAccepted: {
             console.log("* ActionsPage.confirmDialog.onDialogAccepted")
-            counter.reset()
-            appWindow.pageStack.pop()
+            main.resetCount()
+            main.pageStack.pop()
+        }
+        onDialogClosed: {
+            dialogOpen = false;
+        }
+    }
+
+    StepsYesNoDialog {
+        id: confirmResetDailyDialog
+        titleText: "Reset daily step count?"
+        onDialogAccepted: {
+            console.log("* ActionsPage.confirmDialog.onDialogAccepted")
+            main.resetDailyCount()
+            main.pageStack.pop()
         }
         onDialogClosed: {
             dialogOpen = false;
@@ -88,20 +113,20 @@ StepsPage {
 
     onBack: {
         console.log("* ActionsPage.onBack")
-        appWindow.pageStack.pop()
+        main.pageStack.pop()
     }
 
     function onVolumeDownPressed() {
         if (active && !dialogOpen) {
             console.log("* ActionsPage.onVolumeDownPressed")
-            appWindow.pageStack.pop()
+            main.pageStack.pop()
         }
     }
 
     function openUrl(url) {
         console.log("* ActionsPage.openUrl " + url)
         spinner.running = false
-        appWindow.pageStack.push(loginBrowser)
+        main.pageStack.push(loginBrowser)
         loginBrowser.openUrl(url)
     }
 

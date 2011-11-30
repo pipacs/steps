@@ -1,25 +1,36 @@
 import QtQuick 1.1
-import "symbian"
+import "meego"
 
 StepsPage {
     property bool counterWasRunning: false
 
     StepsLabel {
-        id: label
+        id: dailyLabel
         anchors {
             centerIn: parent
-            bottomMargin: 100
+            bottomMargin: 200
         }
-        text: counter.count
+        text: main.dailyCount
         font.pixelSize: 116
         font.bold: true
+    }
+
+    StepsLabel {
+        id: totalLabel
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: dailyLabel.bottom
+            topMargin: 37
+        }
+        text: "Total: " + counter.count
+        horizontalAlignment: Text.AlignHCenter
     }
 
     StepsLabel {
         id: pausedLabel
         anchors {
             horizontalCenter: parent.horizontalCenter
-            top: label.bottom
+            top: totalLabel.bottom
             topMargin: 37
         }
         width: parent.width
@@ -94,7 +105,7 @@ StepsPage {
         if (active) {
             console.log("* MainPage.onVolumeDownPressed")
             settingsSound.play()
-            appWindow.pageStack.push(actions)
+            main.pageStack.push(actions)
         }
     }
 }

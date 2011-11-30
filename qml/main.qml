@@ -3,9 +3,10 @@ import QtMultimediaKit 1.1
 import "meego"
 
 StepsPageStackWindow {
-    id: appWindow
+    id: main
     initialPage: mainPage
-    property int prevCount: counter.count
+    property int prevCount: 0
+    property int dailyCount: 0
 
     MainPage {
         id: mainPage
@@ -26,10 +27,37 @@ StepsPageStackWindow {
         }
 
         logger.log(count, {})
+
+        // Play applause at every 10000 steps
         if ((count % 10000) < (prevCount % 10000)) {
             applause.play()
         }
+
+        var delta = count - prevCount
         prevCount = count
+
+        // Register daily step count
+        var date = new Date()
+        var dateString = date.toDateString()
+        if (dateString != prefs.dailyCountDate) {
+            resetDailyCount()
+            prefs.dailyCountDate = dateString
+        }
+        dailyCount += delta
+        prefs.dailyCount = dailyCount
+    }
+
+    function resetDailyCount() {
+        dailyCount = 0
+        prefs.dailyCount = 0
+        logger.log(counter.count, {"resetDailyCount": 0})
+    }
+
+    function resetCount() {
+        counter.reset()
+        prevCount = 0
+        logger.log(0, {"reset": 0})
+        resetDailyCount()
     }
 
     function runningChanged() {
@@ -39,13 +67,24 @@ StepsPageStackWindow {
     Component.onCompleted: {
         counter.calibration = prefs.calibration
         counter.rawCount = prefs.rawCount
+        main.prevCount = counter.count
         counter.sensitivity = prefs.sensitivity
 
-        counter.rawCountChanged.connect(appWindow.rawCountChanged)
-        counter.step.connect(appWindow.countChanged)
-        counter.runningChanged.connect(appWindow.runningChanged)
+        counter.rawCountChanged.connect(main.rawCountChanged)
+        counter.step.connect(main.countChanged)
+        counter.runningChanged.connect(main.runningChanged)
 
         logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.version})
+
+        // Restore daily step count from settings
+        var date = new Date()
+        var dateString = date.toDateString()
+        if (dateString != prefs.dailyCountDate) {
+            resetDailyCount()
+            prefs.dailyCountDate = dateString
+        } else {
+            dailyCount = prefs.dailyCount
+        }
     }
 
     Component.onDestruction: {
