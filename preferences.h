@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QDebug>
+#include <QDate>
 
 /// Shallow wrapper for QSettings.
 /// Emits valueChanged signals when a setting value has changed, provides some settings as QML properties.
@@ -13,6 +14,9 @@ class Preferences: public QObject {
     Q_PROPERTY(qreal calibration READ calibration WRITE setCalibration NOTIFY valueChanged)
     Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY valueChanged)
     Q_PROPERTY(qreal sensitivity READ sensitivity WRITE setSensitivity NOTIFY valueChanged)
+
+    /// Date of logging. If it's not the current date, the log file should be archived.
+    Q_PROPERTY(QDate logDate READ logDate WRITE setLogDate NOTIFY valueChanged)
 
 public:
     static Preferences *instance();
@@ -29,6 +33,8 @@ public:
     void setMuted(bool v) {setValue("muted", v);}
     int sensitivity() {return value("sensitivity", 100).toInt();}
     void setSensitivity(int v) {qDebug() << "Preferences::setSensitivity" << v; setValue("sensitivity", v);}
+    QDate logDate() {return value("logdate", QDate::currentDate()).toDate();}
+    void setLogDate(const QDate &v) {setValue("logdate", v);}
 
 signals:
     void valueChanged(const QString &key);

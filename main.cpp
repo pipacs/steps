@@ -3,7 +3,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtNetwork/QNetworkDiskCache>
-#
+
 #include "qmlapplicationviewer.h"
 #include "counter.h"
 #include "preferences.h"
