@@ -3,7 +3,7 @@ import com.nokia.meego 1.0
 
 // Simple wrapper for PageStackWindow
 PageStackWindow {
-    property bool toolBar: false
+    property bool toolBar: true
 
     focus: true
     showStatusBar: false
