@@ -116,3 +116,13 @@ void GoogleDocs::setEnabled(bool v) {
     oauthSettings.setValue("gd_enabled", v);
     emit enabledChanged();
 }
+
+GoogleDocs::UploadResult GoogleDocs::upload(const QString &archive) {
+    qDebug() << "GoogleDocs::upload" << archive;
+    if (!enabled()) {
+        return GoogleDocs::UploadSucceeded;
+    }
+
+    // FIXME: Implement me
+    return GoogleDocs::UploadSucceeded;
+}

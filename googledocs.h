@@ -20,6 +20,16 @@ public:
     bool linked();
     bool enabled();
 
+    /// Result of an upload.
+    enum UploadResult {
+        UploadFailed,       ///< Upload failed.
+        UploadSucceeded,    ///< Upload was successful, but there is more to upload from the archive.
+        UploadCompleted     ///< Upload was successful, the complete archive has been uploaded.
+    };
+
+    /// Upload (parts of) an archive.
+    UploadResult upload(const QString &archive);
+
 signals:
     void linkedChanged();
     void linkingSucceeded();

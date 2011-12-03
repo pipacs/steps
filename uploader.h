@@ -39,6 +39,8 @@ class UploaderWorker: public QObject {
 public:
     explicit UploaderWorker(QObject *parent = 0);
     virtual ~UploaderWorker();
+    QStringList listArchives();
+    void deleteArchive(const QString archive);
 
 signals:
     void uploadingChanged(bool v);
@@ -47,8 +49,11 @@ public slots:
     /// Upload some data.
     void upload();
 
-protected slots:
-    void onUploadStart(); // FIXME: For testing only
+    /// Enable/disable uploading.
+    void enable(bool v);
+
+protected:
+    bool enabled;
 };
 
 #endif // UPLOADER_H

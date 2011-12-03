@@ -1,9 +1,13 @@
 #include <QTimer>
 #include <QThread>
 #include <QDebug>
+#include <QStringList>
+#include <QFileInfo>
+#include <QDir>
 
 #include "uploader.h"
 #include "googledocs.h"
+#include "platform.h"
 
 static Uploader *instance_;
 
@@ -21,6 +25,7 @@ void Uploader::close() {
 
 Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
     worker = new UploaderWorker();
+    worker->enable(true);
     connect(worker, SIGNAL(uploadingChanged(bool)), this, SLOT(onUploadingChanged(bool)));
     workerThread = new QThread(this);
     worker->moveToThread(workerThread);
@@ -29,6 +34,7 @@ Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
 
 Uploader::~Uploader() {
     qDebug() << "Uploader::~Uploader";
+    (void)QMetaObject::invokeMethod(worker, "enable", Q_ARG(bool, false));
     workerThread->quit();
     workerThread->wait();
     delete worker;
@@ -56,13 +62,39 @@ UploaderWorker::~UploaderWorker() {
 }
 
 void UploaderWorker::upload() {
-    qDebug() << "UploaderWorker: Upload stopped";
+    qDebug() << "UploaderWorker::upload";
+    if (enabled) {
+        emit uploadingChanged(true);
+        QStringList archives = listArchives();
+        qDebug() << " Archives:" << archives;
+        if (archives.count()) {
+            GoogleDocs::UploadResult result = GoogleDocs::instance()->upload(archives[0]);
+            if (result == GoogleDocs::UploadCompleted) {
+                deleteArchive(archives[0]);
+            }
+        }
+    }
     emit uploadingChanged(false);
-    QTimer::singleShot(1000, this, SLOT(onUploadStart()));
+    QTimer::singleShot(5000, this, SLOT(upload()));
 }
 
-void UploaderWorker::onUploadStart() {
-    qDebug() << "UploaderWorker: Upload started";
-    emit uploadingChanged(true);
-    QTimer::singleShot(3000, this, SLOT(upload()));
+void UploaderWorker::enable(bool v) {
+    qDebug() << "UploadWorker::enable" << v;
+    enabled = v;
+}
+
+QStringList UploaderWorker::listArchives() {
+    QString dbPath =  Platform::instance()->dbPath();
+    QFileInfo dbInfo(dbPath);
+    QDir dir(dbInfo.absolutePath());
+    QStringList nameFilters(QString("*.adb"));
+    return dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+}
+
+void UploaderWorker::deleteArchive(const QString archive) {
+    qDebug() << "UploadWorker::deleteArchive" << archive;
+    QFile file(archive);
+    if (!file.remove()) {
+        qCritical() << "UploadWorker::deleteArchive: Failed to delete" << archive;
+    }
 }

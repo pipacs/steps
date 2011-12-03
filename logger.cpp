@@ -204,7 +204,7 @@ bool LoggerWorker::create(int steps) {
 QString LoggerWorker::getArchiveName() {
     QString dir = QFileInfo(Platform::instance()->dbPath()).absolutePath();
     QString base = QDateTime::currentDateTime().toString("yyMMddhhmmss");
-    QString archiveName = dir + "/" + base + ".db";
+    QString archiveName = dir + "/" + base + ".adb";
     if (QFileInfo(archiveName).exists()) {
         qCritical() << "LoggerWorker::getArchiveName: Archive" << archiveName << "exists already";
         return QString();
