@@ -67,7 +67,8 @@ SOURCES += \
     kqoauth/kqoauthrequest_1.cpp \
     kqoauth/kqoauthrequest_xauth.cpp \
     kqoauth/kqoauthutils.cpp \
-    uploader.cpp
+    uploader.cpp \
+    gftprogram.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -141,9 +142,12 @@ HEADERS += \
     kqoauth/kqoauthrequest_xauth.h \
     kqoauth/kqoauthrequest_xauth_p.h \
     kqoauth/kqoauthutils.h \
-    uploader.h
+    uploader.h \
+    gftprogram.h
 
 RESOURCES += \
     common.qrc
+
+
 
 

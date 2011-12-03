@@ -5,6 +5,9 @@
 #include <QString>
 #include <QSettings>
 
+#define GFT_OAUTH_CONSUMER_KEY "903309545755.apps.googleusercontent.com"
+#define GFT_OAUTH_CONSUMER_SECRET_KEY "bjFH7kt7nL9jrE4t8L_x7O6W"
+
 class KQOAuthManager;
 class KQOAuthRequest;
 
@@ -52,6 +55,7 @@ protected slots:
 protected:
     explicit GoogleDocs(QObject *parent = 0);
     virtual ~GoogleDocs();
+    QString createRemoteDatabase(const QString archive);
     KQOAuthManager *oauthManager;
     KQOAuthRequest *oauthRequest;
     QSettings oauthSettings;

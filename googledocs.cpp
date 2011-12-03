@@ -1,13 +1,15 @@
 #include <QDebug>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QDir>
 
 #include "kqoauth/kqoauthmanager.h"
 #include "kqoauth/kqoauthrequest.h"
-
+#include "gftprogram.h"
 #include "googledocs.h"
 
-static const char *OAUTH_CONSUMER_KEY = "903309545755.apps.googleusercontent.com";
-static const char *OAUTH_CONSUMER_SECRET_KEY = "bjFH7kt7nL9jrE4t8L_x7O6W";
-static const char *OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
+static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 
 static GoogleDocs *instance_;
 
@@ -54,10 +56,10 @@ void GoogleDocs::link() {
 
     // oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://api.twitter.com/oauth/request_token"));
     oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://www.google.com/accounts/OAuthGetRequestToken"));
-    oauthRequest->setConsumerKey(OAUTH_CONSUMER_KEY);
-    oauthRequest->setConsumerSecretKey(OAUTH_CONSUMER_SECRET_KEY);
+    oauthRequest->setConsumerKey(GFT_OAUTH_CONSUMER_KEY);
+    oauthRequest->setConsumerSecretKey(GFT_OAUTH_CONSUMER_SECRET_KEY);
     KQOAuthParameters parameters;
-    parameters.insert("scope", OAUTH_SCOPE);
+    parameters.insert("scope", GFT_OAUTH_SCOPE);
     parameters.insert("oauth_signature_method", "HMAC-SHA");
     oauthRequest->setAdditionalParameters(parameters);
     oauthManager->setHandleUserAuthorization(true);
@@ -99,9 +101,7 @@ void GoogleDocs::onRequestReady(QByteArray response) {
 void GoogleDocs::onTemporaryTokenReceived(QString token, QString tokenSecret) {
     qDebug() << "GoogleDocs::onTemporaryTokenReceived: Temporary token received: " << token << tokenSecret;
 
-    // QUrl userAuthURL("https://api.twitter.com/oauth/authorize");
     QUrl userAuthURL("https://accounts.google.com/OAuthAuthorizeToken");
-
     if (oauthManager->lastError() == KQOAuthManager::NoError) {
         qDebug() << " Asking for user's permission to access protected resources. Opening URL: " << userAuthURL;
         oauthManager->getUserAuthorization(userAuthURL);
@@ -120,9 +120,32 @@ void GoogleDocs::setEnabled(bool v) {
 GoogleDocs::UploadResult GoogleDocs::upload(const QString &archive) {
     qDebug() << "GoogleDocs::upload" << archive;
     if (!enabled()) {
+        // FIXME: This should be checked row by row
+        qDebug() << " Not enabled";
         return GoogleDocs::UploadSucceeded;
     }
 
-    // FIXME: Implement me
+    QString token = oauthSettings.value("gd_oauth_token").toString();
+    QString tokenSecret = oauthSettings.value("gd_oauth_token_secret").toString();
+    if (!token.length() || !tokenSecret.length()) {
+        qDebug() << " Not linked";
+        return GoogleDocs::UploadCompleted;
+    }
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(QDir::toNativeSeparators(archive));
+    if (!db.open()) {
+        qCritical() << "GoogleDocs::upload: Could not open database";
+        return GoogleDocs::UploadFailed;
+    }
+
+    QSqlQuery query;
+    if (!query.exec("select id, date, steps from log")) {
+        qCritical() << "GoogleDocs::upload: Could not execute query:" << query.lastError().text();
+        return GoogleDocs::UploadFailed;
+    }
+
+    // FIXME: Create and execute Gft program
+
     return GoogleDocs::UploadSucceeded;
 }
