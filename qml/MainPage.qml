@@ -3,6 +3,7 @@ import "meego"
 
 StepsPage {
     property bool counterWasRunning: false
+    showBack: false
 
     StepsLabel {
         id: dailyLabel

@@ -5,7 +5,6 @@ import "symbian"
 StepsPage {
     id: loginBrowser
     lockOrientation: false
-    showBack: true
 
     Flickable {
         id: flickable

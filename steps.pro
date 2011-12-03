@@ -1,4 +1,4 @@
-VERSION = 0.0.5
+VERSION = 0.0.6
 
 # Qt packages to use
 CONFIG += mobility
@@ -66,7 +66,7 @@ SOURCES += \
     kqoauth/kqoauthrequest.cpp \
     kqoauth/kqoauthrequest_1.cpp \
     kqoauth/kqoauthrequest_xauth.cpp \
-    kqoauth/kqoauthutils.cpp 
+    kqoauth/kqoauthutils.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)

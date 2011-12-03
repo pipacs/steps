@@ -5,7 +5,7 @@ import com.nokia.meego 1.0
 Page {
     property bool active
     property bool lockOrientation: true
-    property bool showBack: false
+    property bool showBack: true
     signal back
 
     active: status == PageStatus.Active

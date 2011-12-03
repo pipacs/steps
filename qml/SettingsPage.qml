@@ -1,13 +1,10 @@
 import QtQuick 1.1
+import "meego"
 
-StepsDialog {
+StepsPage {
     id: settings
 
-    title: "Settings"
-    acceptText: "Save"
-    rejectText: "Cancel"
-
-    content: Flickable {
+    Flickable {
         anchors.fill: parent
         anchors.leftMargin: 30
         anchors.rightMargin: 30
@@ -19,7 +16,7 @@ StepsDialog {
         Column {
             id: col2
             anchors.top: parent.top
-            spacing: 41
+            spacing: 31
             width: settings.width - 60
 
             StepsCheckBox {
@@ -58,11 +55,50 @@ StepsDialog {
                 maximumValue: 190
                 value: counter.sensitivity
             }
+
+            StepsLabel {text: "Sharing:"}
+
+            StepsCheckBox {
+                text: "Share to Google Documents"
+                id: enableSharing
+                checked: googleDocs.enabled
+                enabled: googleDocs.linked
+            }
+
+            StepsButton {
+                text: googleDocs.linked? "Logout from Google": "Login to Google"
+                onClicked: {
+                    if (googleDocs.linked) {
+                        dialogOpen = true
+                        confirmLogoutDialog.open()
+                    } else {
+                        spinner.running = true
+                        googleDocs.link()
+                    }
+                }
+            }
         }
     }
 
-    onDialogAccepted: {
-        console.log("* SettingsPage.onDialogAccepted")
+    StepsYesNoDialog {
+        id: confirmLogoutDialog
+        titleText: "Are you sure to log out?"
+        onDialogAccepted: {
+            googleDocs.unlink()
+        }
+    }
+
+    StepsSpinner {
+        id: spinner
+    }
+
+    LoginBrowser {
+        id: loginBrowser
+    }
+
+    onBack: {
+        console.log("* SettingsPage.onBack")
+        main.pageStack.pop()
         if (calibrationSlider.changed && counter.rawCount) {
             console.log("*  New calibration value " + calibrationSlider.value)
             counter.calibration = calibrationSlider.value / counter.rawCount
@@ -71,5 +107,16 @@ StepsDialog {
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
         prefs.sensitivity = counter.sensitivity
+    }
+
+    function openUrl(url) {
+        console.log("* SettingsPage.openUrl " + url)
+        spinner.running = false
+        main.pageStack.push(loginBrowser)
+        loginBrowser.openUrl(url)
+    }
+
+    Component.onCompleted: {
+        googleDocs.openUrl.connect(openUrl);
     }
 }
