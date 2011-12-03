@@ -67,6 +67,7 @@ StepsPage {
 
             StepsButton {
                 text: googleDocs.linked? "Logout from Google": "Login to Google"
+                anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (googleDocs.linked) {
                         dialogOpen = true

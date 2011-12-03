@@ -12,21 +12,25 @@ class KQOAuthRequest;
 class GoogleDocs: public QObject {
     Q_OBJECT
     Q_PROPERTY(bool linked READ linked NOTIFY linkedChanged)
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
     static GoogleDocs *instance();
     static void close();
     bool linked();
+    bool enabled();
 
 signals:
     void linkedChanged();
     void linkingSucceeded();
     void linkingFailed(QString error);
     void openUrl(QString url);
+    void enabledChanged();
 
 public slots:
     Q_INVOKABLE void link();
     Q_INVOKABLE void unlink();
+    void setEnabled(bool v);
 
 protected slots:
     void onTemporaryTokenReceived(QString temporaryToken, QString temporaryTokenSecret);

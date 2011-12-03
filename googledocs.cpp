@@ -5,12 +5,6 @@
 
 #include "googledocs.h"
 
-/* Twitter demo keys:
-static const char *OAUTH_CONSUMER_KEY = "9PqhX2sX7DlmjNJ5j2Q";
-static const char *OAUTH_CONSUMER_SECRET_KEY = "1NYYhpIw1fXItywS9Bw6gGRmkRyF9zB54UXkTGcI8";
-static const char *OAUTH_REQUEST_TOKEN_URL = "https://api.twitter.com/oauth/request_token";
-static const char *OAUTH_GET_ACCESS_URL = "https://api.twitter.com/oauth/access_token";
-*/
 static const char *OAUTH_CONSUMER_KEY = "903309545755.apps.googleusercontent.com";
 static const char *OAUTH_CONSUMER_SECRET_KEY = "bjFH7kt7nL9jrE4t8L_x7O6W";
 static const char *OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
@@ -42,7 +36,7 @@ GoogleDocs::~GoogleDocs() {
 }
 
 bool GoogleDocs::linked() {
-    return oauthSettings.value("oauth_token").toString().length() && oauthSettings.value("oauth_token_secret").toString().length();
+    return oauthSettings.value("gd_oauth_token").toString().length() && oauthSettings.value("gd_oauth_token_secret").toString().length();
 }
 
 void GoogleDocs::link() {
@@ -71,8 +65,8 @@ void GoogleDocs::link() {
 }
 
 void GoogleDocs::unlink() {
-    oauthSettings.setValue("oauth_token", QString());
-    oauthSettings.setValue("oauth_token_secret", QString());
+    oauthSettings.setValue("gd_oauth_token", QString());
+    oauthSettings.setValue("gd_oauth_token_secret", QString());
     emit linkedChanged();
 }
 
@@ -87,8 +81,8 @@ void GoogleDocs::onAuthorizationReceived(QString token, QString verifier) {
 
 void GoogleDocs::onAccessTokenReceived(QString token, QString tokenSecret) {
     qDebug() << "GoogleDocs::onAccessTokenReceived: Access token received: " << token << tokenSecret;
-    oauthSettings.setValue("oauth_token", token);
-    oauthSettings.setValue("oauth_token_secret", tokenSecret);
+    oauthSettings.setValue("gd_oauth_token", token);
+    oauthSettings.setValue("gd_oauth_token_secret", tokenSecret);
     qDebug() << " Access tokens now stored. Authentication complete.";
     emit linkedChanged();
     emit linkingSucceeded();
@@ -112,4 +106,13 @@ void GoogleDocs::onTemporaryTokenReceived(QString token, QString tokenSecret) {
         qDebug() << " Asking for user's permission to access protected resources. Opening URL: " << userAuthURL;
         oauthManager->getUserAuthorization(userAuthURL);
     }
+}
+
+bool GoogleDocs::enabled() {
+    return oauthSettings.value("gd_enabled", false).toBool();
+}
+
+void GoogleDocs::setEnabled(bool v) {
+    oauthSettings.setValue("gd_enabled", v);
+    emit enabledChanged();
 }
