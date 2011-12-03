@@ -66,7 +66,8 @@ SOURCES += \
     kqoauth/kqoauthrequest.cpp \
     kqoauth/kqoauthrequest_1.cpp \
     kqoauth/kqoauthrequest_xauth.cpp \
-    kqoauth/kqoauthutils.cpp
+    kqoauth/kqoauthutils.cpp \
+    uploader.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -139,7 +140,10 @@ HEADERS += \
     kqoauth/kqoauthrequest_p.h \
     kqoauth/kqoauthrequest_xauth.h \
     kqoauth/kqoauthrequest_xauth_p.h \
-    kqoauth/kqoauthutils.h
+    kqoauth/kqoauthutils.h \
+    uploader.h
 
 RESOURCES += \
     common.qrc
+
+

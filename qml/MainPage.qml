@@ -6,6 +6,15 @@ StepsPage {
     id: mainPage
     showBack: false
 
+    Image {
+        source: "qrc:/images/reset.png"
+        width: 28
+        height: 28
+        anchors.top: mainPage.top
+        anchors.right: mainPage.right
+        visible: uploader.uploading
+    }
+
     Column {
         anchors.centerIn: parent
         spacing: 32
@@ -40,11 +49,7 @@ StepsPage {
         }
 
         StepsLabel {
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: pausedLabel.bottom
-                topMargin: 37
-            }
+            anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
             text: qsTr("Press Volume Up to start/pause counter, Volume Down to show settings")
             horizontalAlignment: Text.AlignHCenter

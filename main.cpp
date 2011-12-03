@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "googledocs.h"
 #include "sipfixer.h"
+#include "uploader.h"
 
 class PersistentCookieJar: public QNetworkCookieJar {
 public:
@@ -97,6 +98,8 @@ int main(int argc, char *argv[]) {
     GoogleDocs *googleDocs = GoogleDocs::instance();
     SipFixer *sipFixer = SipFixer::instance();
     NetworkAccessManagerFactory *namFactory = new NetworkAccessManagerFactory;
+    Uploader *uploader = Uploader::instance();
+    uploader->upload();
 
     // Create application
     QApplication app(argc, argv);
@@ -118,6 +121,7 @@ int main(int argc, char *argv[]) {
     viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
     viewer->rootContext()->setContextProperty("googleDocs", googleDocs);
     viewer->rootContext()->setContextProperty("sipFixer", sipFixer);
+    viewer->rootContext()->setContextProperty("uploader", uploader);
     viewer->setMainQmlFile(QLatin1String("qrc:/qml/main.qml"));
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer->showExpanded();
@@ -137,6 +141,7 @@ int main(int argc, char *argv[]) {
     // Delete singletons and exit
     delete viewer;
     delete namFactory;
+    Uploader::close();
     SipFixer::close();
     GoogleDocs::close();
     Logger::close();
