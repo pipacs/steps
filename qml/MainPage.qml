@@ -3,57 +3,53 @@ import "symbian"
 
 StepsPage {
     property bool counterWasRunning: false
+    id: mainPage
     showBack: false
 
-    StepsLabel {
-        id: dailyLabel
-        y: screen.height / 4
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            bottomMargin: 100
-        }
-        text: main.dailyCount
-        font.pixelSize: 116
-        font.bold: true
-    }
+    Column {
+        anchors.centerIn: parent
+        spacing: 32
+        width: mainPage.width
 
-    StepsLabel {
-        id: totalLabel
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: dailyLabel.bottom
-            topMargin: 37
+        StepsLabel {
+            id: dailyLabel
+            y: screen.height / 3
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: main.dailyCount
+            font.pixelSize: 116
+            font.bold: true
         }
-        text: "Total: " + counter.count
-        horizontalAlignment: Text.AlignHCenter
-    }
 
-    StepsLabel {
-        id: pausedLabel
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: totalLabel.bottom
-            topMargin: 37
+        StepsLabel {
+            id: totalLabel
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Total: " + counter.count
+            font.pixelSize: 45
+            horizontalAlignment: Text.AlignHCenter
         }
-        width: parent.width
-        text: qsTr("Paused")
-        font.pixelSize: 45
-        color: "#ff9999"
-        visible: !counter.running
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-    }
 
-    StepsLabel {
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: pausedLabel.bottom
-            topMargin: 37
+        StepsLabel {
+            id: pausedLabel
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width
+            text: counter.running? "": qsTr("Paused")
+            font.pixelSize: 45
+            color: "#ff9999"
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
-        width: parent.width
-        text: qsTr("Press Volume Up to start/pause counter, Volume Down to show settings")
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+        StepsLabel {
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: pausedLabel.bottom
+                topMargin: 37
+            }
+            width: parent.width
+            text: qsTr("Press Volume Up to start/pause counter, Volume Down to show settings")
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        }
     }
 
     Beep {
