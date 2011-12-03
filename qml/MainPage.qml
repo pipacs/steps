@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "meego"
+import "symbian"
 
 StepsPage {
     property bool counterWasRunning: false
@@ -7,9 +7,10 @@ StepsPage {
 
     StepsLabel {
         id: dailyLabel
+        y: screen.height / 4
         anchors {
-            centerIn: parent
-            bottomMargin: 200
+            horizontalCenter: parent.horizontalCenter
+            bottomMargin: 100
         }
         text: main.dailyCount
         font.pixelSize: 116
