@@ -28,8 +28,9 @@ StepsPageStackWindow {
 
         logger.log(count, {})
 
-        // Play applause at every 10000 steps
-        if ((count % 10000) < (prevCount % 10000)) {
+        // Play applause at every X steps
+        var APPLAUSE_GOAL = 10000
+        if ((count > prevCount) && ((count % APPLAUSE_GOAL) < (prevCount % APPLAUSE_GOAL))) {
             applause.play()
         }
 
@@ -44,6 +45,9 @@ StepsPageStackWindow {
             prefs.dailyCountDate = dateString
         }
         dailyCount += delta
+        if (dailyCount < 0) {
+            dailyCount = 0
+        }
         prefs.dailyCount = dailyCount
     }
 
