@@ -1,5 +1,5 @@
-#ifndef GOOGLEDOCS_H
-#define GOOGLEDOCS_H
+#ifndef GFT_H
+#define GFT_H
 
 #include <QObject>
 #include <QString>
@@ -11,14 +11,14 @@
 class KQOAuthManager;
 class KQOAuthRequest;
 
-/// Link application to a Google Docs account
-class GoogleDocs: public QObject {
+/// Google Fusion Tables account connector and uploader.
+class Gft: public QObject {
     Q_OBJECT
     Q_PROPERTY(bool linked READ linked NOTIFY linkedChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
-    static GoogleDocs *instance();
+    static Gft *instance();
     static void close();
     bool linked();
     bool enabled();
@@ -53,12 +53,12 @@ protected slots:
     void onRequestReady(QByteArray);
 
 protected:
-    explicit GoogleDocs(QObject *parent = 0);
-    virtual ~GoogleDocs();
+    explicit Gft(QObject *parent = 0);
+    virtual ~Gft();
     QString createRemoteDatabase(const QString archive);
     KQOAuthManager *oauthManager;
     KQOAuthRequest *oauthRequest;
     QSettings oauthSettings;
 };
 
-#endif // GOOGLEDOCS_H
+#endif // GFT_H

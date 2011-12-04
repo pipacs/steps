@@ -10,7 +10,7 @@
 #include "platform.h"
 #include "mediakey.h"
 #include "logger.h"
-#include "googledocs.h"
+#include "gft.h"
 #include "sipfixer.h"
 #include "uploader.h"
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
     Preferences *prefs = Preferences::instance();
     Platform *platform = Platform::instance();
     Logger *logger = Logger::instance();
-    GoogleDocs *googleDocs = GoogleDocs::instance();
+    Gft *gft = Gft::instance();
     SipFixer *sipFixer = SipFixer::instance();
     NetworkAccessManagerFactory *namFactory = new NetworkAccessManagerFactory;
     Uploader *uploader = Uploader::instance();
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
     viewer->rootContext()->setContextProperty("platform", platform);
     viewer->rootContext()->setContextProperty("logger", logger);
     viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
-    viewer->rootContext()->setContextProperty("googleDocs", googleDocs);
+    viewer->rootContext()->setContextProperty("gft", gft);
     viewer->rootContext()->setContextProperty("sipFixer", sipFixer);
     viewer->rootContext()->setContextProperty("uploader", uploader);
     viewer->setMainQmlFile(QLatin1String("qrc:/qml/main.qml"));
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
     delete namFactory;
     Uploader::close();
     SipFixer::close();
-    GoogleDocs::close();
+    Gft::close();
     Logger::close();
     Platform::close();
     Preferences::close();

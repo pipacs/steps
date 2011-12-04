@@ -61,20 +61,20 @@ StepsPage {
             StepsCheckBox {
                 text: "Share to Google Documents"
                 id: enableSharing
-                checked: googleDocs.enabled
-                enabled: googleDocs.linked
+                checked: gft.enabled
+                enabled: gft.linked
             }
 
             StepsButton {
-                text: googleDocs.linked? "Logout from Google": "Login to Google"
+                text: gft.linked? "Logout from Google": "Login to Google"
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
-                    if (googleDocs.linked) {
+                    if (gft.linked) {
                         dialogOpen = true
                         confirmLogoutDialog.open()
                     } else {
                         spinner.running = true
-                        googleDocs.link()
+                        gft.link()
                     }
                 }
             }
@@ -85,7 +85,7 @@ StepsPage {
         id: confirmLogoutDialog
         titleText: "Are you sure to log out?"
         onDialogAccepted: {
-            googleDocs.unlink()
+            gft.unlink()
         }
     }
 
@@ -118,6 +118,6 @@ StepsPage {
     }
 
     Component.onCompleted: {
-        googleDocs.openUrl.connect(openUrl);
+        gft.openUrl.connect(openUrl);
     }
 }

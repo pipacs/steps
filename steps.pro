@@ -59,7 +59,6 @@ SOURCES += \
     mediakey.cpp \
     platform.cpp \
     logger.cpp \
-    googledocs.cpp \
     sipfixer.cpp \
     kqoauth/kqoauthauthreplyserver.cpp \
     kqoauth/kqoauthmanager.cpp \
@@ -68,7 +67,8 @@ SOURCES += \
     kqoauth/kqoauthrequest_xauth.cpp \
     kqoauth/kqoauthutils.cpp \
     uploader.cpp \
-    gftprogram.cpp
+    gftprogram.cpp \
+    gft.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -129,7 +129,6 @@ HEADERS += \
     mediakeyprivate.h \
     platform.h \
     logger.h \
-    googledocs.h \
     sipfixer.h \
     kqoauth/kqoauthauthreplyserver.h \
     kqoauth/kqoauthauthreplyserver_p.h \
@@ -143,10 +142,15 @@ HEADERS += \
     kqoauth/kqoauthrequest_xauth_p.h \
     kqoauth/kqoauthutils.h \
     uploader.h \
-    gftprogram.h
+    gftprogram.h \
+    gft.h
 
 RESOURCES += \
     common.qrc
+
+
+
+
 
 
 

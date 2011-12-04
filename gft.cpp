@@ -7,41 +7,41 @@
 #include "kqoauth/kqoauthmanager.h"
 #include "kqoauth/kqoauthrequest.h"
 #include "gftprogram.h"
-#include "googledocs.h"
+#include "gft.h"
 
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 
-static GoogleDocs *instance_;
+static Gft *instance_;
 
-GoogleDocs *GoogleDocs::instance() {
+Gft *Gft::instance() {
     if (!instance_) {
-        instance_ = new GoogleDocs();
+        instance_ = new Gft();
     }
     return instance_;
 }
 
-void GoogleDocs::close() {
+void Gft::close() {
     delete instance_;
     instance_ = 0;
 }
 
-GoogleDocs::GoogleDocs(QObject *parent): QObject(parent) {
+Gft::Gft(QObject *parent): QObject(parent) {
     oauthRequest = new KQOAuthRequest;
     oauthManager = new KQOAuthManager(this);
 
     oauthRequest->setEnableDebugOutput(true);
 }
 
-GoogleDocs::~GoogleDocs() {
+Gft::~Gft() {
     delete oauthRequest;
     delete oauthManager;
 }
 
-bool GoogleDocs::linked() {
+bool Gft::linked() {
     return oauthSettings.value("gd_oauth_token").toString().length() && oauthSettings.value("gd_oauth_token_secret").toString().length();
 }
 
-void GoogleDocs::link() {
+void Gft::link() {
     disconnect(oauthManager, SIGNAL(temporaryTokenReceived(QString,QString)));
     disconnect(oauthManager, SIGNAL(authorizationReceived(QString,QString)));
     disconnect(oauthManager, SIGNAL(accessTokenReceived(QString,QString)));
@@ -66,14 +66,14 @@ void GoogleDocs::link() {
     oauthManager->executeRequest(oauthRequest);
 }
 
-void GoogleDocs::unlink() {
+void Gft::unlink() {
     oauthSettings.setValue("gd_oauth_token", QString());
     oauthSettings.setValue("gd_oauth_token_secret", QString());
     emit linkedChanged();
 }
 
-void GoogleDocs::onAuthorizationReceived(QString token, QString verifier) {
-    qDebug() << "GoogleDocs::onAuthorizationReceived: User authorization received: " << token << verifier;
+void Gft::onAuthorizationReceived(QString token, QString verifier) {
+    qDebug() << "Gft::onAuthorizationReceived: User authorization received: " << token << verifier;
     // oauthManager->getUserAccessTokens(QUrl("https://api.twitter.com/oauth/access_token"));
     oauthManager->getUserAccessTokens(QUrl("https://www.google.com//accounts/OAuthGetAccessToken"));
     if (oauthManager->lastError() != KQOAuthManager::NoError) {
@@ -81,8 +81,8 @@ void GoogleDocs::onAuthorizationReceived(QString token, QString verifier) {
     }
 }
 
-void GoogleDocs::onAccessTokenReceived(QString token, QString tokenSecret) {
-    qDebug() << "GoogleDocs::onAccessTokenReceived: Access token received: " << token << tokenSecret;
+void Gft::onAccessTokenReceived(QString token, QString tokenSecret) {
+    qDebug() << "Gft::onAccessTokenReceived: Access token received: " << token << tokenSecret;
     oauthSettings.setValue("gd_oauth_token", token);
     oauthSettings.setValue("gd_oauth_token_secret", tokenSecret);
     qDebug() << " Access tokens now stored. Authentication complete.";
@@ -90,16 +90,16 @@ void GoogleDocs::onAccessTokenReceived(QString token, QString tokenSecret) {
     emit linkingSucceeded();
 }
 
-void GoogleDocs::onAuthorizedRequestDone() {
-    qDebug() << "GoogleDocs::onAuthorizedRequestDone: Request sent to Twitter!";
+void Gft::onAuthorizedRequestDone() {
+    qDebug() << "Gft::onAuthorizedRequestDone: Request sent to Twitter!";
 }
 
-void GoogleDocs::onRequestReady(QByteArray response) {
-    qDebug() << "GoogleDocs::onRequestReady: Response from the service: " << response;
+void Gft::onRequestReady(QByteArray response) {
+    qDebug() << "Gft::onRequestReady: Response from the service: " << response;
 }
 
-void GoogleDocs::onTemporaryTokenReceived(QString token, QString tokenSecret) {
-    qDebug() << "GoogleDocs::onTemporaryTokenReceived: Temporary token received: " << token << tokenSecret;
+void Gft::onTemporaryTokenReceived(QString token, QString tokenSecret) {
+    qDebug() << "Gft::onTemporaryTokenReceived: Temporary token received: " << token << tokenSecret;
 
     QUrl userAuthURL("https://accounts.google.com/OAuthAuthorizeToken");
     if (oauthManager->lastError() == KQOAuthManager::NoError) {
@@ -108,44 +108,44 @@ void GoogleDocs::onTemporaryTokenReceived(QString token, QString tokenSecret) {
     }
 }
 
-bool GoogleDocs::enabled() {
+bool Gft::enabled() {
     return oauthSettings.value("gd_enabled", false).toBool();
 }
 
-void GoogleDocs::setEnabled(bool v) {
+void Gft::setEnabled(bool v) {
     oauthSettings.setValue("gd_enabled", v);
     emit enabledChanged();
 }
 
-GoogleDocs::UploadResult GoogleDocs::upload(const QString &archive) {
-    qDebug() << "GoogleDocs::upload" << archive;
+Gft::UploadResult Gft::upload(const QString &archive) {
+    qDebug() << "Gft::upload" << archive;
     if (!enabled()) {
         // FIXME: This should be checked row by row
         qDebug() << " Not enabled";
-        return GoogleDocs::UploadSucceeded;
+        return Gft::UploadSucceeded;
     }
 
     QString token = oauthSettings.value("gd_oauth_token").toString();
     QString tokenSecret = oauthSettings.value("gd_oauth_token_secret").toString();
     if (!token.length() || !tokenSecret.length()) {
         qDebug() << " Not linked";
-        return GoogleDocs::UploadCompleted;
+        return Gft::UploadCompleted;
     }
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(QDir::toNativeSeparators(archive));
     if (!db.open()) {
-        qCritical() << "GoogleDocs::upload: Could not open database";
-        return GoogleDocs::UploadFailed;
+        qCritical() << "Gft::upload: Could not open database";
+        return Gft::UploadFailed;
     }
 
     QSqlQuery query;
     if (!query.exec("select id, date, steps from log")) {
-        qCritical() << "GoogleDocs::upload: Could not execute query:" << query.lastError().text();
-        return GoogleDocs::UploadFailed;
+        qCritical() << "Gft::upload: Could not execute query:" << query.lastError().text();
+        return Gft::UploadFailed;
     }
 
     // FIXME: Create and execute Gft program
 
-    return GoogleDocs::UploadSucceeded;
+    return Gft::UploadSucceeded;
 }

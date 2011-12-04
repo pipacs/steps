@@ -3,7 +3,7 @@
 #include "gftprogram.h"
 #include "kqoauth/kqoauthmanager.h"
 #include "kqoauth/kqoauthrequest.h"
-#include "googledocs.h"
+#include "gft.h"
 
 GftProgram::GftProgram(QObject *parent, const QString &token_, const QString &secret_, const QList<GftInstruction> &program_): QObject(parent), token(token_), secret(secret_), program(program_), ic(0), status(Idle), oauthRequest(0) {
     qDebug() << "GftProgram::GftProgram";

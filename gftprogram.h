@@ -8,6 +8,7 @@
 #include <QByteArray>
 #include <QList>
 
+/// POST URL for SQL queries.
 #define GFT_SQL_URL "https://www.google.com/fusiontables/api/query"
 
 class KQOAuthManager;
@@ -42,11 +43,17 @@ public:
     ~GftProgram();
 
 public slots:
+    /// Execute one instruction.
     void step();
+
+    /// Request ready callback.
     void stepReady(QByteArray response);
+
+    /// Request completed callback.
     void stepDone();
 
 signals:
+    /// Emitted when running the program is completed.
     void completed(Status status);
 
 public:

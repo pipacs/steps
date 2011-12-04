@@ -6,7 +6,7 @@
 #include <QDir>
 
 #include "uploader.h"
-#include "googledocs.h"
+#include "gft.h"
 #include "platform.h"
 
 static Uploader *instance_;
@@ -68,8 +68,8 @@ void UploaderWorker::upload() {
         QStringList archives = listArchives();
         qDebug() << " Archives:" << archives;
         if (archives.count()) {
-            GoogleDocs::UploadResult result = GoogleDocs::instance()->upload(archives[0]);
-            if (result == GoogleDocs::UploadCompleted) {
+            Gft::UploadResult result = Gft::instance()->upload(archives[0]);
+            if (result == Gft::UploadCompleted) {
                 deleteArchive(archives[0]);
             }
         }
