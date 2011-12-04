@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QSettings>
+#include <QSqlDatabase>
 
 #define GFT_OAUTH_CONSUMER_KEY "903309545755.apps.googleusercontent.com"
 #define GFT_OAUTH_CONSUMER_SECRET_KEY "bjFH7kt7nL9jrE4t8L_x7O6W"
@@ -55,7 +56,14 @@ protected slots:
 protected:
     explicit Gft(QObject *parent = 0);
     virtual ~Gft();
-    QString createRemoteDatabase(const QString archive);
+
+    /// Get tags for a log ID
+    /// @return Tags as a single string of sanitized name/value pairs: "name1=value1;name2=value2;..."
+    QString getTags(QSqlDatabase db, qlonglong id);
+
+    /// Sanitize string by removing the following characters: quote, double quote, backslash, equal, semicolon.
+    QString sanitize(const QString &s);
+
     KQOAuthManager *oauthManager;
     KQOAuthRequest *oauthRequest;
     QSettings oauthSettings;

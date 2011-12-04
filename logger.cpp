@@ -88,7 +88,7 @@ bool LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
     }
 
     qDebug() << "LoggerWorker::insertLog:" << now.toString(Qt::ISODate) << ":" << steps;
-    QSqlQuery query("insert into log (date, steps) values (?, ?)");
+    QSqlQuery query("insert into log (date, steps) values (?, ?)", db);
     query.bindValue(0, now.toString(Qt::ISODate));
     query.bindValue(1, steps);
     success = query.exec();

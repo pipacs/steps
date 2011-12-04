@@ -2,6 +2,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlRecord>
 #include <QDir>
 
 #include "kqoauth/kqoauthmanager.h"
@@ -139,13 +140,59 @@ Gft::UploadResult Gft::upload(const QString &archive) {
         return Gft::UploadFailed;
     }
 
-    QSqlQuery query;
-    if (!query.exec("select id, date, steps from log")) {
-        qCritical() << "Gft::upload: Could not execute query:" << query.lastError().text();
+    // Create Gft program
+
+    QSqlQuery query("select id, date, steps from log", db);
+    query.setForwardOnly(true);
+    if (!query.exec()) {
+        qDebug() << "Gft::upload: Could not query database:" << query.lastError().text();
         return Gft::UploadFailed;
     }
+    QSqlRecord record = query.record();
+    int idIndex = record.indexOf("id");
+    int dateIndex = record.indexOf("date");
+    int stepsIndex = record.indexOf("steps");
+    while (query.next()) {
+        qlonglong id = query.value(idIndex).toLongLong();
+        QString date = sanitize(query.value(dateIndex).toString());
+        int steps = query.value(stepsIndex).toInt();
+        QString tags = getTags(db, id);
+        qDebug() << "" << id << date << steps << tags;
+    }
+    db.close();
 
-    // FIXME: Create and execute Gft program
+    // FIXME: Execute Gft program
 
     return Gft::UploadSucceeded;
+}
+
+QString Gft::getTags(QSqlDatabase db, qlonglong id) {
+    QString ret;
+    QSqlQuery query("select name, value from tags where logId = ?", db);
+    query.bindValue(0, id);
+    if (!query.exec()) {
+        qDebug() << "Gft::upload: Could not query database:" << query.lastError().text();
+        return ret;
+    }
+    QSqlRecord record = query.record();
+    int nameIndex = record.indexOf("name");
+    int valueIndex = record.indexOf("value");
+    while (query.next()) {
+        QString name = query.value(nameIndex).toString();
+        QString value = query.value(valueIndex).toString();
+        ret.append(sanitize(name));
+        ret.append("=");
+        ret.append(sanitize(value));
+        ret.append(";");
+    }
+}
+
+QString Gft::sanitize(const QString &s) {
+    QString ret = s;
+    ret.remove('\'');
+    ret.remove('"');
+    ret.remove(';');
+    ret.remove('=');
+    ret.remove('\\');
+    return ret;
 }

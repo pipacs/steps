@@ -84,11 +84,13 @@ void UploaderWorker::enable(bool v) {
 }
 
 QStringList UploaderWorker::listArchives() {
-    QString dbPath =  Platform::instance()->dbPath();
-    QFileInfo dbInfo(dbPath);
-    QDir dir(dbInfo.absolutePath());
+    QString dbDir = QFileInfo(Platform::instance()->dbPath()).absolutePath();
     QStringList nameFilters(QString("*.adb"));
-    return dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+    QStringList ret;
+    foreach (QString dbFile, QDir(dbDir).entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name)) {
+        ret.append(dbDir + "/" + dbFile);
+    }
+    return ret;
 }
 
 void UploaderWorker::deleteArchive(const QString archive) {
