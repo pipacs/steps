@@ -16,13 +16,14 @@ class KQOAuthRequest;
 
 /// An operation.
 enum GftOp {
-    FindTable,
-    CreateTable,
-    Insert
+    GftFindTable,       ///< Find table, return ID in GftProgram::tableId. Parameter is the table name.
+    GftCreateTableIf,   ///< Create table if doesn't exist, return ID in GftProgram::tableId. Parameter is the table name.
+    GftQuery            ///< Execute a query. Parameter is an SQL statement; $T will be replaced by the table ID.
 };
 
 /// Instruction: Operation and parameter
 struct GftInstruction {
+    GftInstruction(GftOp op_, const QString &param_): op(op_), param(param_) {}
     GftOp op;
     QString param;
 };

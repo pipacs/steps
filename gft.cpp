@@ -142,6 +142,13 @@ Gft::UploadResult Gft::upload(const QString &archive) {
 
     // Create Gft program
 
+    QList<GftInstruction> program;
+
+    QFileInfo info(archive);
+    QString dbName = info.baseName();
+    program.append(GftInstruction(GftFindTable, dbName));
+    program.append(GftInstruction(GftCreateTableIf, dbName));
+
     QSqlQuery query("select id, date, steps from log", db);
     query.setForwardOnly(true);
     if (!query.exec()) {
@@ -157,7 +164,9 @@ Gft::UploadResult Gft::upload(const QString &archive) {
         QString date = sanitize(query.value(dateIndex).toString());
         int steps = query.value(stepsIndex).toInt();
         QString tags = getTags(db, id);
-        qDebug() << "" << id << date << steps << tags;
+        GftInstruction instruction(GftQuery, QString("INSERT INTO $T (steps, date, tags) VALUES (%1, '%2', '%3')").arg(steps).arg(date).arg(tags));
+        qDebug() << "" << instruction.param;
+        program.append(instruction);
     }
     db.close();
 
