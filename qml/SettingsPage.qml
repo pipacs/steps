@@ -108,6 +108,7 @@ StepsPage {
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
         prefs.sensitivity = counter.sensitivity
+        gft.enabled = enableSharing.checked
     }
 
     function openUrl(url) {
