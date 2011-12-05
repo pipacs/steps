@@ -7,9 +7,11 @@
 #include <QString>
 #include <QByteArray>
 #include <QList>
+#include <QThread>
 
 /// POST URL for SQL queries.
-#define GFT_SQL_URL "https://www.google.com/fusiontables/api/query"
+#define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
+// #define GFT_SQL_URL "https://www.google.com/fusiontables/api/query"
 
 class KQOAuthManager;
 class KQOAuthRequest;
@@ -29,7 +31,7 @@ struct GftInstruction {
 };
 
 /// Program
-class GftProgram: public QObject {
+class GftProgram: public QThread {
     Q_OBJECT
 
 public:
@@ -40,8 +42,12 @@ public:
         Failed
     };
 
-    GftProgram(QObject *parent, const QString &token, const QString &secret, const QList<GftInstruction> &program);
+    GftProgram(QObject *parent = 0);
     ~GftProgram();
+    void setToken(const QString &token);
+    void setSecret(const QString &secret);
+    void setInstructions(const QList<GftInstruction> instructions);
+    void run();
 
 public slots:
     /// Execute one instruction.
@@ -60,7 +66,7 @@ signals:
 public:
     QString token;
     QString secret;
-    QList<GftInstruction> program;
+    QList<GftInstruction> instructions;
     int ic;
     Status status;
     QString tableId;

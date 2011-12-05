@@ -56,12 +56,13 @@ void Gft::link() {
     connect(oauthManager, SIGNAL(openUrl(QString)), this, SIGNAL(openUrl(QString)));
 
     // oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://api.twitter.com/oauth/request_token"));
-    oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://www.google.com/accounts/OAuthGetRequestToken"));
+    // oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://www.google.com/accounts/OAuthGetRequestToken"));
+    oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl("https://accounts.google.com/o/oauth2/auth"));
     oauthRequest->setConsumerKey(GFT_OAUTH_CONSUMER_KEY);
     oauthRequest->setConsumerSecretKey(GFT_OAUTH_CONSUMER_SECRET_KEY);
     KQOAuthParameters parameters;
     parameters.insert("scope", GFT_OAUTH_SCOPE);
-    parameters.insert("oauth_signature_method", "HMAC-SHA");
+    parameters.insert("response_type", "code");
     oauthRequest->setAdditionalParameters(parameters);
     oauthManager->setHandleUserAuthorization(true);
     oauthManager->executeRequest(oauthRequest);
@@ -140,14 +141,14 @@ Gft::UploadResult Gft::upload(const QString &archive) {
         return Gft::UploadFailed;
     }
 
-    // Create Gft program
+    // Create Gft instruction list
 
-    QList<GftInstruction> program;
+    QList<GftInstruction> instructions;
 
     QFileInfo info(archive);
     QString dbName = info.baseName();
-    program.append(GftInstruction(GftFindTable, dbName));
-    program.append(GftInstruction(GftCreateTableIf, dbName));
+    instructions.append(GftInstruction(GftFindTable, dbName));
+    instructions.append(GftInstruction(GftCreateTableIf, dbName));
 
     QSqlQuery query("select id, date, steps from log", db);
     query.setForwardOnly(true);
@@ -166,13 +167,21 @@ Gft::UploadResult Gft::upload(const QString &archive) {
         QString tags = getTags(db, id);
         GftInstruction instruction(GftQuery, QString("INSERT INTO $T (steps, date, tags) VALUES (%1, '%2', '%3')").arg(steps).arg(date).arg(tags));
         qDebug() << "" << instruction.param;
-        program.append(instruction);
+        instructions.append(instruction);
     }
     db.close();
 
-    // FIXME: Execute Gft program
+    // Execute Gft program
+    qDebug() << " Running GFT program";
+    GftProgram program(0);
+    program.setToken(token);
+    program.setSecret(tokenSecret);
+    program.setInstructions(instructions);
+    program.run();
+    program.wait();
+    qDebug() << " GFT program finished";
 
-    return Gft::UploadSucceeded;
+    return Gft::UploadFailed; // FIXME Gft::UploadSucceeded;
 }
 
 QString Gft::getTags(QSqlDatabase db, qlonglong id) {
