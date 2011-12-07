@@ -130,19 +130,8 @@ HEADERS += \
     gftprogram.h \
     gft.h \
     o2.h \
-    o2replyserver.h
+    o2replyserver.h \
+    gftsecret.h
 
 RESOURCES += \
     common.qrc
-
-
-
-
-
-
-
-
-
-
-
-

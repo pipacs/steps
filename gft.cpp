@@ -7,9 +7,8 @@
 
 #include "gftprogram.h"
 #include "gft.h"
+#include "gftsecret.h"
 
-static const char *GFT_OAUTH_CLIENT_ID = "903309545755.apps.googleusercontent.com";
-static const char *GFT_OAUTH_CLIENT_SECRET = "bjFH7kt7nL9jrE4t8L_x7O6W";
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
 static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
