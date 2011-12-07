@@ -50,15 +50,12 @@ StepsPage {
 
     function closeUrl() {
         sipFixer.enabled = false
-        gft.linkingSucceeded.disconnect(closeUrl)
-        gft.linkingFailed.disconnect(closeUrl)
         pageStack.pop()
     }
 
     function openUrl(url) {
         sipFixer.enabled = true
-        gft.linkingSucceeded.connect(closeUrl)
-        gft.linkingFailed.connect(closeUrl)
+        gft.closeBrowser.connect(closeUrl)
         webView.url = url
     }
 }

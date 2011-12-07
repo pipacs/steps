@@ -9,10 +9,12 @@
 #include "gft.h"
 
 static const char *GFT_OAUTH_CLIENT_ID = "903309545755.apps.googleusercontent.com";
-static const char *GFT_OAUTH_CLIENT_SECRET = "FIXME";
+static const char *GFT_OAUTH_CLIENT_SECRET = "bjFH7kt7nL9jrE4t8L_x7O6W";
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
-static const char *GFT_REQUEST_URL = "FIXME";
-static const char *GFT_REFRESH_URL = "FIXME";
+static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
+static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
+static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "FIXME";
+static const char *GFT_OAUTH_REDIRECT_URL = "https://github.com/pipacs/steps/wiki";
 
 static Gft *instance_;
 
@@ -28,7 +30,7 @@ void Gft::close() {
     instance_ = 0;
 }
 
-Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_REQUEST_URL), QUrl(GFT_REFRESH_URL), parent) {
+Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), QUrl(GFT_OAUTH_REDIRECT_URL), parent) {
 }
 
 Gft::~Gft() {
@@ -127,6 +129,8 @@ QString Gft::getTags(QSqlDatabase db, qlonglong id) {
         ret.append(sanitize(value));
         ret.append(";");
     }
+
+    return ret;
 }
 
 QString Gft::sanitize(const QString &s) {

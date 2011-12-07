@@ -111,14 +111,14 @@ StepsPage {
         gft.enabled = enableSharing.checked
     }
 
-    function openUrl(url) {
-        console.log("* SettingsPage.openUrl " + url)
+    function openBrowser(url) {
+        console.log("* SettingsPage.openBrowser " + url)
         spinner.running = false
         main.pageStack.push(loginBrowser)
         loginBrowser.openUrl(url)
     }
 
     Component.onCompleted: {
-        gft.openUrl.connect(openUrl);
+        gft.openBrowser.connect(openBrowser);
     }
 }

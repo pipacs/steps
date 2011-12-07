@@ -18,10 +18,8 @@ O2ReplyServer::~O2ReplyServer() {
 }
 
 void O2ReplyServer::onIncomingConnection() {
-    qDebug() << ">O2ReplyServer::onIncomingConnection";
     socket = nextPendingConnection();
     connect(socket, SIGNAL(readyRead()), this, SLOT(onBytesReady()), Qt::UniqueConnection);
-    qDebug() << "<O2ReplyServer::onIncomingConnection";
 }
 
 void O2ReplyServer::onBytesReady() {
@@ -37,10 +35,11 @@ void O2ReplyServer::onBytesReady() {
     socket->write(reply);
 
     QByteArray data = socket->readAll();
+    qDebug() << " Raw data:" << data;
     QMultiMap<QString, QString> queryParams = parseQueryParams(&data);
-
     socket->disconnectFromHost();
     close();
+    qDebug() << " Parsed data:" << queryParams;
     emit verificationReceived(queryParams);
     qDebug() << "<O2ReplyServer::onBytesReady";
 }
