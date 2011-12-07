@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QUrl>
-#include <QMultiMap>
+#include <QMap>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
@@ -16,7 +16,7 @@ class O2: public QObject {
     Q_PROPERTY(bool linked READ linked NOTIFY linkedChanged)
 
 public:
-    explicit O2(const QString &clientId, const QString &clientSecret, const QString &scope, const QUrl &requestUrl, const QUrl &tokenUrl, const QUrl &refreshTokenUrl, const QUrl &redirectUrl, QObject *parent = 0);
+    explicit O2(const QString &clientId, const QString &clientSecret, const QString &scope, const QUrl &requestUrl, const QUrl &tokenUrl, const QUrl &refreshTokenUrl, QObject *parent = 0);
     virtual ~O2();
     bool linked();
     QString code();
@@ -36,9 +36,12 @@ signals:
     void linkedChanged();
 
 protected slots:
-    void onVerificationReceived(QMultiMap<QString, QString>);
+    void onVerificationReceived(QMap<QString, QString>);
     void onTokenReplyFinished();
     void onTokenReplyError(QNetworkReply::NetworkError error);
+
+protected:
+    QByteArray buildRequestBody(const QMap<QString, QString> &parameters);
 
 protected:
     QString clientId_;
@@ -47,7 +50,7 @@ protected:
     QUrl requestUrl_;
     QUrl tokenUrl_;
     QUrl refreshTokenUrl_;
-    QUrl redirectUrl_;
+    QString redirectUri_;
     QNetworkAccessManager *manager_;
     O2ReplyServer *replyServer_;
     QString code_;

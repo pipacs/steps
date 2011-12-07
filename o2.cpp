@@ -2,7 +2,7 @@
 #include <QPair>
 #include <QDebug>
 #include <QTcpServer>
-#include <QMultiMap>
+#include <QMap>
 #include <QSettings>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -11,10 +11,10 @@
 #include "o2.h"
 #include "o2replyserver.h"
 
-O2::O2(const QString &clientId, const QString &clientSecret, const QString &scope, const QUrl &requestUrl, const QUrl &tokenUrl, const QUrl &refreshTokenUrl, const QUrl &redirectUrl, QObject *parent): QObject(parent), clientId_(clientId), clientSecret_(clientSecret), scope_(scope), requestUrl_(requestUrl), tokenUrl_(tokenUrl), refreshTokenUrl_(refreshTokenUrl), redirectUrl_(redirectUrl) {
+O2::O2(const QString &clientId, const QString &clientSecret, const QString &scope, const QUrl &requestUrl, const QUrl &tokenUrl, const QUrl &refreshTokenUrl, QObject *parent): QObject(parent), clientId_(clientId), clientSecret_(clientSecret), scope_(scope), requestUrl_(requestUrl), tokenUrl_(tokenUrl), refreshTokenUrl_(refreshTokenUrl) {
     manager_ = new QNetworkAccessManager(this);
     replyServer_ = new O2ReplyServer(this);
-    connect(replyServer_, SIGNAL(verificationReceived(QMultiMap<QString,QString>)), this, SLOT(onVerificationReceived(QMultiMap<QString,QString>)));
+    connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
 }
 
 O2::~O2() {
@@ -26,11 +26,14 @@ void O2::link() {
     // Start listening to authentication replies
     replyServer_->listen();
 
+    // Save redirect URI, as we have to reuse it when requesting the access token
+    redirectUri_ = QString("http://localhost:%1").arg(replyServer_->serverPort());
+
     // Assemble intial authentication URL
     QList<QPair<QString, QString> > parameters;
     parameters.append(qMakePair(QString("response_type"), QString("code")));
     parameters.append(qMakePair(QString("client_id"), clientId_));
-    parameters.append(qMakePair(QString("redirect_uri"), QString("http://localhost:%1").arg(replyServer_->serverPort())));
+    parameters.append(qMakePair(QString("redirect_uri"), redirectUri_));
     parameters.append(qMakePair(QString("scope"), scope_));
     parameters.append(qMakePair(QString("state"), QString("openbrowser")));
 
@@ -56,7 +59,7 @@ bool O2::linked() {
     return false;
 }
 
-void O2::onVerificationReceived(const QMultiMap<QString, QString> response) {
+void O2::onVerificationReceived(const QMap<QString, QString> response) {
     qDebug() << ">O2::onVerificationReceived";
     emit closeBrowser();
     if (response.contains("error")) {
@@ -69,48 +72,16 @@ void O2::onVerificationReceived(const QMultiMap<QString, QString> response) {
     // Save access code
     setCode(response.value(QString("code")));
 
-    // Exchange access code for access token and refresh token
+    // Exchange access code for access/refresh tokens
     QNetworkRequest tokenRequest(tokenUrl_);
     tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-
-#if 0
-    QByteArray data;
-    data.append(QUrl::toPercentEncoding("code"));
-    data.append("=");
-    data.append(QUrl::toPercentEncoding(code()));
-    data.append("&");
-
-    data.append(QUrl::toPercentEncoding("client_id"));
-    data.append("=");
-    data.append(QUrl::toPercentEncoding(clientId_));
-    data.append("&");
-
-    data.append(QUrl::toPercentEncoding("client_secret"));
-    data.append("=");
-    data.append(QUrl::toPercentEncoding(clientSecret_));
-    data.append("&");
-
-    data.append(QUrl::toPercentEncoding("redirect_uri"));
-    data.append("=");
-    data.append("urn:ietf:wg:oauth:2.0:oob"); // QUrl::toPercentEncoding("urn:ietf:wg:oauth:2.0:oob")); // redirectUrl_.toString()));
-    data.append("&");
-
-    data.append(QUrl::toPercentEncoding("grant_type"));
-    data.append("=");
-    data.append(QUrl::toPercentEncoding("authorization_code"));
-
-    data = data.toPercentEncoding("&=");
-#else
-    QUrl params;
-    params.addQueryItem("code", code());
-    params.addQueryItem("client_id", clientId_);
-    params.addQueryItem("client_secret", clientSecret_);
-    params.addQueryItem("redirect_uri", "http://localhost");
-    params.addQueryItem("grant_type", "authorization_code");
-    QByteArray data = params.encodedQuery().toPercentEncoding("&=");
-#endif
-
+    QMap<QString, QString> parameters;
+    parameters.insert("code", code());
+    parameters.insert("client_id", clientId_);
+    parameters.insert("client_secret", clientSecret_);
+    parameters.insert("redirect_uri", redirectUri_);
+    parameters.insert("grant_type", "authorization_code");
+    QByteArray data = buildRequestBody(parameters);
     tokenError_ = QNetworkReply::NoError;
     qDebug() << " Token request URL:" << tokenRequest.url();
     qDebug() << " Token request header:";
@@ -141,6 +112,7 @@ void O2::onTokenReplyFinished() {
     if (tokenReply_->error() == QNetworkReply::NoError) {
         QByteArray reply = tokenReply_->readAll();
         qDebug() << "" << reply;
+        // FIXME: Parse reply
         emit linkingSucceeded();
     }
     tokenReply_->deleteLater();
@@ -151,4 +123,19 @@ void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
     qDebug() << ">O2::onTokenReplyError" << error << tokenReply_->errorString();
     emit linkingFailed();
     qDebug() << "<O2::onTokenReplyError";
+}
+
+QByteArray O2::buildRequestBody(const QMap<QString, QString> &parameters) {
+    QByteArray body;
+    bool first = true;
+    foreach (QString key, parameters.keys()) {
+        if (first) {
+            first = false;
+        } else {
+            body.append("&");
+        }
+        QString value = parameters.value(key);
+        body.append(QUrl::toPercentEncoding(key) + QString("=").toUtf8() + QUrl::toPercentEncoding(value));
+    }
+    return body;
 }

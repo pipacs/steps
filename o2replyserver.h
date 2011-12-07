@@ -2,6 +2,7 @@
 #define O2REPLYSERVER_H
 
 #include <QTcpServer>
+#include <QMap>
 
 /// HTTP server to process authentication response.
 class O2ReplyServer: public QTcpServer {
@@ -12,12 +13,12 @@ public:
     ~O2ReplyServer();
 
 signals:
-    void verificationReceived(QMultiMap<QString, QString>);
+    void verificationReceived(QMap<QString, QString>);
 
 public slots:
     void onIncomingConnection();
     void onBytesReady();
-    QMultiMap<QString, QString> parseQueryParams(QByteArray *data);
+    QMap<QString, QString> parseQueryParams(QByteArray *data);
 
 public:
     QTcpSocket *socket;

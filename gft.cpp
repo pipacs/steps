@@ -14,7 +14,6 @@ static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontabl
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
 static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
 static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "FIXME";
-static const char *GFT_OAUTH_REDIRECT_URL = "https://github.com/pipacs/steps/wiki";
 
 static Gft *instance_;
 
@@ -30,7 +29,7 @@ void Gft::close() {
     instance_ = 0;
 }
 
-Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), QUrl(GFT_OAUTH_REDIRECT_URL), parent) {
+Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), parent) {
 }
 
 Gft::~Gft() {

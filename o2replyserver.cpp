@@ -2,7 +2,7 @@
 #include <QTcpSocket>
 #include <QByteArray>
 #include <QString>
-#include <QMultiMap>
+#include <QMap>
 #include <QPair>
 #include <QDebug>
 #include <QStringList>
@@ -36,7 +36,7 @@ void O2ReplyServer::onBytesReady() {
 
     QByteArray data = socket->readAll();
     qDebug() << " Raw data:" << data;
-    QMultiMap<QString, QString> queryParams = parseQueryParams(&data);
+    QMap<QString, QString> queryParams = parseQueryParams(&data);
     socket->disconnectFromHost();
     close();
     qDebug() << " Parsed data:" << queryParams;
@@ -44,7 +44,7 @@ void O2ReplyServer::onBytesReady() {
     qDebug() << "<O2ReplyServer::onBytesReady";
 }
 
-QMultiMap<QString, QString> O2ReplyServer::parseQueryParams(QByteArray *data) {
+QMap<QString, QString> O2ReplyServer::parseQueryParams(QByteArray *data) {
     QString splitGetLine = QString(*data).split("\r\n").first();   // Retrieve the first line with query params.
     splitGetLine.remove("GET ");                                   // Clean the line from GET
     splitGetLine.remove("HTTP/1.1");                               // From HTTP
