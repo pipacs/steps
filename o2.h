@@ -38,7 +38,7 @@ public:
     QUrl requestUrl_;
     QUrl refreshUrl_;
     QNetworkAccessManager *manager_;
-    O2ReplySever *replyServer_;
+    O2ReplyServer *replyServer_;
 };
 
 #endif // O2_H

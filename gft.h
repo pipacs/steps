@@ -6,15 +6,11 @@
 #include <QSettings>
 #include <QSqlDatabase>
 
-#define GFT_OAUTH_CONSUMER_KEY "903309545755.apps.googleusercontent.com"
-
-class KQOAuthManager;
-class KQOAuthRequest;
+#include "o2.h"
 
 /// Google Fusion Tables account connector and uploader.
-class Gft: public QObject {
+class Gft: public O2 {
     Q_OBJECT
-    Q_PROPERTY(bool linked READ linked NOTIFY linkedChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
@@ -34,23 +30,10 @@ public:
     UploadResult upload(const QString &archive);
 
 signals:
-    void linkedChanged();
-    void linkingSucceeded();
-    void linkingFailed(QString error);
-    void openUrl(QString url);
     void enabledChanged();
 
 public slots:
-    Q_INVOKABLE void link();
-    Q_INVOKABLE void unlink();
     void setEnabled(bool v);
-
-protected slots:
-    void onTemporaryTokenReceived(QString temporaryToken, QString temporaryTokenSecret);
-    void onAuthorizationReceived(QString token, QString verifier);
-    void onAccessTokenReceived(QString token, QString tokenSecret);
-    void onAuthorizedRequestDone();
-    void onRequestReady(QByteArray);
 
 protected:
     explicit Gft(QObject *parent = 0);
@@ -63,8 +46,6 @@ protected:
     /// Sanitize string by removing the following characters: quote, double quote, backslash, equal, semicolon.
     QString sanitize(const QString &s);
 
-    KQOAuthManager *oauthManager;
-    KQOAuthRequest *oauthRequest;
     QSettings oauthSettings;
 };
 

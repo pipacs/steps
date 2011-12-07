@@ -13,9 +13,6 @@
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
 // #define GFT_SQL_URL "https://www.google.com/fusiontables/api/query"
 
-class KQOAuthManager;
-class KQOAuthRequest;
-
 /// An operation.
 enum GftOp {
     GftFindTable,       ///< Find table, return ID in GftProgram::tableId. Parameter is the table name.
@@ -71,8 +68,6 @@ public:
     Status status;
     QString tableId;
     QString errorMsg;
-    KQOAuthManager *oauthManager;
-    KQOAuthRequest *oauthRequest;
 };
 
 #endif // GFTPROGRAM_H
