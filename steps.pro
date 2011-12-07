@@ -60,15 +60,10 @@ SOURCES += \
     platform.cpp \
     logger.cpp \
     sipfixer.cpp \
-    kqoauth/kqoauthauthreplyserver.cpp \
-    kqoauth/kqoauthmanager.cpp \
-    kqoauth/kqoauthrequest.cpp \
-    kqoauth/kqoauthrequest_1.cpp \
-    kqoauth/kqoauthrequest_xauth.cpp \
-    kqoauth/kqoauthutils.cpp \
     uploader.cpp \
     gftprogram.cpp \
-    gft.cpp
+    gft.cpp \
+    o2.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -130,23 +125,15 @@ HEADERS += \
     platform.h \
     logger.h \
     sipfixer.h \
-    kqoauth/kqoauthauthreplyserver.h \
-    kqoauth/kqoauthauthreplyserver_p.h \
-    kqoauth/kqoauthglobals.h \
-    kqoauth/kqoauthmanager.h \
-    kqoauth/kqoauthmanager_p.h \
-    kqoauth/kqoauthrequest.h \
-    kqoauth/kqoauthrequest_1.h \
-    kqoauth/kqoauthrequest_p.h \
-    kqoauth/kqoauthrequest_xauth.h \
-    kqoauth/kqoauthrequest_xauth_p.h \
-    kqoauth/kqoauthutils.h \
     uploader.h \
     gftprogram.h \
-    gft.h
+    gft.h \
+    o2.h
 
 RESOURCES += \
     common.qrc
+
+
 
 
 
