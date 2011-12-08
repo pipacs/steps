@@ -95,7 +95,6 @@ Gft::UploadResult Gft::upload(const QString &archive) {
     // Execute Gft program
     qDebug() << " Running GFT program";
     GftProgram program(0);
-    program.setToken(token());
     program.setInstructions(instructions);
     program.run();
     program.wait();

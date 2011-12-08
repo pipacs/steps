@@ -3,7 +3,6 @@
 #ifndef GFTPROGRAM_H
 #define GFTPROGRAM_H
 
-#include <QObject>
 #include <QString>
 #include <QByteArray>
 #include <QList>
@@ -12,6 +11,9 @@
 /// POST URL for SQL queries.
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
 // #define GFT_SQL_URL "https://www.google.com/fusiontables/api/query"
+
+class QNetworkAccessManager;
+class QNetworkReply;
 
 /// An operation.
 enum GftOp {
@@ -39,9 +41,14 @@ public:
         Failed
     };
 
+    enum Error {
+        NoError,
+        NetworkError,
+        SqlError
+    };
+
     GftProgram(QObject *parent = 0);
     ~GftProgram();
-    void setToken(const QString &token);
     void setInstructions(const QList<GftInstruction> instructions);
     void run();
 
@@ -49,24 +56,22 @@ public slots:
     /// Execute one instruction.
     void step();
 
-    /// Request ready callback.
-    void stepReady(QByteArray response);
-
-    /// Request completed callback.
+    /// Request finished callback.
     void stepDone();
 
 signals:
     /// Emitted when running the program is completed.
-    void completed(Status status);
+    void completed(Status status, Error error, QString errorMsg);
 
 public:
-    QString token;
-    QString secret;
     QList<GftInstruction> instructions;
     int ic;
     Status status;
     QString tableId;
+    Error error;
     QString errorMsg;
+    QNetworkAccessManager *manager;
+    QNetworkReply *reply;
 };
 
 #endif // GFTPROGRAM_H

@@ -1,20 +1,18 @@
 #include <QDebug>
+#include <QNetworkAccessManager>
 
 #include "gftprogram.h"
 #include "gft.h"
 
 enum GftMethod {GftGet, GftPost};
 
-GftProgram::GftProgram(QObject *parent): QThread(parent), ic(0), status(Idle) {
+GftProgram::GftProgram(QObject *parent): QThread(parent), ic(0), status(Idle), error(NoError) {
     qDebug() << "GftProgram::GftProgram";
+    manager = new QNetworkAccessManager(this);
 }
 
 GftProgram::~GftProgram() {
     qDebug() << "GftProgram::~GftProgram";
-}
-
-void GftProgram::setToken(const QString &token_) {
-    token = token_;
 }
 
 void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
@@ -32,6 +30,7 @@ void GftProgram::step() {
 
     if (status == Completed || status == Failed) {
         qCritical() << "GftProgram::step: Attempting to run a Completed or Failed program";
+        emit completed(status, error, errorMsg);
         quit();
         return;
     }
@@ -40,14 +39,24 @@ void GftProgram::step() {
         status = Running;
     }
 
+    if (error != NoError) {
+        qDebug() << " Error" << error << errorMsg;
+        status = Failed;
+        emit completed(status, error, errorMsg);
+        quit();
+        return;
+    }
+
     if (ic >= instructions.length()) {
         qDebug() << " No more instructions";
-        status = Completed;
+        status = (error == NoError)? Completed: Failed;
+        emit completed(status, error, errorMsg);
         quit();
         return;
     }
 
     // Build SQL statement based on current instruction
+
     QString sql;
     GftMethod method;
     switch (instructions[ic].op) {
@@ -59,7 +68,7 @@ void GftProgram::step() {
     case GftCreateTableIf:
         if (!tableId.isNull()) {
             qDebug() << " GftCreateTableIf --> Table exists, skipping";
-            stepReady("-");
+            stepDone();
             return;
         }
         sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: STRING, tags: STRING)").arg(instructions[ic].param);
@@ -71,6 +80,9 @@ void GftProgram::step() {
         if (tableId.isNull()) {
             qCritical() << "GftProgram::step: No table ID";
             status = Failed;
+            error = SqlError;
+            errorMsg = "No table ID";
+            emit completed(status, error, errorMsg);
             quit();
             return;
         }
@@ -81,18 +93,41 @@ void GftProgram::step() {
 
     qDebug() << "" << ((method == GftGet)? "GET": "POST") << sql;
 
-    // FIXME: Execute request
-}
+    // Execute request
 
-void GftProgram::stepReady(QByteArray response) {
-    qDebug() << "GftProgram::stepReady" << response;
-
-    // FIXME: Interpret response, set status and errorMsg
+    Gft *gft = Gft::instance();
+    if (!gft->linked()) {
+        status = Failed;
+        error = NetworkError;
+        errorMsg = "Not logged in";
+        emit completed(status, error, errorMsg);
+        quit();
+        return;
+    }
+    QUrl url(GFT_SQL_URL);
+    QByteArray data;
+    url.addQueryItem("access_token", gft->token());
+    if (method == GftGet) {
+        url.addQueryItem("sql", sql);
+    } else {
+        data.append("sql=");
+        data.append(QUrl::toPercentEncoding(sql.toUtf8()));
+    }
+    QNetworkRequest request(url);
+    reply = (method == GftGet)? manager->get(request): manager->post(request, data);
+    connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }
 
 void GftProgram::stepDone() {
     qDebug() << "GftProgram::stepDone";
-    // FIXME: Delete request
+
+    QByteArray data = reply->readAll();
+    qDebug() << "" << data;
+
+    // FIXME:
+    error = SqlError;
+
+    reply->deleteLater();
     ic++;
     step();
 }
