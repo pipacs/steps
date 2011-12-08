@@ -10,5 +10,6 @@
         <file alias="StepsYesNoDialog.qml">qml/meego/StepsYesNoDialog.qml</file>
         <file alias="StepsTextField.qml">qml/meego/StepsTextField.qml</file>
         <file alias="StepsSpinner.qml">qml/meego/StepsSpinner.qml</file>
+        <file alias="StepsBanner.qml">qml/meego/StepsBanner.qml</file>
     </qresource>
 </RCC>

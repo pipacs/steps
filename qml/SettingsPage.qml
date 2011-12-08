@@ -97,6 +97,11 @@ StepsPage {
         id: loginBrowser
     }
 
+    StepsBanner {
+        id: linkInfo
+        text: gft.linked? "Logged in to Google Docs": "Logged out from Google Docs"
+    }
+
     onBack: {
         console.log("* SettingsPage.onBack")
         main.pageStack.pop()
@@ -120,5 +125,6 @@ StepsPage {
 
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
+        gft.linkedChanged.connect(linkInfo.show)
     }
 }
