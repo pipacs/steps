@@ -16,7 +16,6 @@ class Gft: public O2 {
 public:
     static Gft *instance();
     static void close();
-    bool linked();
     bool enabled();
 
     /// Result of an upload.
@@ -45,8 +44,6 @@ protected:
 
     /// Sanitize string by removing the following characters: quote, double quote, backslash, equal, semicolon.
     QString sanitize(const QString &s);
-
-    QSettings oauthSettings;
 };
 
 #endif // GFT_H

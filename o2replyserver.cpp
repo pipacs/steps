@@ -4,7 +4,6 @@
 #include <QString>
 #include <QMap>
 #include <QPair>
-#include <QDebug>
 #include <QStringList>
 #include <QUrl>
 
@@ -23,25 +22,20 @@ void O2ReplyServer::onIncomingConnection() {
 }
 
 void O2ReplyServer::onBytesReady() {
-    qDebug() << ">O2ReplyServer::onBytesReady";
     QByteArray reply;
     QByteArray content;
     content.append("<HTML></HTML>");
     reply.append("HTTP/1.0 200 OK \r\n");
     reply.append("Content-Type: text/html; charset=\"utf-8\"\r\n");
-    reply.append(QString("Content-Length: %1\r\n").arg(content.size()));
-    reply.append("\r\n");
+    reply.append(QString("Content-Length: %1\r\n\r\n").arg(content.size()));
     reply.append(content);
     socket->write(reply);
 
     QByteArray data = socket->readAll();
-    qDebug() << " Raw data:" << data;
     QMap<QString, QString> queryParams = parseQueryParams(&data);
     socket->disconnectFromHost();
     close();
-    qDebug() << " Parsed data:" << queryParams;
     emit verificationReceived(queryParams);
-    qDebug() << "<O2ReplyServer::onBytesReady";
 }
 
 QMap<QString, QString> O2ReplyServer::parseQueryParams(QByteArray *data) {

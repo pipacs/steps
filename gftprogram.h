@@ -42,7 +42,6 @@ public:
     GftProgram(QObject *parent = 0);
     ~GftProgram();
     void setToken(const QString &token);
-    void setSecret(const QString &secret);
     void setInstructions(const QList<GftInstruction> instructions);
     void run();
 

@@ -23,8 +23,6 @@ O2::~O2() {
 }
 
 void O2::link() {
-    qDebug() << ">O2::link";
-
     // Start listening to authentication replies
     replyServer_->listen();
 
@@ -37,15 +35,11 @@ void O2::link() {
     parameters.append(qMakePair(QString("client_id"), clientId_));
     parameters.append(qMakePair(QString("redirect_uri"), redirectUri_));
     parameters.append(qMakePair(QString("scope"), scope_));
-    parameters.append(qMakePair(QString("state"), QString("openbrowser")));
 
     // Show authentication URL with a web browser
     QUrl url(requestUrl_);
     url.setQueryItems(parameters);
-    qDebug() << " Open" << url;
     emit openBrowser(url);
-
-    qDebug() << "<O2::link";
 }
 
 void O2::unlink() {
@@ -63,12 +57,11 @@ bool O2::linked() {
 }
 
 void O2::onVerificationReceived(const QMap<QString, QString> response) {
-    qDebug() << ">O2::onVerificationReceived";
+    qDebug() << "O2::onVerificationReceived";
     emit closeBrowser();
     if (response.contains("error")) {
-        qDebug() << " Verification failed";
+        qDebug() << "O2::onVerificationReceived: Verification failed";
         emit linkingFailed();
-        qDebug() << "<O2::onVerificationReceived";
         return;
     }
 
@@ -89,8 +82,6 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
     tokenReply_ = manager_->post(tokenRequest, data);
     connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
     connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
-
-    qDebug() << "<O2::onVerificationReceived";
 }
 
 QString O2::code() {
@@ -104,7 +95,6 @@ void O2::setCode(const QString &c) {
 }
 
 void O2::onTokenReplyFinished() {
-    qDebug() << ">O2::onTokenReplyFinished";
     if (tokenReply_->error() == QNetworkReply::NoError) {
         QByteArray reply = tokenReply_->readAll();
         QScriptValue value;
@@ -118,13 +108,11 @@ void O2::onTokenReplyFinished() {
         emit linkedChanged();
     }
     tokenReply_->deleteLater();
-    qDebug() << "<O2::onTokenReplyFinished";
 }
 
 void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
-    qDebug() << ">O2::onTokenReplyError" << error << tokenReply_->errorString();
+    qDebug() << "O2::onTokenReplyError" << error << tokenReply_->errorString();
     emit linkingFailed();
-    qDebug() << "<O2::onTokenReplyError";
 }
 
 QByteArray O2::buildRequestBody(const QMap<QString, QString> &parameters) {

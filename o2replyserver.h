@@ -3,6 +3,8 @@
 
 #include <QTcpServer>
 #include <QMap>
+#include <QByteArray>
+#include <QString>
 
 /// HTTP server to process authentication response.
 class O2ReplyServer: public QTcpServer {

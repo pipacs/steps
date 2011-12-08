@@ -36,11 +36,6 @@ StepsPage {
             preferredWidth: loginBrowser.width
             preferredHeight: loginBrowser.height
             contentsScale: 1
-
-            onLoadFinished: {
-                // Disable links
-                // webView.evaluateJavaScript("for (var i = 0; i < document.links.length; i++) {l = document.links[i]; l.disabled = true; l.onclick = new Function('return false'); l.style.textDecoration = 'none'}")
-            }
         }
     }
 
@@ -49,11 +44,14 @@ StepsPage {
     }
 
     function closeUrl() {
+        console.log("* LoginBrowser.closeUrl")
+        gft.closeBrowser.disconnect(closeUrl)
         sipFixer.enabled = false
         pageStack.pop()
     }
 
     function openUrl(url) {
+        console.log("* LoginBrowser.openUrl")
         sipFixer.enabled = true
         gft.closeBrowser.connect(closeUrl)
         webView.url = url

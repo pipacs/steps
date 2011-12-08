@@ -6,19 +6,15 @@
 enum GftMethod {GftGet, GftPost};
 
 GftProgram::GftProgram(QObject *parent): QThread(parent), ic(0), status(Idle) {
-    qDebug() << "-GftProgram::GftProgram";
+    qDebug() << "GftProgram::GftProgram";
 }
 
 GftProgram::~GftProgram() {
-    qDebug() << "-GftProgram::~GftProgram";
+    qDebug() << "GftProgram::~GftProgram";
 }
 
 void GftProgram::setToken(const QString &token_) {
     token = token_;
-}
-
-void GftProgram::setSecret(const QString &secret_) {
-    secret = secret_;
 }
 
 void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
@@ -26,13 +22,13 @@ void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
 }
 
 void GftProgram::run() {
-    qDebug() << "-GftProgram::run";
+    qDebug() << "GftProgram::run";
     step();
     exec();
 }
 
 void GftProgram::step() {
-    qDebug() << "-GftProgram::step";
+    qDebug() << "GftProgram::step";
 
     if (status == Completed || status == Failed) {
         qCritical() << "GftProgram::step: Attempting to run a Completed or Failed program";
@@ -89,13 +85,13 @@ void GftProgram::step() {
 }
 
 void GftProgram::stepReady(QByteArray response) {
-    qDebug() << "-GftProgram::stepReady" << response;
+    qDebug() << "GftProgram::stepReady" << response;
 
     // FIXME: Interpret response, set status and errorMsg
 }
 
 void GftProgram::stepDone() {
-    qDebug() << "-GftProgram::stepDone";
+    qDebug() << "GftProgram::stepDone";
     // FIXME: Delete request
     ic++;
     step();

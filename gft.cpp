@@ -35,11 +35,11 @@ Gft::~Gft() {
 }
 
 bool Gft::enabled() {
-    return oauthSettings.value("gd_enabled", false).toBool();
+    return QSettings().value("gft.enabled", false).toBool();
 }
 
 void Gft::setEnabled(bool v) {
-    oauthSettings.setValue("gd_enabled", v);
+    QSettings().setValue("gft.enabled", v);
     emit enabledChanged();
 }
 
@@ -50,12 +50,9 @@ Gft::UploadResult Gft::upload(const QString &archive) {
         qDebug() << " Not enabled";
         return Gft::UploadSucceeded;
     }
-
-    QString token = oauthSettings.value("gd_oauth_token").toString();
-    QString tokenSecret = oauthSettings.value("gd_oauth_token_secret").toString();
-    if (!token.length() || !tokenSecret.length()) {
+    if (!linked()) {
         qDebug() << " Not linked";
-        return Gft::UploadCompleted;
+        return Gft::UploadFailed;
     }
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -77,7 +74,7 @@ Gft::UploadResult Gft::upload(const QString &archive) {
     QSqlQuery query("select id, date, steps from log", db);
     query.setForwardOnly(true);
     if (!query.exec()) {
-        qDebug() << "Gft::upload: Could not query database:" << query.lastError().text();
+        qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
         return Gft::UploadFailed;
     }
     QSqlRecord record = query.record();
@@ -98,8 +95,7 @@ Gft::UploadResult Gft::upload(const QString &archive) {
     // Execute Gft program
     qDebug() << " Running GFT program";
     GftProgram program(0);
-    program.setToken(token);
-    program.setSecret(tokenSecret);
+    program.setToken(token());
     program.setInstructions(instructions);
     program.run();
     program.wait();
@@ -113,7 +109,7 @@ QString Gft::getTags(QSqlDatabase db, qlonglong id) {
     QSqlQuery query("select name, value from tags where logId = ?", db);
     query.bindValue(0, id);
     if (!query.exec()) {
-        qDebug() << "Gft::upload: Could not query database:" << query.lastError().text();
+        qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
         return ret;
     }
     QSqlRecord record = query.record();
