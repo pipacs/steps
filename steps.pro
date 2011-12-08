@@ -6,6 +6,7 @@ MOBILITY += sensors
 MOBILITY += multimedia
 QT += sql
 QT += network
+QT += script
 
 # Add dependency to Symbian components
 # CONFIG += qt-components

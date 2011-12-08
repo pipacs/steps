@@ -7,6 +7,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
+#include <QScriptEngine>
+#include <QDateTime>
 
 #include "o2.h"
 #include "o2replyserver.h"
@@ -47,7 +49,9 @@ void O2::link() {
 }
 
 void O2::unlink() {
-    // FIXME
+    setToken(QString());
+    setExpires(0);
+    emit linkedChanged();
 }
 
 void O2::refresh() {
@@ -55,8 +59,7 @@ void O2::refresh() {
 }
 
 bool O2::linked() {
-    // FIXME
-    return false;
+    return token().length() && (expires() > QDateTime::currentMSecsSinceEpoch() / 1000);
 }
 
 void O2::onVerificationReceived(const QMap<QString, QString> response) {
@@ -83,13 +86,6 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
     parameters.insert("grant_type", "authorization_code");
     QByteArray data = buildRequestBody(parameters);
     tokenError_ = QNetworkReply::NoError;
-    qDebug() << " Token request URL:" << tokenRequest.url();
-    qDebug() << " Token request header:";
-    foreach (QByteArray header, tokenRequest.rawHeaderList()) {
-        qDebug() << " " << header << tokenRequest.rawHeader(header);
-    }
-    qDebug() << " Token request parameters:" << data;
-
     tokenReply_ = manager_->post(tokenRequest, data);
     connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
     connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
@@ -111,9 +107,15 @@ void O2::onTokenReplyFinished() {
     qDebug() << ">O2::onTokenReplyFinished";
     if (tokenReply_->error() == QNetworkReply::NoError) {
         QByteArray reply = tokenReply_->readAll();
-        qDebug() << "" << reply;
-        // FIXME: Parse reply
+        QScriptValue value;
+        QScriptEngine engine;
+        value = engine.evaluate("(" + QString(reply) + ")");
+        setToken(value.property("access_token").toString());
+        setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
+        setRefreshToken(value.property("refresh_token").toString());
         emit linkingSucceeded();
+        emit tokenChanged();
+        emit linkedChanged();
     }
     tokenReply_->deleteLater();
     qDebug() << "<O2::onTokenReplyFinished";
@@ -138,4 +140,34 @@ QByteArray O2::buildRequestBody(const QMap<QString, QString> &parameters) {
         body.append(QUrl::toPercentEncoding(key) + QString("=").toUtf8() + QUrl::toPercentEncoding(value));
     }
     return body;
+}
+
+QString O2::token() {
+    QString key = QString("token.%1").arg(clientId_);
+    return QSettings().value(key).toString();
+}
+
+void O2::setToken(const QString &v) {
+    QString key = QString("token.%1").arg(clientId_);
+    QSettings().setValue(key, v);
+}
+
+int O2::expires() {
+    QString key = QString("expires.%1").arg(clientId_);
+    return QSettings().value(key).toInt();
+}
+
+void O2::setExpires(int v) {
+    QString key = QString("expires.%1").arg(clientId_);
+    QSettings().setValue(key, v);
+}
+
+QString O2::refreshToken() {
+    QString key = QString("refreshtoken.%1").arg(clientId_);
+    return QSettings().value(key).toString();
+}
+
+void O2::setRefreshToken(const QString &v) {
+    QString key = QString("refreshtoken.%1").arg(clientId_);
+    QSettings().setValue(key, v);
 }
