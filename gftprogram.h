@@ -59,6 +59,9 @@ public slots:
     /// Request finished callback.
     void stepDone();
 
+    /// Quit.
+    void quit(Status status, Error error, const QString &errorMsg);
+
 signals:
     /// Emitted when running the program is completed.
     void completed(Status status, Error error, QString errorMsg);
@@ -68,6 +71,7 @@ public:
     int ic;
     Status status;
     QString tableId;
+    QString lastRowId;
     Error error;
     QString errorMsg;
     QNetworkAccessManager *manager;

@@ -1,5 +1,8 @@
+#include <assert.h>
 #include <QDebug>
 #include <QNetworkAccessManager>
+#include <QStringList>
+#include <QTimer>
 
 #include "gftprogram.h"
 #include "gft.h"
@@ -21,7 +24,7 @@ void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
 
 void GftProgram::run() {
     qDebug() << "GftProgram::run";
-    step();
+    QTimer::singleShot(0, this, SLOT(step()));
     exec();
 }
 
@@ -29,29 +32,23 @@ void GftProgram::step() {
     qDebug() << "GftProgram::step";
 
     if (status == Completed || status == Failed) {
-        qCritical() << "GftProgram::step: Attempting to run a Completed or Failed program";
-        emit completed(status, error, errorMsg);
-        quit();
+        quit(status, error, "Attempting to run a Completed or Failed program");
         return;
     }
 
     if (status == Idle) {
+        // End program if there was an error during execution
         status = Running;
     }
 
     if (error != NoError) {
-        qDebug() << " Error" << error << errorMsg;
-        status = Failed;
-        emit completed(status, error, errorMsg);
-        quit();
+        quit(Failed, error, errorMsg);
         return;
     }
 
     if (ic >= instructions.length()) {
-        qDebug() << " No more instructions";
-        status = (error == NoError)? Completed: Failed;
-        emit completed(status, error, errorMsg);
-        quit();
+        // No more instructions: End program
+        quit((error == NoError)? Completed: Failed, error, errorMsg);
         return;
     }
 
@@ -59,6 +56,7 @@ void GftProgram::step() {
 
     QString sql;
     GftMethod method;
+
     switch (instructions[ic].op) {
     case GftFindTable:
         sql = QString("SHOW TABLES");
@@ -67,8 +65,9 @@ void GftProgram::step() {
 
     case GftCreateTableIf:
         if (!tableId.isNull()) {
-            qDebug() << " GftCreateTableIf --> Table exists, skipping";
-            stepDone();
+            // Table exists --> No need to create table
+            ic++;
+            QTimer::singleShot(0, this, SLOT(step()));
             return;
         }
         sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: STRING, tags: STRING)").arg(instructions[ic].param);
@@ -78,12 +77,7 @@ void GftProgram::step() {
     default:
         // At this point, we should have a table ID. If there isn't, fail.
         if (tableId.isNull()) {
-            qCritical() << "GftProgram::step: No table ID";
-            status = Failed;
-            error = SqlError;
-            errorMsg = "No table ID";
-            emit completed(status, error, errorMsg);
-            quit();
+            quit(Failed, SqlError, "No table ID");
             return;
         }
         sql = instructions[ic].param;
@@ -97,11 +91,7 @@ void GftProgram::step() {
 
     Gft *gft = Gft::instance();
     if (!gft->linked()) {
-        status = Failed;
-        error = NetworkError;
-        errorMsg = "Not logged in";
-        emit completed(status, error, errorMsg);
-        quit();
+        quit(Failed, NetworkError, "Not logged in");
         return;
     }
     QUrl url(GFT_SQL_URL);
@@ -121,13 +111,55 @@ void GftProgram::step() {
 void GftProgram::stepDone() {
     qDebug() << "GftProgram::stepDone";
 
-    QByteArray data = reply->readAll();
-    qDebug() << "" << data;
+    if (reply->error() != QNetworkReply::NoError) {
+        error = NetworkError;
+        errorMsg = QString("Network error %1: %2").arg(reply->error()).arg(reply->errorString());
+    } else {
+        QByteArray data = reply->readAll();
+        QStringList lines = QString(data).split("\n");
+        qDebug() << "" << lines;
 
-    // FIXME:
-    error = SqlError;
+        switch (instructions[ic].op) {
+        case GftFindTable:
+            foreach (QString line, lines) {
+                int commaIndex = line.indexOf(',');
+                if (commaIndex >= 0) {
+                    QString id = line.left(commaIndex);
+                    QString name = line.mid(commaIndex + 1);
+                    if (name == instructions[ic].param) {
+                        qDebug() << " Found table" << name << ": id" << id;
+                        tableId = id;
+                        break;
+                    }
+                }
+            }
+            break;
+
+        case GftCreateTableIf:
+            if ((lines.length() >= 2) && (lines[0] == "tableid")) {
+                tableId = lines[1];
+            } else {
+                errorMsg = "Could not create table";
+                error = SqlError;
+            }
+            break;
+
+        default:
+            if ((lines.length() >= 2) && (lines[0] == "rowid")) {
+                lastRowId = lines[1];
+            }
+        }
+    }
 
     reply->deleteLater();
     ic++;
     step();
+}
+
+void GftProgram::quit(Status status_, Error error_, const QString &errorMsg_) {
+    status = status_;
+    error = error_;
+    errorMsg = errorMsg_;
+    emit completed(status, error, errorMsg);
+    QThread::quit();
 }
