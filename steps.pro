@@ -64,8 +64,8 @@ SOURCES += \
     uploader.cpp \
     gftprogram.cpp \
     gft.cpp \
-    o2.cpp \
-    o2replyserver.cpp
+    o2/o2.cpp \
+    o2/o2replyserver.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -131,8 +131,8 @@ HEADERS += \
     uploader.h \
     gftprogram.h \
     gft.h \
-    o2.h \
-    o2replyserver.h \
+    o2/o2.h \
+    o2/o2replyserver.h \
     gftsecret.h
 
 RESOURCES += \
