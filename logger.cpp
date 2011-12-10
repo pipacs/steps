@@ -97,7 +97,7 @@ bool LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
             qDebug() << "" << key << ":" << value;
-            QSqlQuery tagQuery("insert into tags (name, value, logid) values (?, ?, ?)");
+            QSqlQuery tagQuery("insert into tags (name, value, logid) values (?, ?, ?)", db);
             tagQuery.bindValue(0, key);
             tagQuery.bindValue(1, value);
             tagQuery.bindValue(2, id);
@@ -182,7 +182,7 @@ bool LoggerWorker::create(int steps) {
         qCritical() << "LoggerWorker::create: Could not open database";
         return false;
     }
-    QSqlQuery query;
+    QSqlQuery query(db);
     if (!query.exec("create table log (id integer primary key, date varchar, steps integer)")) {
         qCritical() << "LoggerWorker::create: Failed to create log table:" << query.lastError().text();
         return false;

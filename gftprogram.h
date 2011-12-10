@@ -22,11 +22,12 @@ enum GftOp {
     GftQuery            ///< Execute a query. Parameter is an SQL statement; $T will be replaced by the table ID.
 };
 
-/// Instruction: Operation and parameter
+/// Instruction.
 struct GftInstruction {
-    GftInstruction(GftOp op_, const QString &param_): op(op_), param(param_) {}
-    GftOp op;
-    QString param;
+    GftInstruction(GftOp op_, const QString &param_, qlonglong id_ = -1): op(op_), param(param_), id(id_) {}
+    GftOp op;           ///< Operation.
+    QString param;      ///< Table name or SQL statement.
+    qlonglong id;       ///< Local record ID.
 };
 
 /// Program
@@ -41,12 +42,6 @@ public:
         Failed
     };
 
-    enum Error {
-        NoError,
-        NetworkError,
-        SqlError
-    };
-
     GftProgram(QObject *parent = 0);
     ~GftProgram();
     void setInstructions(const QList<GftInstruction> instructions);
@@ -56,24 +51,19 @@ public slots:
     /// Execute one instruction.
     void step();
 
-    /// Request finished callback.
+    /// Process finished request.
     void stepDone();
 
-    /// Quit.
-    void quit(Status status, Error error, const QString &errorMsg);
-
 signals:
-    /// Emitted when running the program is completed.
-    void completed(Status status, Error error, QString errorMsg);
+    /// Emitted when a step is completed.
+    /// @param  id      Record ID corresponding to the step.
+    void stepCompleted(qlonglong id);
 
 public:
     QList<GftInstruction> instructions;
     int ic;
     Status status;
     QString tableId;
-    QString lastRowId;
-    Error error;
-    QString errorMsg;
     QNetworkAccessManager *manager;
     QNetworkReply *reply;
 };

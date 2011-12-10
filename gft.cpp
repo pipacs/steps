@@ -43,18 +43,11 @@ void Gft::setEnabled(bool v) {
     emit enabledChanged();
 }
 
-Gft::UploadResult Gft::upload(const QString &archive) {
-    qDebug() << "Gft::upload" << archive;
-    if (!enabled()) {
-        // FIXME: This should be checked row by row
-        qDebug() << " Not enabled";
-        return Gft::UploadSucceeded;
-    }
-    if (!linked()) {
-        qDebug() << " Not linked";
-        return Gft::UploadFailed;
-    }
+Gft::UploadResult Gft::upload(const QString &archive_) {
+    qDebug() << "Gft::upload" << archive_;
 
+    archive = archive_;
+    uploadedRecords.clear();
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(QDir::toNativeSeparators(archive));
     if (!db.open()) {
@@ -94,13 +87,15 @@ Gft::UploadResult Gft::upload(const QString &archive) {
 
     // Execute Gft program
     qDebug() << " Running GFT program";
-    GftProgram program(0);
-    program.setInstructions(instructions);
-    program.run();
-    program.wait();
+    GftProgram *program = new GftProgram();
+    program->setInstructions(instructions);
+    connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onRecordUploaded(qlonglong)));
+    program->run();
+    program->wait();
+    delete program;
     qDebug() << " GFT program finished";
 
-    return Gft::UploadFailed; // FIXME Gft::UploadSucceeded;
+    return completeUpload();
 }
 
 QString Gft::getTags(QSqlDatabase db, qlonglong id) {
@@ -134,4 +129,38 @@ QString Gft::sanitize(const QString &s) {
     ret.remove('=');
     ret.remove('\\');
     return ret;
+}
+
+void Gft::onRecordUploaded(qlonglong recordId) {
+    qDebug() << "Gft::onRecordUploaded" << recordId;
+    uploadedRecords.append(recordId);
+}
+
+Gft::UploadResult Gft::completeUpload() {
+    qDebug() << "Gft::completeUpload";
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(QDir::toNativeSeparators(archive));
+    if (!db.open()) {
+        qCritical() << "Gft::completeUpload: Could not open database";
+        return Gft::UploadFailed;
+    }
+
+    foreach (qlonglong id, uploadedRecords) {
+        QSqlQuery query("delete from log where id = %1", db);
+        query.bindValue(0, id);
+        if (!query.exec()) {
+            return Gft::UploadFailed;
+        }
+    }
+
+    QSqlQuery query("select count(*) from log", db);
+    if (!query.exec()) {
+        qCritical() << "Gft::completeUpload: Query failed";
+        return Gft::UploadFailed;
+    }
+    qlonglong total = query.value(0).toLongLong();
+    db.close();
+    qDebug() << "" << total << "records left";
+    return (total > 0)? Gft::UploadSucceeded: Gft::UploadCompleted;
 }
