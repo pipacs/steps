@@ -9,15 +9,8 @@
 
 enum GftMethod {GftGet, GftPost};
 
-GftProgram::GftProgram(QObject *parent): QThread(parent), ic(0), status(Idle) {
+GftProgram::GftProgram(const QList<GftInstruction> instructions_): QThread(0), instructions(instructions_), ic(0), status(Idle) {
     manager = new QNetworkAccessManager(this);
-}
-
-GftProgram::~GftProgram() {
-}
-
-void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
-    instructions = instructions_;
 }
 
 void GftProgram::run() {
@@ -26,7 +19,9 @@ void GftProgram::run() {
 }
 
 void GftProgram::step() {
+    qDebug() << "GftProgram::step";
     if (status == Completed || status == Failed) {
+        qDebug() << " Completed or failed";
         quit();
         return;
     }
@@ -36,8 +31,13 @@ void GftProgram::step() {
     }
 
     Gft *gft = Gft::instance();
-    if (!gft->enabled() || !gft->linked()) {
-        // Upload disabled or user not logged in
+    if (!gft->enabled()) {
+        qDebug() << " Upload disabled";
+        quit();
+        return;
+    }
+    if (!gft->linked()) {
+        qDebug() << " Not logged in";
         quit();
         return;
     }
@@ -87,6 +87,7 @@ void GftProgram::step() {
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
+    qDebug() << " Execute request" << sql;
     reply = (method == GftGet)? manager->get(request): manager->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }

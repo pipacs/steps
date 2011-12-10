@@ -91,6 +91,13 @@ QNetworkAccessManager *NetworkAccessManagerFactory::create(QObject *parent) {
 }
 
 int main(int argc, char *argv[]) {
+    // Create application
+    QApplication app(argc, argv);
+    app.setApplicationName("Steps");
+    app.setOrganizationDomain("pipacs.com");
+    app.setOrganizationName("pipacs.com");
+    app.setApplicationVersion(Platform::instance()->version());
+
     // Create singletons
     Preferences *prefs = Preferences::instance();
     Platform *platform = Platform::instance();
@@ -100,13 +107,6 @@ int main(int argc, char *argv[]) {
     NetworkAccessManagerFactory *namFactory = new NetworkAccessManagerFactory;
     Uploader *uploader = Uploader::instance();
     uploader->upload();
-
-    // Create application
-    QApplication app(argc, argv);
-    app.setApplicationName("Steps");
-    app.setApplicationVersion(platform->version());
-    app.setOrganizationDomain("pipacs.com");
-    app.setOrganizationName("pipacs.com");
 
     // Set up and show QML viewer
     QmlApplicationViewer *viewer = new QmlApplicationViewer;

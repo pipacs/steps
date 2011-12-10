@@ -70,7 +70,6 @@ bool O2::linked() {
 }
 
 void O2::onVerificationReceived(const QMap<QString, QString> response) {
-    qDebug() << "O2::onVerificationReceived";
     emit closeBrowser();
     if (response.contains("error")) {
         qDebug() << "O2::onVerificationReceived: Verification failed";

@@ -31,9 +31,6 @@ void Gft::close() {
 Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), parent) {
 }
 
-Gft::~Gft() {
-}
-
 bool Gft::enabled() {
     return QSettings().value("gft.enabled", false).toBool();
 }
@@ -87,8 +84,7 @@ Gft::UploadResult Gft::upload(const QString &archive_) {
 
     // Execute Gft program
     qDebug() << " Running GFT program";
-    GftProgram *program = new GftProgram();
-    program->setInstructions(instructions);
+    GftProgram *program = new GftProgram(instructions);
     connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onRecordUploaded(qlonglong)));
     program->run();
     program->wait();
@@ -149,18 +145,14 @@ Gft::UploadResult Gft::completeUpload() {
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query("delete from log where id = %1", db);
         query.bindValue(0, id);
-        if (!query.exec()) {
-            return Gft::UploadFailed;
-        }
+        query.exec();
     }
 
+    qlonglong total = -1;
     QSqlQuery query("select count(*) from log", db);
-    if (!query.exec()) {
-        qCritical() << "Gft::completeUpload: Query failed";
-        return Gft::UploadFailed;
-    }
-    qlonglong total = query.value(0).toLongLong();
+    query.exec();
+    total = query.value(0).toLongLong();
     db.close();
     qDebug() << "" << total << "records left";
-    return (total > 0)? Gft::UploadSucceeded: Gft::UploadCompleted;
+    return (total == 0)? Gft::UploadSucceeded: Gft::UploadCompleted;
 }

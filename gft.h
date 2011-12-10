@@ -14,10 +14,6 @@ class Gft: public O2 {
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
-    static Gft *instance();
-    static void close();
-    bool enabled();
-
     /// Result of an upload.
     enum UploadResult {
         UploadFailed,       ///< Upload failed.
@@ -25,13 +21,21 @@ public:
         UploadCompleted     ///< Upload was successful, the complete archive has been uploaded.
     };
 
+    static Gft *instance();
+    static void close();
+
+    /// Is upload enabled?
+    bool enabled();
+
     /// Upload (parts of) an archive.
     UploadResult upload(const QString &archive);
 
 signals:
+    /// Emitted when enabling/disabling uploads.
     void enabledChanged();
 
 public slots:
+    /// Enable/disable uploads.
     void setEnabled(bool v);
 
 protected slots:
@@ -40,7 +44,6 @@ protected slots:
 
 protected:
     explicit Gft(QObject *parent = 0);
-    virtual ~Gft();
 
     /// Get tags for a log record ID
     /// @return Tags as a single string of sanitized name/value pairs: "name1=value1;name2=value2;..."

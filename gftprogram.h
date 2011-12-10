@@ -42,9 +42,7 @@ public:
         Failed
     };
 
-    GftProgram(QObject *parent = 0);
-    ~GftProgram();
-    void setInstructions(const QList<GftInstruction> instructions);
+    explicit GftProgram(const QList<GftInstruction> instructions);
     void run();
 
 public slots:
