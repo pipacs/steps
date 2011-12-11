@@ -100,14 +100,14 @@ StepsPage {
             console.log("* MainPage.onVolumeUpPressed")
             counter.running = !counter.running
             var sound = counter.running? startSound: stopSound
-            sound.play()
+            sound.beep()
         }
     }
 
     function onVolumeDownPressed() {
         if (active) {
             console.log("* MainPage.onVolumeDownPressed")
-            settingsSound.play()
+            settingsSound.beep()
             main.pageStack.push(actions)
         }
     }

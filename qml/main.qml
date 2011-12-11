@@ -31,7 +31,7 @@ StepsPageStackWindow {
         // Play applause at every X steps
         var APPLAUSE_GOAL = 10000
         if ((count > prevCount) && ((count % APPLAUSE_GOAL) < (prevCount % APPLAUSE_GOAL))) {
-            applause.play()
+            applause.beep()
         }
 
         var delta = count - prevCount
