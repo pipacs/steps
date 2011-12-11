@@ -8,6 +8,7 @@
 #include "gftprogram.h"
 #include "gft.h"
 #include "gftsecret.h"
+#include "database.h"
 
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
@@ -56,12 +57,19 @@ void Gft::upload(const QString &archive_) {
 
     archive = archive_;
     uploadedRecords.clear();
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(QDir::toNativeSeparators(archive));
-    if (!db.open()) {
-        qCritical() << "Gft::upload: Could not open database:" << db.lastError().text();
-        emit uploadFinished(false);
-        return;
+    Database db(archive);
+
+    // Do nothing if database is empty
+    {
+        qlonglong total = -1;
+        QSqlQuery query("select count(*) from log", db.db());
+        query.next();
+        total = query.value(0).toLongLong();
+        if (total == 0) {
+            qDebug() << " Database empty";
+            emit uploadFinished(true);
+            return;
+        }
     }
 
     // Create Gft program's instructions
@@ -73,7 +81,7 @@ void Gft::upload(const QString &archive_) {
     instructions.append(GftInstruction(GftFindTable, dbName));
     instructions.append(GftInstruction(GftCreateTableIf, dbName));
 
-    QSqlQuery query("select id, date, steps from log", db);
+    QSqlQuery query("select id, date, steps from log", db.db());
     query.setForwardOnly(true);
     if (!query.exec()) {
         qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
@@ -89,7 +97,6 @@ void Gft::upload(const QString &archive_) {
         qDebug() << "" << instruction.param;
         instructions.append(instruction);
     }
-    db.close();
 
     // Execute Gft program
     qDebug() << " Executing GFT program";
@@ -97,9 +104,9 @@ void Gft::upload(const QString &archive_) {
     program->step();
 }
 
-QString Gft::getTags(QSqlDatabase db, qlonglong id) {
+QString Gft::getTags(Database &db, qlonglong id) {
     QString ret;
-    QSqlQuery query("select name, value from tags where logId = ?", db);
+    QSqlQuery query("select name, value from tags where logId = ?", db.db());
     query.bindValue(0, id);
     if (!query.exec()) {
         qCritical() << "Gft::getTags: Could not query database:" << query.lastError().text();
@@ -140,7 +147,7 @@ void Gft::onStepCompleted(qlonglong recordId) {
 void Gft::onProgramCompleted() {
     qDebug() << "Gft::onProgramCompleted";
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", __FUNCTION__);
     db.setDatabaseName(QDir::toNativeSeparators(archive));
     if (!db.open()) {
         qCritical() << "Gft::onProgramCompleted: Could not open database";

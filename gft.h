@@ -7,6 +7,7 @@
 #include <QSqlDatabase>
 
 #include "o2/o2.h"
+#include "database.h"
 
 class GftProgram;
 
@@ -57,7 +58,7 @@ protected:
 
     /// Get tags for a log record ID
     /// @return Tags as a single string of sanitized name/value pairs: "name1=value1;name2=value2;..."
-    QString getTags(QSqlDatabase db, qlonglong id);
+    QString getTags(Database &db, qlonglong id);
 
     /// Sanitize string by removing the following characters: quote, double quote, backslash, equal, semicolon.
     QString sanitize(const QString &s);

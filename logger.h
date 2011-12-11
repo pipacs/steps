@@ -8,6 +8,7 @@
 #include <QVariantMap>
 
 class LoggerWorker;
+class Database;
 
 /// Log step counts and other events.
 class Logger: public QObject {
@@ -31,36 +32,30 @@ class LoggerWorker: public QObject {
 
 public:
     explicit LoggerWorker(QObject *parent = 0);
-    virtual ~LoggerWorker();
 
 public slots:
     /// Log the current number of steps and some optional tags.
     void log(int steps, const QVariantMap &tags);
 
-    /// Archive current database, create a new one.
-    /// @param      steps   Step count to record in the newly created database.
-    /// @return     True (success) or false (failure).
-    bool archive(int steps);
+    /// Close and archive current database.
+    void archive();
+
+protected slots:
+    /// Initialize database with schema.
+    void onInitialize();
 
 protected:
-    /// Check database, create it if doesn't exist, archive it if needed.
-    /// @param  steps   Step count to recod in the newly created database.
-    /// @return True if database exists or has been created/archived successfully, false otherwise.
-    bool checkDb(int steps);
+    /// Archive database if it is older than one day.
+    void archiveIfOld();
 
     /// Insert a log entry into an existing database.
     /// @return True if insertion succeeded, false otherwise.
     bool insertLog(int steps, const QVariantMap &tags);
 
-    /// Create database.
-    /// @param  steps   Step count to record in the newly created database.
-    /// @return True (success) or false (failure).
-    bool create(int steps);
-
-    /// Find and return the name of the archive file.
+    /// Get the name of new archive file.
     QString getArchiveName();
 
-    QSqlDatabase db;
+    Database *db;
     QDateTime lastDate;
     int lastSteps;
 };
