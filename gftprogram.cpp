@@ -6,6 +6,7 @@
 
 #include "gftprogram.h"
 #include "gft.h"
+#include "trace.h"
 
 enum GftMethod {GftGet, GftPost};
 
@@ -24,18 +25,18 @@ void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
 }
 
 void GftProgram::step() {
-    qDebug() << "GftProgram::step";
+    Trace t("GftProgram::step");
 
     assert(status != Completed);
 
     if (status == Failed) {
-        qDebug() << " Failed";
+        qDebug() << "Failed";
         emit programCompleted();
         return;
     }
 
     if (ic >= instructions.length()) {
-        qDebug() << " Completed";
+        qDebug() << "Completed";
         emit programCompleted();
         return;
     }
@@ -46,12 +47,12 @@ void GftProgram::step() {
 
     Gft *gft = Gft::instance();
     if (!gft->enabled()) {
-        qDebug() << " Upload disabled";
+        qDebug() << "Upload disabled";
         emit programCompleted();
         return;
     }
     if (!gft->linked()) {
-        qDebug() << " Not logged in";
+        qDebug() << "Not logged in";
         emit programCompleted();
         return;
     }
@@ -74,14 +75,14 @@ void GftProgram::step() {
             QTimer::singleShot(0, this, SLOT(step()));
             return;
         }
-        sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: STRING, tags: STRING)").arg(instructions[ic].param);
+        sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: STRING, tags: STRING)").arg(toGftTableName(instructions[ic].param));
         method = GftPost;
         break;
 
     default:
         // At this point, we should have a table ID. If we don't, fail.
         if (tableId.isNull()) {
-            qDebug() << "GftProgram::step: No table ID";
+            qDebug() << "No table ID";
             emit programCompleted();
             return;
         }
@@ -101,35 +102,36 @@ void GftProgram::step() {
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
-    qDebug() << " Request:" << ((method == GftGet)? "GET": "POST") << sql;
+    qDebug() << "Request:" << ((method == GftGet)? "GET": "POST") << sql;
     reply = (method == GftGet)? manager->get(request): manager->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }
 
 void GftProgram::stepDone() {
-    qDebug() << "GftProgram::stepDone";
+    Trace t("GftProgram::stepDone");
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
         QStringList lines = QString(data).split("\n");
-        qDebug() << "" << lines;
+        qDebug() << lines;
 
         switch (instructions[ic].op) {
-        case GftFindTable:
+        case GftFindTable: {
+            QString gftName = toGftTableName(instructions[ic].param);
             foreach (QString line, lines) {
                 int commaIndex = line.indexOf(',');
                 if (commaIndex >= 0) {
                     QString id = line.left(commaIndex);
                     QString name = line.mid(commaIndex + 1);
-                    if (name == instructions[ic].param) {
-                        qDebug() << " Found table" << name << ": id" << id;
+                    if (name == gftName) {
+                        qDebug() << "Found table" << name << ": id" << id;
                         tableId = id;
                         break;
                     }
                 }
             }
             break;
-
+        }
         case GftCreateTableIf:
             if ((lines.length() >= 2) && (lines[0] == "tableid")) {
                 tableId = lines[1];
@@ -148,4 +150,8 @@ void GftProgram::stepDone() {
     reply->deleteLater();
     ic++;
     QTimer::singleShot(0, this, SLOT(step()));
+}
+
+QString GftProgram::toGftTableName(const QString &localName) {
+    return QString("Steps ") + localName;
 }
