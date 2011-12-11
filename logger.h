@@ -42,7 +42,7 @@ public slots:
 
 protected slots:
     /// Initialize database with schema.
-    void onInitialize();
+    void onAddSchema();
 
 protected:
     /// Archive database if it is older than one day.

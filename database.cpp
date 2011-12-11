@@ -17,6 +17,7 @@ Database::~Database() {
 }
 
 QSqlDatabase &Database::db() {
+    bool schemaRequired = false;
     if (!db_.isValid()) {
         QString connectionName = QString::number(qrand());
         db_ = QSqlDatabase::addDatabase("QSQLITE", connectionName);
@@ -28,16 +29,19 @@ QSqlDatabase &Database::db() {
 
     // Create database
     QFileInfo dbInfo(name_);
-    QString dir = dbInfo.absolutePath();
-    QFileInfo dirInfo(dir);
-    if (!dirInfo.exists()) {
-        if (!QDir().mkpath(dir)) {
-            qCritical() << "Database::db: Failed to create" << dir;
+    if (!dbInfo.exists()) {
+        schemaRequired = true;
+        QString dir = dbInfo.absolutePath();
+        QFileInfo dirInfo(dir);
+        if (!dirInfo.exists()) {
+            if (!QDir().mkpath(dir)) {
+                qCritical() << "Database::db: Failed to create" << dir;
+                return db_;
+            }
+        } else if (!dirInfo.isDir()) {
+            qCritical() << "Database::db:" << dir << "is not a directory";
             return db_;
         }
-    } else if (!dirInfo.isDir()) {
-        qCritical() << "Database::db:" << dir << "is not a directory";
-        return db_;
     }
     db_.setDatabaseName(QDir::toNativeSeparators(name_));
     if (!db_.open()) {
@@ -45,6 +49,8 @@ QSqlDatabase &Database::db() {
         return db_;
     }
 
-    emit initialize();
+    if (schemaRequired) {
+        emit addSchema();
+    }
     return db_;
 }

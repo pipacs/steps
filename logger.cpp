@@ -114,8 +114,9 @@ void LoggerWorker::archive() {
     qDebug() << "LoggerWorker::archive";
     db->db().close();
     QString archiveName = getArchiveName();
-    if (!QFile().rename(Platform::instance()->dbPath(), archiveName)) {
-        qCritical() << "LoggerWorker::archive: Failed to rename" << Platform::instance()->dbPath() << "to" << archiveName;
+    QFile file;
+    if (!file.rename(Platform::instance()->dbPath(), archiveName)) {
+        qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << Platform::instance()->dbPath() << "to" << archiveName;
     }
 }
 
