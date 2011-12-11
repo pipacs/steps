@@ -25,8 +25,7 @@ void Uploader::close() {
 
 Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
     worker = new UploaderWorker();
-    worker->enable(true);
-    connect(worker, SIGNAL(uploadingChanged(bool)), this, SLOT(onUploadingChanged(bool)));
+    connect(worker, SIGNAL(uploadComplete()), this, SLOT(onUploadComplete()));
     workerThread = new QThread(this);
     worker->moveToThread(workerThread);
     workerThread->start(QThread::LowestPriority);
@@ -34,15 +33,9 @@ Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
 
 Uploader::~Uploader() {
     qDebug() << "Uploader::~Uploader";
-    (void)QMetaObject::invokeMethod(worker, "enable", Q_ARG(bool, false));
     workerThread->quit();
     workerThread->wait();
     delete worker;
-}
-
-void Uploader::onUploadingChanged(bool v) {
-    uploading_ = v;
-    emit uploadingChanged(uploading_);
 }
 
 bool Uploader::uploading() {
@@ -50,12 +43,20 @@ bool Uploader::uploading() {
 }
 
 void Uploader::upload() {
-    if (!QMetaObject::invokeMethod(worker, "upload")) {
-        qCritical() << "Uploader::upload: Invoking UploaderWorker::upload() failed";
-    }
+    uploading_ = true;
+    emit uploadingChanged(true);
+    QMetaObject::invokeMethod(worker, "upload");
+}
+
+void Uploader::onUploadComplete() {
+    uploading_ = false;
+    emit uploadingChanged(false);
+    QTimer::singleShot(5000, this, SLOT(upload()));
 }
 
 UploaderWorker::UploaderWorker(QObject *parent): QObject(parent) {
+    Gft *gft = Gft::instance();
+    connect(gft, SIGNAL(uploadFinished(bool)), this, SLOT(onGftUploadFinished(bool)));
 }
 
 UploaderWorker::~UploaderWorker() {
@@ -63,24 +64,26 @@ UploaderWorker::~UploaderWorker() {
 
 void UploaderWorker::upload() {
     qDebug() << "UploaderWorker::upload";
-    if (enabled) {
-        emit uploadingChanged(true);
-        QStringList archives = listArchives();
-        qDebug() << " Archives:" << archives;
-        if (archives.count()) {
-            Gft::UploadResult result = Gft::instance()->upload(archives[0]);
-            if (result == Gft::UploadCompleted) {
-                deleteArchive(archives[0]);
-            }
-        }
+    QStringList archives = listArchives();
+    qDebug() << " Archives:" << archives;
+    if (archives.count()) {
+        archive = archives[0];
+        Gft::instance()->upload(archive);
+    } else {
+        emit uploadComplete();
     }
-    emit uploadingChanged(false);
-    QTimer::singleShot(5000, this, SLOT(upload()));
 }
 
-void UploaderWorker::enable(bool v) {
-    qDebug() << "UploadWorker::enable" << v;
-    enabled = v;
+void UploaderWorker::onGftUploadFinished(bool complete) {
+    qDebug() << "UploaderWorker::onGftUploadFinished" << complete;
+    if (complete) {
+        QFile file(archive);
+        // FIXME: Uncomment me
+        // if (!file.remove()) {
+        //     qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
+        //  }
+    }
+    emit uploadComplete();
 }
 
 QStringList UploaderWorker::listArchives() {
@@ -91,12 +94,4 @@ QStringList UploaderWorker::listArchives() {
         ret.append(dbDir + "/" + dbFile);
     }
     return ret;
-}
-
-void UploaderWorker::deleteArchive(const QString archive) {
-    qDebug() << "UploadWorker::deleteArchive" << archive;
-    QFile file(archive);
-    if (!file.remove()) {
-        qCritical() << "UploadWorker::deleteArchive: Failed to delete" << archive;
-    }
 }

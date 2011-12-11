@@ -9,20 +9,34 @@
 
 enum GftMethod {GftGet, GftPost};
 
-GftProgram::GftProgram(const QList<GftInstruction> instructions_): QThread(0), instructions(instructions_), ic(0), status(Idle) {
-    manager = new QNetworkAccessManager(this);
+GftProgram::GftProgram(QObject *parent): QObject(parent) {
+    manager = new QNetworkAccessManager;
 }
 
-void GftProgram::run() {
-    QTimer::singleShot(0, this, SLOT(step()));
-    exec();
+GftProgram::~GftProgram() {
+    delete manager;
+}
+
+void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
+    instructions = instructions_;
+    ic = 0;
+    status = Idle;
 }
 
 void GftProgram::step() {
     qDebug() << "GftProgram::step";
-    if (status == Completed || status == Failed) {
-        qDebug() << " Completed or failed";
-        quit();
+
+    assert(status != Completed);
+
+    if (status == Failed) {
+        qDebug() << " Failed";
+        emit programCompleted();
+        return;
+    }
+
+    if (ic >= instructions.length()) {
+        qDebug() << " Completed";
+        emit programCompleted();
         return;
     }
 
@@ -33,12 +47,12 @@ void GftProgram::step() {
     Gft *gft = Gft::instance();
     if (!gft->enabled()) {
         qDebug() << " Upload disabled";
-        quit();
+        emit programCompleted();
         return;
     }
     if (!gft->linked()) {
         qDebug() << " Not logged in";
-        quit();
+        emit programCompleted();
         return;
     }
 
@@ -55,7 +69,7 @@ void GftProgram::step() {
 
     case GftCreateTableIf:
         if (!tableId.isNull()) {
-            // Table exists --> No need to create table
+            // Table exists, so there is no need to create table. Execute next step instead
             ic++;
             QTimer::singleShot(0, this, SLOT(step()));
             return;
@@ -65,10 +79,10 @@ void GftProgram::step() {
         break;
 
     default:
-        // At this point, we should have a table ID. If there isn't, fail.
+        // At this point, we should have a table ID. If we don't, fail.
         if (tableId.isNull()) {
             qDebug() << "GftProgram::step: No table ID";
-            quit();
+            emit programCompleted();
             return;
         }
         sql = instructions[ic].param;
@@ -87,7 +101,7 @@ void GftProgram::step() {
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
-    qDebug() << " Execute request" << sql;
+    qDebug() << " Request:" << sql;
     reply = (method == GftGet)? manager->get(request): manager->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }
@@ -133,5 +147,5 @@ void GftProgram::stepDone() {
 
     reply->deleteLater();
     ic++;
-    step();
+    QTimer::singleShot(0, this, SLOT(step()));
 }

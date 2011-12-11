@@ -10,16 +10,16 @@ class Uploader: public QObject {
     Q_OBJECT
     Q_PROPERTY(bool uploading READ uploading NOTIFY uploadingChanged)
 
+signals:
+    void uploadingChanged(bool changed);
+
 public:
     static Uploader *instance();
     static void close();
     bool uploading();
 
-signals:
-    void uploadingChanged(bool v);
-
 public slots:
-    Q_INVOKABLE void upload();
+    void upload();
 
 protected:
     explicit Uploader(QObject *parent = 0);
@@ -29,31 +29,31 @@ protected:
     bool uploading_;
 
 protected slots:
-    void onUploadingChanged(bool v);
+    void onUploadComplete();
 };
 
 /// Do the real uploading work.
 class UploaderWorker: public QObject {
     Q_OBJECT
 
+signals:
+    void uploadComplete();
+
 public:
     explicit UploaderWorker(QObject *parent = 0);
     virtual ~UploaderWorker();
     QStringList listArchives();
-    void deleteArchive(const QString archive);
-
-signals:
-    void uploadingChanged(bool v);
 
 public slots:
     /// Upload some data.
     void upload();
 
-    /// Enable/disable uploading.
-    void enable(bool v);
+    /// An upload batch to Google Fusion Tables has finished.
+    /// @param  complete    True if all records in the archive have been uploaded.
+    void onGftUploadFinished(bool complete);
 
-protected:
-    bool enabled;
+public:
+    QString archive;
 };
 
 #endif // UPLOADER_H

@@ -29,6 +29,9 @@ void Gft::close() {
 }
 
 Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), parent) {
+    program = new GftProgram(this);
+    connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onStepCompleted(qlonglong)));
+    connect(program, SIGNAL(programCompleted()), this, SLOT(onProgramCompleted()));
 }
 
 bool Gft::enabled() {
@@ -40,7 +43,7 @@ void Gft::setEnabled(bool v) {
     emit enabledChanged();
 }
 
-Gft::UploadResult Gft::upload(const QString &archive_) {
+void Gft::upload(const QString &archive_) {
     qDebug() << "Gft::upload" << archive_;
 
     archive = archive_;
@@ -49,7 +52,8 @@ Gft::UploadResult Gft::upload(const QString &archive_) {
     db.setDatabaseName(QDir::toNativeSeparators(archive));
     if (!db.open()) {
         qCritical() << "Gft::upload: Could not open database";
-        return Gft::UploadFailed;
+        emit uploadFinished(false);
+        return;
     }
 
     // Create Gft instruction list
@@ -59,39 +63,31 @@ Gft::UploadResult Gft::upload(const QString &archive_) {
     QFileInfo info(archive);
     QString dbName = info.baseName();
     instructions.append(GftInstruction(GftFindTable, dbName));
+    instructions.append(GftInstruction(GftFindTable, dbName)); // FIXME
     instructions.append(GftInstruction(GftCreateTableIf, dbName));
 
     QSqlQuery query("select id, date, steps from log", db);
     query.setForwardOnly(true);
     if (!query.exec()) {
         qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
-        return Gft::UploadFailed;
+        emit uploadFinished(false);
+        return;
     }
-    QSqlRecord record = query.record();
-    int idIndex = record.indexOf("id");
-    int dateIndex = record.indexOf("date");
-    int stepsIndex = record.indexOf("steps");
     while (query.next()) {
-        qlonglong id = query.value(idIndex).toLongLong();
-        QString date = sanitize(query.value(dateIndex).toString());
-        int steps = query.value(stepsIndex).toInt();
+        qlonglong id = query.value(0).toLongLong();
+        QString date = sanitize(query.value(1).toString());
+        int steps = query.value(2).toInt();
         QString tags = getTags(db, id);
-        GftInstruction instruction(GftQuery, QString("INSERT INTO $T (steps, date, tags) VALUES (%1, '%2', '%3')").arg(steps).arg(date).arg(tags));
+        GftInstruction instruction(GftQuery, QString("INSERT INTO $T (steps, date, tags) VALUES (%1, '%2', '%3')").arg(steps).arg(date).arg(tags), id);
         qDebug() << "" << instruction.param;
         instructions.append(instruction);
     }
     db.close();
 
     // Execute Gft program
-    qDebug() << " Running GFT program";
-    GftProgram *program = new GftProgram(instructions);
-    connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onRecordUploaded(qlonglong)));
-    program->run();
-    program->wait();
-    delete program;
-    qDebug() << " GFT program finished";
-
-    return completeUpload();
+    qDebug() << " Executing GFT program";
+    program->setInstructions(instructions);
+    program->step();
 }
 
 QString Gft::getTags(QSqlDatabase db, qlonglong id) {
@@ -99,7 +95,7 @@ QString Gft::getTags(QSqlDatabase db, qlonglong id) {
     QSqlQuery query("select name, value from tags where logId = ?", db);
     query.bindValue(0, id);
     if (!query.exec()) {
-        qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
+        qCritical() << "Gft::getTags: Could not query database:" << query.lastError().text();
         return ret;
     }
     QSqlRecord record = query.record();
@@ -127,32 +123,37 @@ QString Gft::sanitize(const QString &s) {
     return ret;
 }
 
-void Gft::onRecordUploaded(qlonglong recordId) {
-    qDebug() << "Gft::onRecordUploaded" << recordId;
-    uploadedRecords.append(recordId);
+void Gft::onStepCompleted(qlonglong recordId) {
+    qDebug() << "Gft::onStepCompleted" << recordId;
+    if (recordId != -1) {
+        uploadedRecords.append(recordId);
+    }
 }
 
-Gft::UploadResult Gft::completeUpload() {
-    qDebug() << "Gft::completeUpload";
+void Gft::onProgramCompleted() {
+    qDebug() << "Gft::onProgramCompleted";
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(QDir::toNativeSeparators(archive));
     if (!db.open()) {
-        qCritical() << "Gft::completeUpload: Could not open database";
-        return Gft::UploadFailed;
+        qCritical() << "Gft::onProgramCompleted: Could not open database";
+        emit uploadFinished(false);
+        return;
     }
 
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query("delete from log where id = %1", db);
         query.bindValue(0, id);
         query.exec();
+        query.next();
     }
 
     qlonglong total = -1;
     QSqlQuery query("select count(*) from log", db);
     query.exec();
+    query.next();
     total = query.value(0).toLongLong();
     db.close();
     qDebug() << "" << total << "records left";
-    return (total == 0)? Gft::UploadSucceeded: Gft::UploadCompleted;
+    emit uploadFinished(total == 0);
 }

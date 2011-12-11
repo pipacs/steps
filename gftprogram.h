@@ -3,10 +3,10 @@
 #ifndef GFTPROGRAM_H
 #define GFTPROGRAM_H
 
+#include <QObject>
 #include <QString>
 #include <QByteArray>
 #include <QList>
-#include <QThread>
 
 /// POST URL for SQL queries.
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
@@ -31,31 +31,33 @@ struct GftInstruction {
 };
 
 /// Program
-class GftProgram: public QThread {
+class GftProgram: public QObject {
     Q_OBJECT
 
 public:
-    enum Status {
-        Idle,
-        Running,
-        Completed,
-        Failed
-    };
+    /// Execution status.
+    enum Status {Idle, Running, Completed, Failed};
 
-    explicit GftProgram(const QList<GftInstruction> instructions);
-    void run();
+    explicit GftProgram(QObject *parent = 0);
+    ~GftProgram();
+
+    /// Set instructions, reset instruction counter and status.
+    void setInstructions(const QList<GftInstruction> instructions_);
 
 public slots:
-    /// Execute one instruction.
+    /// Execute next instruction.
     void step();
 
     /// Process finished request.
     void stepDone();
 
 signals:
-    /// Emitted when a step is completed.
+    /// Emitted when an instruction step is completed.
     /// @param  id      Record ID corresponding to the step.
     void stepCompleted(qlonglong id);
+
+    /// Emitted when all instructions are completed.
+    void programCompleted();
 
 public:
     QList<GftInstruction> instructions;

@@ -8,6 +8,8 @@
 
 #include "o2/o2.h"
 
+class GftProgram;
+
 /// Google Fusion Tables account connector and uploader.
 class Gft: public O2 {
     Q_OBJECT
@@ -27,20 +29,27 @@ public:
     /// Is upload enabled?
     bool enabled();
 
-    /// Upload (parts of) an archive.
-    UploadResult upload(const QString &archive);
+    /// Start uploading some records from an archive.
+    void upload(const QString &archive);
 
 signals:
     /// Emitted when enabling/disabling uploads.
     void enabledChanged();
+
+    /// Emitted when an upload batch has finished.
+    /// @param  complete    True, if all records from the archive are uploaded.
+    void uploadFinished(bool complete);
 
 public slots:
     /// Enable/disable uploads.
     void setEnabled(bool v);
 
 protected slots:
-    /// Add record ID to the list of uploaded record IDs.
-    void onRecordUploaded(qlonglong recordId);
+    /// Handle step completion: Add record ID to the list of uploaded record IDs.
+    void onStepCompleted(qlonglong recordId);
+
+    /// Handle program completion.
+    void onProgramCompleted();
 
 protected:
     explicit Gft(QObject *parent = 0);
@@ -52,10 +61,8 @@ protected:
     /// Sanitize string by removing the following characters: quote, double quote, backslash, equal, semicolon.
     QString sanitize(const QString &s);
 
-    /// Complete upload by removing the uploaded records from the database.
-    UploadResult completeUpload();
-
 protected:
+    GftProgram *program;
     QList<qlonglong> uploadedRecords;
     QString archive;
 };
