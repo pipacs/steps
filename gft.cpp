@@ -149,18 +149,13 @@ void Gft::onProgramCompleted() {
     }
 
     foreach (qlonglong id, uploadedRecords) {
-        QSqlQuery query("delete from log where id = %1", db);
+        QSqlQuery query("delete from log where id = ?", db);
         query.bindValue(0, id);
-        if (!query.exec()) {
-            qCritical() << "Gft::onProgramCompleted: Failed to execute query:" << (int)db.lastError().type() <<  db.lastError().text();
-        } else {
-            query.next();
-        }
+        query.exec();
     }
 
     qlonglong total = -1;
     QSqlQuery query("select count(*) from log", db);
-    query.exec();
     query.next();
     total = query.value(0).toLongLong();
     db.close();

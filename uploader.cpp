@@ -78,10 +78,9 @@ void UploaderWorker::onGftUploadFinished(bool complete) {
     qDebug() << "UploaderWorker::onGftUploadFinished" << complete;
     if (complete) {
         QFile file(archive);
-        // FIXME: Uncomment me
-        // if (!file.remove()) {
-        //     qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
-        //  }
+        if (!file.remove()) {
+            qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
+        }
     }
     emit uploadComplete();
 }
