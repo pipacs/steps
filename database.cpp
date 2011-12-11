@@ -5,6 +5,7 @@
 #include <QSqlError>
 
 #include "database.h"
+#include "trace.h"
 
 Database::Database(const QString &name, QObject *parent): QObject(parent), name_(name) {
 }
@@ -16,41 +17,30 @@ Database::~Database() {
     }
 }
 
-QSqlDatabase &Database::db() {
+void Database::initialize() {
     bool schemaRequired = false;
+
     if (!db_.isValid()) {
         QString connectionName = QString::number(qrand());
         db_ = QSqlDatabase::addDatabase("QSQLITE", connectionName);
     }
 
-    if (db_.open()) {
-        return db_;
+    if (db_.isOpen()) {
+        return;
     }
 
     // Create database
-    QFileInfo dbInfo(name_);
-    if (!dbInfo.exists()) {
+    if (!QFile::exists(name_)) {
         schemaRequired = true;
-        QString dir = dbInfo.absolutePath();
-        QFileInfo dirInfo(dir);
-        if (!dirInfo.exists()) {
-            if (!QDir().mkpath(dir)) {
-                qCritical() << "Database::db: Failed to create" << dir;
-                return db_;
-            }
-        } else if (!dirInfo.isDir()) {
-            qCritical() << "Database::db:" << dir << "is not a directory";
-            return db_;
-        }
+        QDir().mkpath(QFileInfo(name_).absolutePath());
     }
     db_.setDatabaseName(QDir::toNativeSeparators(name_));
     if (!db_.open()) {
         qCritical() << "Database::db: Could not open database:" << db_.lastError().text();
-        return db_;
+        return;
     }
 
     if (schemaRequired) {
         emit addSchema();
     }
-    return db_;
 }

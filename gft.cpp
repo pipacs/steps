@@ -81,9 +81,9 @@ void Gft::upload(const QString &archive_) {
     instructions.append(GftInstruction(GftFindTable, dbName));
     instructions.append(GftInstruction(GftCreateTableIf, dbName));
 
-    QSqlQuery query("select id, date, steps from log", db.db());
+    QSqlQuery query(db.db());
     query.setForwardOnly(true);
-    if (!query.exec()) {
+    if (!query.exec("select id, date, steps from log")) {
         qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
         emit uploadFinished(false);
         return;
@@ -106,7 +106,8 @@ void Gft::upload(const QString &archive_) {
 
 QString Gft::getTags(Database &db, qlonglong id) {
     QString ret;
-    QSqlQuery query("select name, value from tags where logId = ?", db.db());
+    QSqlQuery query(db.db());
+    query.prepare("select name, value from tags where logId = ?");
     query.bindValue(0, id);
     if (!query.exec()) {
         qCritical() << "Gft::getTags: Could not query database:" << query.lastError().text();
@@ -146,26 +147,18 @@ void Gft::onStepCompleted(qlonglong recordId) {
 
 void Gft::onProgramCompleted() {
     qDebug() << "Gft::onProgramCompleted";
-
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", __FUNCTION__);
-    db.setDatabaseName(QDir::toNativeSeparators(archive));
-    if (!db.open()) {
-        qCritical() << "Gft::onProgramCompleted: Could not open database";
-        emit uploadFinished(false);
-        return;
-    }
-
+    Database db(archive);
     foreach (qlonglong id, uploadedRecords) {
-        QSqlQuery query("delete from log where id = ?", db);
+        QSqlQuery query(db.db());
+        query.prepare("delete from log where id = ?");
         query.bindValue(0, id);
         query.exec();
     }
 
     qlonglong total = -1;
-    QSqlQuery query("select count(*) from log", db);
+    QSqlQuery query("select count(*) from log", db.db());
     query.next();
     total = query.value(0).toLongLong();
-    db.close();
     qDebug() << "" << total << "records left";
     emit uploadFinished(total == 0);
 }

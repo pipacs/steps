@@ -13,6 +13,7 @@
 #include "gft.h"
 #include "sipfixer.h"
 #include "uploader.h"
+#include "trace.h"
 
 class PersistentCookieJar: public QNetworkCookieJar {
 public:
@@ -97,6 +98,9 @@ int main(int argc, char *argv[]) {
     app.setOrganizationDomain("pipacs.com");
     app.setOrganizationName("pipacs.com");
     app.setApplicationVersion(Platform::instance()->version());
+
+    // Set up tracing
+    qInstallMsgHandler(Trace::messageHandler);
 
     // Create singletons
     Preferences *prefs = Preferences::instance();

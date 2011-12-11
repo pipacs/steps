@@ -66,7 +66,8 @@ SOURCES += \
     gft.cpp \
     o2/o2.cpp \
     o2/o2replyserver.cpp \
-    database.cpp
+    database.cpp \
+    trace.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -136,10 +137,13 @@ HEADERS += \
     o2/o2.h \
     o2/o2replyserver.h \
     gftsecret.h \
-    database.h
+    database.h \
+    trace.h
 
 RESOURCES += \
     common.qrc
+
+
 
 
 

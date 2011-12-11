@@ -8,6 +8,7 @@
 #include "uploader.h"
 #include "gft.h"
 #include "platform.h"
+#include "trace.h"
 
 static Uploader *instance_;
 const int UPLOADER_IDLE = 10000;    ///< Idle time between two uploads (ms).
@@ -64,10 +65,21 @@ UploaderWorker::~UploaderWorker() {
 }
 
 void UploaderWorker::upload() {
-    qDebug() << "UploaderWorker::upload";
+    Trace t("UploaderWorker::upload");
     Gft *gft = Gft::instance();
     QStringList archives = listArchives();
-    if (!archives.count() || !gft->enabled() || !gft->linked()) {
+    bool skip = false;
+    if (!archives.count()) {
+        qDebug() << "No archives";
+        skip = true;
+    } else if (!gft->enabled()) {
+        qDebug() << "Uploading not enabled";
+        skip = true;
+    } else if (!gft->linked()) {
+        qDebug() << "Not logged in";
+        skip = true;
+    }
+    if (skip) {
         emit uploadComplete();
         return;
     }
@@ -76,7 +88,8 @@ void UploaderWorker::upload() {
 }
 
 void UploaderWorker::onGftUploadFinished(bool complete) {
-    qDebug() << "UploaderWorker::onGftUploadFinished" << complete;
+    Trace t("UploaderWorker::onGftUploadFinished");
+    qDebug() << "Complete?" << complete;
     if (complete) {
         QFile file(archive);
         if (!file.remove()) {

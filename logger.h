@@ -49,8 +49,7 @@ protected:
     void archiveIfOld();
 
     /// Insert a log entry into an existing database.
-    /// @return True if insertion succeeded, false otherwise.
-    bool insertLog(int steps, const QVariantMap &tags);
+    void insertLog(int steps, const QVariantMap &tags);
 
     /// Get the name of new archive file.
     QString getArchiveName();

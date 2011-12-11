@@ -9,6 +9,7 @@
 #include "platform.h"
 #include "preferences.h"
 #include "database.h"
+#include "trace.h"
 
 /// Minimum time difference for logging unchanged information (seconds).
 const int MinTimeDiff = 60 * 60;
@@ -35,7 +36,6 @@ Logger::Logger(QObject *parent): QObject(parent) {
 }
 
 Logger::~Logger() {
-    qDebug() << "Logger::~Logger";
     workerThread->quit();
     workerThread->wait();
     delete worker;
@@ -53,45 +53,49 @@ void Logger::log(int steps, const QVariantMap &tags) {
 
 LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1) {
     db = new Database(Platform::instance()->dbPath(), this);
-    connect(db, SIGNAL(initialize()), this, SLOT(onInitialize()));
+    connect(db, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
+    Trace t("LoggerWorker::log");
     archiveIfOld();
     insertLog(steps, tags);
 }
 
 void LoggerWorker::archiveIfOld() {
+    Trace t("LoggerWorker::archiveIfOld");
     if (QDate::currentDate() != Preferences::instance()->logDate()) {
-        qDebug() << "LoggerWorker::archiveIsOld: Archiving needed";
+        qDebug() << "Archiving needed";
         archive();
     }
 }
 
-bool LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
-    bool success = false;
+void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
+    Trace t("LoggerWorker::insertLog");
 
     QDateTime now = QDateTime::currentDateTime();
     if ((lastSteps == steps) && !tags.size() && (lastDate.secsTo(now) < MinTimeDiff)) {
-        return true;
+        return;
     }
     lastSteps = steps;
     lastDate = now;
 
-    if (!db->db().transaction()) {
-        qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db->db().lastError().text();
-        return false;
+    if (!db->transaction()) {
+        qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db->error();
+        return;
     }
 
-    QSqlQuery query("insert into log (date, steps) values (?, ?)", db->db());
+    QSqlQuery query(db->db());
+    query.prepare("insert into log (date, steps) values (?, ?)");
     query.bindValue(0, now.toString(Qt::ISODate));
     query.bindValue(1, steps);
-    success = query.exec();
+    bool success = query.exec();
     if (success) {
         qlonglong id = query.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
-            QSqlQuery tagQuery("insert into tags (name, value, logid) values (?, ?, ?)", db->db());
+            QSqlQuery tagQuery(db->db());
+            tagQuery.prepare("insert into tags (name, value, logid) values (?, ?, ?)");
             tagQuery.bindValue(0, key);
             tagQuery.bindValue(1, value);
             tagQuery.bindValue(2, id);
@@ -102,35 +106,41 @@ bool LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
         }
     }
     if (success) {
-        db->db().commit();
+        db->commit();
     } else {
-        qCritical() << "LoggerWorker::insertLog: Failed to log:" << db->db().lastError().text();
-        db->db().rollback();
+        qCritical() << "LoggerWorker::insertLog: Failed to log:" << db->error();
+        db->rollback();
     }
-    return success;
 }
 
 void LoggerWorker::archive() {
-    qDebug() << "LoggerWorker::archive";
-    db->db().close();
+    Trace t("LoggerWorker::archive");
+    QString dbName = Platform::instance()->dbPath();
+    QFile file(dbName);
+    if (!file.exists()) {
+        qDebug() << "No database:" << dbName << "does not exist";
+        return;
+    }
+    db->close();
     QString archiveName = getArchiveName();
-    QFile file;
-    if (!file.rename(Platform::instance()->dbPath(), archiveName)) {
-        qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << Platform::instance()->dbPath() << "to" << archiveName;
+    if (!file.rename(archiveName)) {
+        qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << dbName << "to" << archiveName;
+    } else {
+        qDebug() << "Renamed" << dbName << "to" << archiveName;
     }
 }
 
-void LoggerWorker::onInitialize() {
-    qDebug() << "LoggerWorker::onInitialize";
+void LoggerWorker::onAddSchema() {
+    Trace t("LoggerWorker::onAddSchema");
 
     // Set database schema
     QSqlQuery query(db->db());
-    if (!query.exec("create table if not exists log (id integer primary key, date varchar, steps integer)")) {
-        qCritical() << "LoggerWorker::onInitialize: Failed to create log table:" << query.lastError().text();
+    if (!query.exec("create table log (id integer primary key, date varchar, steps integer)")) {
+        qCritical() << "LoggerWorker::onAddSchema: Failed to create log table:" << query.lastError().text();
         return;
     }
-    if (!query.exec("create table if not exists tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id))")) {
-        qCritical() << "LoggerWorker::onInitialize: Failed to create tags table:" << query.lastError().text();
+    if (!query.exec("create table tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id))")) {
+        qCritical() << "LoggerWorker::onAddSchema: Failed to create tags table:" << query.lastError().text();
         return;
     }
 
