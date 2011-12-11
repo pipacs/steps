@@ -57,12 +57,10 @@ LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1) {
         (void)QDir().mkpath(info.absolutePath());
         shouldCreate = true;
     }
-    db = QSqlDatabase::addDatabase("QSQLITE");
 }
 
 LoggerWorker::~LoggerWorker() {
     qDebug() << "LoggerWorker::~LoggerWorker";
-    db.close();
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
@@ -117,6 +115,10 @@ bool LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
 }
 
 bool LoggerWorker::checkDb(int steps) {
+    if (!db.isValid()) {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+    }
+
     // Open database if not opened yet
     if (!db.isOpen()) {
         QString dbPath = Platform::instance()->dbPath();
@@ -128,7 +130,7 @@ bool LoggerWorker::checkDb(int steps) {
         // Otherwise open database with the existing file
         db.setDatabaseName(QDir::toNativeSeparators(dbPath));
         if (!db.open()) {
-            qCritical() << "LoggerWorker::checkDb: Could not open database";
+            qCritical() << "LoggerWorker::checkDb: Could not open database:" << db.lastError().text();
             return false;
         }
     }
@@ -145,6 +147,11 @@ bool LoggerWorker::checkDb(int steps) {
 
 bool LoggerWorker::archive(int steps) {
     qDebug() << "LoggerWorker::archive";
+
+    if (!db.isValid()) {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+    }
+
     if (!db.isOpen()) {
         qCritical() << "LoggerWorker::archive: Database not open";
         return false;
@@ -177,6 +184,9 @@ bool LoggerWorker::create(int steps) {
         return false;
     }
 
+    if (!db.isValid()) {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+    }
     db.setDatabaseName(QDir::toNativeSeparators(dbPath));
     if (!db.open()) {
         qCritical() << "LoggerWorker::create: Could not open database";

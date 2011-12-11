@@ -49,7 +49,7 @@ void Gft::upload(const QString &archive_) {
 
     // Create program if doesn't exist
     if (!program) {
-        program = new GftProgram(this);
+        program = new GftProgram;
         connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onStepCompleted(qlonglong)));
         connect(program, SIGNAL(programCompleted()), this, SLOT(onProgramCompleted()));
     }
@@ -59,7 +59,7 @@ void Gft::upload(const QString &archive_) {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(QDir::toNativeSeparators(archive));
     if (!db.open()) {
-        qCritical() << "Gft::upload: Could not open database";
+        qCritical() << "Gft::upload: Could not open database:" << db.lastError().text();
         emit uploadFinished(false);
         return;
     }
