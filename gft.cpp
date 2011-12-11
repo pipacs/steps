@@ -28,10 +28,11 @@ void Gft::close() {
     instance_ = 0;
 }
 
-Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), parent) {
-    program = new GftProgram(this);
-    connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onStepCompleted(qlonglong)));
-    connect(program, SIGNAL(programCompleted()), this, SLOT(onProgramCompleted()));
+Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), parent), program(0) {
+}
+
+Gft::~Gft() {
+    delete program;
 }
 
 bool Gft::enabled() {
@@ -46,6 +47,13 @@ void Gft::setEnabled(bool v) {
 void Gft::upload(const QString &archive_) {
     qDebug() << "Gft::upload" << archive_;
 
+    // Create program if doesn't exist
+    if (!program) {
+        program = new GftProgram(this);
+        connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onStepCompleted(qlonglong)));
+        connect(program, SIGNAL(programCompleted()), this, SLOT(onProgramCompleted()));
+    }
+
     archive = archive_;
     uploadedRecords.clear();
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -56,14 +64,13 @@ void Gft::upload(const QString &archive_) {
         return;
     }
 
-    // Create Gft instruction list
+    // Create Gft program's instructions
 
     QList<GftInstruction> instructions;
 
     QFileInfo info(archive);
     QString dbName = info.baseName();
     instructions.append(GftInstruction(GftFindTable, dbName));
-    instructions.append(GftInstruction(GftFindTable, dbName)); // FIXME
     instructions.append(GftInstruction(GftCreateTableIf, dbName));
 
     QSqlQuery query("select id, date, steps from log", db);
@@ -144,8 +151,11 @@ void Gft::onProgramCompleted() {
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query("delete from log where id = %1", db);
         query.bindValue(0, id);
-        query.exec();
-        query.next();
+        if (!query.exec()) {
+            qCritical() << "Gft::onProgramCompleted: Failed to execute query:" << (int)db.lastError().type() <<  db.lastError().text();
+        } else {
+            query.next();
+        }
     }
 
     qlonglong total = -1;

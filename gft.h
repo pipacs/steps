@@ -53,6 +53,7 @@ protected slots:
 
 protected:
     explicit Gft(QObject *parent = 0);
+    ~Gft();
 
     /// Get tags for a log record ID
     /// @return Tags as a single string of sanitized name/value pairs: "name1=value1;name2=value2;..."

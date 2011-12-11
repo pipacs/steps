@@ -101,7 +101,7 @@ void GftProgram::step() {
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
-    qDebug() << " Request:" << sql;
+    qDebug() << " Request:" << ((method == GftGet)? "GET": "POST") << sql;
     reply = (method == GftGet)? manager->get(request): manager->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }
