@@ -117,7 +117,8 @@ OTHER_FILES += \
     qml/LoginBrowser.qml \
     qml/meego/StepsSpinner.qml \
     qml/symbian/StepsSpinner.qml \
-    qml/meego/StepsBanner.qml
+    qml/meego/StepsBanner.qml \
+    qml/symbian/StepsBanner.qml
 
 HEADERS += \
     counter.h \
@@ -137,6 +138,7 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
 
 
 
