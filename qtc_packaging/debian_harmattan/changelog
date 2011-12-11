@@ -2,6 +2,8 @@ steps (0.0.6) unstable; urgency=low
 
   * Move Google login/logout to Settings
   * Use OAuth 2.0
+  * Upload to Google Fusion Tables
+  * Fix sound on Symbian
 
  -- Akos Polster <akos@pipacs.com>  Sat, 03 Dec 2011 10:57:00 +0100
 
