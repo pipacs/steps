@@ -10,6 +10,7 @@
 #include "platform.h"
 
 static Uploader *instance_;
+const int UPLOADER_IDLE = 10000;    ///< Idle time between two uploads (ms).
 
 Uploader *Uploader::instance() {
     if (!instance_) {
@@ -51,7 +52,7 @@ void Uploader::upload() {
 void Uploader::onUploadComplete() {
     uploading_ = false;
     emit uploadingChanged(false);
-    QTimer::singleShot(5000, this, SLOT(upload()));
+    QTimer::singleShot(UPLOADER_IDLE, this, SLOT(upload()));
 }
 
 UploaderWorker::UploaderWorker(QObject *parent): QObject(parent) {
@@ -64,14 +65,14 @@ UploaderWorker::~UploaderWorker() {
 
 void UploaderWorker::upload() {
     qDebug() << "UploaderWorker::upload";
+    Gft *gft = Gft::instance();
     QStringList archives = listArchives();
-    qDebug() << " Archives:" << archives;
-    if (archives.count()) {
-        archive = archives[0];
-        Gft::instance()->upload(archive);
-    } else {
+    if (!archives.count() || !gft->enabled() || !gft->linked()) {
         emit uploadComplete();
+        return;
     }
+    archive = archives[0];
+    Gft::instance()->upload(archive);
 }
 
 void UploaderWorker::onGftUploadFinished(bool complete) {
