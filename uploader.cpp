@@ -11,7 +11,7 @@
 #include "trace.h"
 
 static Uploader *instance_;
-const int UPLOADER_IDLE = 10000;    ///< Idle time between two uploads (ms).
+const int UPLOADER_IDLE = 1000 * 60 * 30;    ///< Idle time between two uploads (ms).
 
 Uploader *Uploader::instance() {
     if (!instance_) {
