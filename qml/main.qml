@@ -6,6 +6,7 @@ StepsPageStackWindow {
     id: main
     initialPage: mainPage
     property int prevCount: 0
+    property int prevDailyCount: 0
     property int dailyCount: 0
 
     MainPage {
@@ -28,12 +29,6 @@ StepsPageStackWindow {
 
         logger.log(count, {})
 
-        // Play applause at every X steps
-        var APPLAUSE_GOAL = 10000
-        if ((count > prevCount) && ((count % APPLAUSE_GOAL) < (prevCount % APPLAUSE_GOAL))) {
-            applause.beep()
-        }
-
         var delta = count - prevCount
         prevCount = count
 
@@ -49,10 +44,18 @@ StepsPageStackWindow {
             dailyCount = 0
         }
         prefs.dailyCount = dailyCount
+
+        // Play applause at every X (daily) steps
+        var APPLAUSE_GOAL = 10000
+        if ((dailyCount > prevDailyCount) && ((dailyCount % APPLAUSE_GOAL) < (prevDailyCount % APPLAUSE_GOAL))) {
+            applause.beep()
+        }
+        prevDailyCount = dailyCount
     }
 
     function resetDailyCount() {
         dailyCount = 0
+        prevDailyCount = 0
         prefs.dailyCount = 0
         logger.log(counter.count, {"resetDailyCount": 0})
     }
