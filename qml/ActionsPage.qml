@@ -11,13 +11,13 @@ StepsPage {
         width: actionsPage.width
 
         BigButton {
-            text: "Reset daily"
+            text: "Reset activity"
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             negative: true
             onClicked: {
                 dialogOpen = true
-                confirmResetDailyDialog.open()
+                confirmResetActivityDialog.open()
             }
         }
 
@@ -56,11 +56,10 @@ StepsPage {
     }
 
     StepsYesNoDialog {
-        id: confirmResetDailyDialog
-        titleText: "Reset daily step count?"
+        id: confirmResetActivityDialog
+        titleText: "Reset current activity step count?"
         onDialogAccepted: {
-            console.log("* ActionsPage.confirmDialog.onDialogAccepted")
-            main.resetDailyCount()
+            main.resetActivityCount()
             main.pageStack.pop()
         }
         onDialogClosed: {

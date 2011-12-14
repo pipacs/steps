@@ -21,12 +21,20 @@ StepsPage {
         width: mainPage.width
 
         StepsLabel {
-            id: dailyLabel
+            id: activityLabel
             y: screen.height / 3
             anchors.horizontalCenter: parent.horizontalCenter
-            text: main.dailyCount
+            text: main.activityCount
             font.pixelSize: 116
             font.bold: true
+        }
+
+        StepsLabel {
+            id: dailyLabel
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Today: " + counter.count
+            font.pixelSize: 45
+            horizontalAlignment: Text.AlignHCenter
         }
 
         StepsLabel {
