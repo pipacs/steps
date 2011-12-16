@@ -8,7 +8,7 @@ Page {
     property bool showBack: true
     signal back
 
-    active: status == PageStatus.Active
+    active: status === PageStatus.Active
     orientationLock: lockOrientation? PageOrientation.LockPortrait: PageOrientation.Automatic
     tools: pageTools
 

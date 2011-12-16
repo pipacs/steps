@@ -6,8 +6,9 @@ Page {
     property bool showBack: false
     property bool lockOrientation: true
     signal back
+    orientationLock: lockOrientation? PageOrientation.LockPortrait: PageOrientation.Automatic
 
-    active: status == PageStatus.Active
+    active: status === PageStatus.Active
 
     tools: pageTools
 
@@ -29,7 +30,7 @@ Page {
 
     onStatusChanged: {
         // Enforce focus on activation
-        if (status == PageStatus.Active) {
+        if (status === PageStatus.Active) {
             focus = true
         }
     }
