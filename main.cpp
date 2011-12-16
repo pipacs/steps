@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
     app.setApplicationName("Steps");
     app.setOrganizationDomain("pipacs.com");
     app.setOrganizationName("pipacs.com");
-    app.setApplicationVersion(Platform::instance()->version());
+    app.setApplicationVersion(Platform::instance()->appVersion());
 
     // Set up tracing
     qInstallMsgHandler(Trace::messageHandler);
