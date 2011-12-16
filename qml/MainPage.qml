@@ -41,7 +41,6 @@ StepsPage {
             id: totalLabel
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Total: " + counter.count
-            font.pixelSize: 45
             horizontalAlignment: Text.AlignHCenter
         }
 
