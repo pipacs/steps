@@ -20,8 +20,8 @@ StepsPage {
             transformOrigin: Item.TopLeft
             pressGrabTime: 9999
             focus: true
-            settings.defaultFontSize: 28
-            settings.minimumFontSize: 26
+            settings.defaultFontSize: (platform.osName === "symbian")? 22: 28
+            settings.minimumFontSize: (platform.osName === "symbian")? 20: 26
             settings.javaEnabled: false
             settings.javascriptCanAccessClipboard: false
             settings.javascriptCanOpenWindows: false

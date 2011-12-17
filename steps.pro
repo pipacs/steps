@@ -8,11 +8,6 @@ QT += sql
 QT += network
 QT += script
 
-# Add dependency to Symbian components
-# CONFIG += qt-components
-
-DEFINES += KQOAUTH
-
 # Platform-specific
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
@@ -26,7 +21,8 @@ contains(MEEGO_EDITION,harmattan) {
     QML_IMPORT_PATH = qml/meego
 } else:symbian {
     TARGET.CAPABILITY += NetworkServices
-    TARGET.UID3 = 0xE1584C4E
+    # TARGET.UID3 = 0xE1584C4E
+    TARGET.UID3 = 0x20034d0f
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
@@ -66,8 +62,9 @@ SOURCES += \
     gft.cpp \
     o2/o2.cpp \
     o2/o2replyserver.cpp \
+    o2/simplecrypt.cpp \
     database.cpp \
-    trace.cpp
+    trace.cpp \
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -136,25 +133,20 @@ HEADERS += \
     gft.h \
     o2/o2.h \
     o2/o2replyserver.h \
+    o2/simplecrypt.h \
     gftsecret.h \
     database.h \
-    trace.h
+    trace.h \
 
 RESOURCES += \
     common.qrc
 
+symbian {
+    my_deployment.pkg_prerules += vendorinfo
 
+    DEPLOYMENT += my_deployment
 
+    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
 
-
-
-
-
-
-
-
-
-
-
-
-
+    TARGET.UID3 += 0x20034d0f
+}

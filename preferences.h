@@ -18,6 +18,9 @@ class Preferences: public QObject {
     /// Daily step count.
     Q_PROPERTY(int dailyCount READ dailyCount WRITE setDailyCount NOTIFY valueChanged)
 
+    /// Current activity step count.
+    Q_PROPERTY(int activityCount READ activityCount WRITE setActivityCount NOTIFY valueChanged)
+
     /// Date of the daily step count (arbitrary string).
     Q_PROPERTY(QString dailyCountDate READ dailyCountDate WRITE setDailyCountDate NOTIFY valueChanged)
 
@@ -49,6 +52,9 @@ public:
 
     int dailyCount() {return value("dailycount", 0).toInt();}
     void setDailyCount(int v) {setValue("dailycount", v);}
+
+    int activityCount() {return value("activitycount", 0).toInt();}
+    void setActivityCount(int v) {setValue("activitycount", v);}
 
     QString dailyCountDate() {return value("dailycountdate").toString();}
     void setDailyCountDate(const QString &v) {setValue("dailycountdate", v);}

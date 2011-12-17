@@ -6,8 +6,8 @@ StepsPageStackWindow {
     id: main
     initialPage: mainPage
     property int prevCount: 0
-    property int prevDailyCount: 0
     property int dailyCount: 0
+    property int activityCount: 0
 
     MainPage {
         id: mainPage
@@ -32,46 +32,56 @@ StepsPageStackWindow {
         var delta = count - prevCount
         prevCount = count
 
+        // Register activity step count
+        setActivityCount(activityCount + delta)
+
         // Register daily step count
+        setDailyCount(dailyCount + delta)
+    }
+
+    // Set current activity step count
+    function setActivityCount(c) {
+        activityCount = c
+        if (activityCount < 0) {
+            activityCount = 0
+        }
+        prefs.activityCount = activityCount
+    }
+
+    // Set daily step count
+    function setDailyCount(c) {
+        // Check for new day
         var date = new Date()
         var dateString = date.toDateString()
+        console.log("* main.setDailyCount " + c)
+        console.log("*  Today: '" + dateString + "'")
+        console.log("*  Last day: '" + prefs.dailyCountDate + "'")
         if (dateString != prefs.dailyCountDate) {
-            resetDailyCount()
+            console.log("*  New day!")
+            c = 0
             prefs.dailyCountDate = dateString
         }
 
-        var newDailyCount = dailyCount + delta
-        if (newDailyCount < 0) {
-            newDailyCount = 0
+        dailyCount = c
+        if (dailyCount < 0) {
+            dailyCount = 0
         }
-
-        // Play applause at every X (daily) steps
-        var APPLAUSE_GOAL = 10000
-        if ((newDailyCount > dailyCount) && ((newDailyCount % APPLAUSE_GOAL) < (dailyCount % APPLAUSE_GOAL))) {
-            applause.beep()
-        }
-
-        setDailyCount(newDailyCount)
+        prefs.dailyCount = dailyCount
     }
 
-    function resetDailyCount() {
-        setDailyCount(0)
-        logger.log(counter.count, {"resetDailyCount": 0})
+    // Reset current activity counter
+    function resetActivityCount() {
+        setActivityCount(0)
+        logger.log(counter.count, {"resetActivityCount": 0})
     }
 
+    // Reset all counters
     function resetCount() {
         counter.reset()
         prevCount = 0
         logger.log(0, {"reset": 0})
-        resetDailyCount()
-    }
-
-    function setDailyCount(d) {
-        if (d < 0) {
-            d = 0
-        }
-        dailyCount = d
-        prefs.dailyCount = d
+        resetActivityCount()
+        setDailyCount(0)
     }
 
     function runningChanged() {
@@ -90,16 +100,9 @@ StepsPageStackWindow {
 
         logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.version})
 
-        // Restore daily step count from settings
-        var date = new Date()
-        var dateString = date.toDateString()
-        if (dateString != prefs.dailyCountDate) {
-            resetDailyCount()
-            prefs.dailyCountDate = dateString
-        } else {
-            dailyCount = prefs.dailyCount
-            prevDailyCount = dailyCount
-        }
+        // Restore step counts from settings
+        setDailyCount(prefs.dailyCount)
+        setActivityCount(prefs.activityCount)
     }
 
     Component.onDestruction: {

@@ -20,13 +20,17 @@
 #   error Unknown platform
 #endif
 
+#if defined(Q_OS_SYMBIAN)
+#   define STEPS_OS_NAME "symbian"
+#elif defined(MEEGO_EDITION_HARMATTAN)
+#   define STEPS_OS_NAME "harmattan"
+#else
+#   define STEPS_OS_NAME "unknown"
+#endif
+
 static Platform *theInstance;
 
 Platform::Platform(): QObject() {
-}
-
-Platform::~Platform() {
-    qDebug() << "Platform::~Platform";
 }
 
 Platform *Platform::instance() {
@@ -41,12 +45,12 @@ void Platform::close() {
     theInstance = 0;
 }
 
-QString Platform::version() {
-    return QString(STEPS_VERSION);
+QString Platform::osName() {
+    return STEPS_OS_NAME;
 }
 
-void Platform::browse(const QString &url) {
-    QDesktopServices::openUrl(QUrl(url));
+QString Platform::appVersion() {
+    return QString(STEPS_VERSION);
 }
 
 QUrl Platform::soundUrl(const QString &name) {
