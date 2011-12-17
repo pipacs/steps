@@ -29,19 +29,19 @@ StepsPage {
                 id: calibrationLabel
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "Calibration: Measured " + counter.count + " steps, but it should be:"
-                enabled: counter.count
+                text: "Calibration: Measured " + main.dailyCount + " steps, but it should be:"
+                enabled: main.dailyCount
             }
 
             StepsSlider {
                 id: calibrationSlider
                 width: parent.width - 15
-                enabled: counter.count
+                enabled: main.dailyCount
                 stepSize: 1
                 valueIndicatorVisible: true
-                minimumValue: Math.ceil(counter.count - counter.count / 3)
-                maximumValue: Math.ceil(counter.count + counter.count / 3)
-                value: counter.count
+                minimumValue: Math.ceil(main.dailyCount - main.dailyCount / 3)
+                maximumValue: Math.ceil(main.dailyCount + main.dailyCount / 3)
+                value: main.dailyCount
             }
 
             StepsLabel {text: "Sensitivity:"}
@@ -56,10 +56,10 @@ StepsPage {
                 value: counter.sensitivity
             }
 
-            StepsLabel {text: "Sharing:"}
+            StepsLabel {text: "Share to Google Docs:"}
 
             StepsCheckBox {
-                text: "Share to Google Documents"
+                text: "Enable sharing"
                 id: enableSharing
                 checked: gft.enabled
                 enabled: gft.linked
@@ -78,6 +78,30 @@ StepsPage {
                     }
                 }
             }
+
+            StepsButton {
+                text: "Reset all"
+                id: resetAll
+                negative: true
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    dialogOpen = true
+                    confirmResetAllDialog.open()
+                }
+            }
+        }
+    }
+
+    StepsYesNoDialog {
+        id: confirmResetAllDialog
+        titleText: "Reset all settings?"
+        onDialogAccepted: {
+            prefs.muted = true
+            audioFeedback.checked = false
+            counter.resetSettings()
+            sensitivitySlider.value = counter.sensitivity
+            gft.enabled = false
+            enableSharing.checked = false
         }
     }
 
@@ -106,8 +130,9 @@ StepsPage {
         console.log("* SettingsPage.onBack")
         main.pageStack.pop()
         if (calibrationSlider.changed && counter.rawCount) {
-            console.log("*  New calibration value " + calibrationSlider.value)
-            counter.calibration = calibrationSlider.value / counter.rawCount
+            var dailyDelta = calibrationSlider.value - main.dailyCount
+            main.dailyCount = calibrationSlider.value
+            counter.calibration = (counter.count + dailyDelta) / counter.rawCount
             prefs.calibration = counter.calibration
         }
         prefs.muted = !audioFeedback.checked

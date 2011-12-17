@@ -39,24 +39,23 @@ StepsPageStackWindow {
             resetDailyCount()
             prefs.dailyCountDate = dateString
         }
-        dailyCount += delta
-        if (dailyCount < 0) {
-            dailyCount = 0
+
+        var newDailyCount = dailyCount + delta
+        if (newDailyCount < 0) {
+            newDailyCount = 0
         }
-        prefs.dailyCount = dailyCount
 
         // Play applause at every X (daily) steps
         var APPLAUSE_GOAL = 10000
-        if ((dailyCount > prevDailyCount) && ((dailyCount % APPLAUSE_GOAL) < (prevDailyCount % APPLAUSE_GOAL))) {
+        if ((newDailyCount > dailyCount) && ((newDailyCount % APPLAUSE_GOAL) < (dailyCount % APPLAUSE_GOAL))) {
             applause.beep()
         }
-        prevDailyCount = dailyCount
+
+        setDailyCount(newDailyCount)
     }
 
     function resetDailyCount() {
-        dailyCount = 0
-        prevDailyCount = 0
-        prefs.dailyCount = 0
+        setDailyCount(0)
         logger.log(counter.count, {"resetDailyCount": 0})
     }
 
@@ -65,6 +64,14 @@ StepsPageStackWindow {
         prevCount = 0
         logger.log(0, {"reset": 0})
         resetDailyCount()
+    }
+
+    function setDailyCount(d) {
+        if (d < 0) {
+            d = 0
+        }
+        dailyCount = d
+        prefs.dailyCount = d
     }
 
     function runningChanged() {
@@ -91,6 +98,7 @@ StepsPageStackWindow {
             prefs.dailyCountDate = dateString
         } else {
             dailyCount = prefs.dailyCount
+            prevDailyCount = dailyCount
         }
     }
 
