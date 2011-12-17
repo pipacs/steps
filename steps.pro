@@ -21,7 +21,8 @@ contains(MEEGO_EDITION,harmattan) {
     QML_IMPORT_PATH = qml/meego
 } else:symbian {
     TARGET.CAPABILITY += NetworkServices
-    TARGET.UID3 = 0xE1584C4E
+    # TARGET.UID3 = 0xE1584C4E
+    TARGET.UID3 = 0x20034d0f
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
@@ -140,18 +141,12 @@ HEADERS += \
 RESOURCES += \
     common.qrc
 
+symbian {
+    my_deployment.pkg_prerules += vendorinfo
 
+    DEPLOYMENT += my_deployment
 
+    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
 
-
-
-
-
-
-
-
-
-
-
-
-
+    TARGET.UID3 += 0x20034d0f
+}
