@@ -34,7 +34,6 @@ Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
 }
 
 Uploader::~Uploader() {
-    qDebug() << "Uploader::~Uploader";
     workerThread->quit();
     workerThread->wait();
     delete worker;
@@ -51,6 +50,7 @@ void Uploader::upload() {
 }
 
 void Uploader::onUploadComplete() {
+    Trace t("Uploader::onUploadComplete");
     uploading_ = false;
     emit uploadingChanged(false);
     QTimer::singleShot(UPLOADER_IDLE, this, SLOT(upload()));
