@@ -22,6 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 #include <QNetworkReply>
 
 class O2ReplyServer;
+class SimpleCrypt;
 
 /// Simple OAuth2 authenticator.
 class O2: public QObject {
@@ -77,6 +78,7 @@ protected:
     QString code_;
     QNetworkReply::NetworkError tokenError_;
     QNetworkReply *tokenReply_;
+    SimpleCrypt *crypt_;
 };
 
 #endif // O2_H

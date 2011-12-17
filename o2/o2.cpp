@@ -22,17 +22,22 @@ You should have received a copy of the GNU Lesser General Public License along w
 #include <QNetworkAccessManager>
 #include <QScriptEngine>
 #include <QDateTime>
+#include <QCryptographicHash>
 
 #include "o2.h"
 #include "o2replyserver.h"
+#include "simplecrypt.h"
 
 O2::O2(const QString &clientId, const QString &clientSecret, const QString &scope, const QUrl &requestUrl, const QUrl &tokenUrl, const QUrl &refreshTokenUrl, QObject *parent): QObject(parent), clientId_(clientId), clientSecret_(clientSecret), scope_(scope), requestUrl_(requestUrl), tokenUrl_(tokenUrl), refreshTokenUrl_(refreshTokenUrl) {
+    QByteArray hash = QCryptographicHash::hash(clientSecret.toUtf8(), QCryptographicHash::Sha1);
+    crypt_ = new SimpleCrypt(*((quint64 *)(void *)hash.data()));
     manager_ = new QNetworkAccessManager(this);
     replyServer_ = new O2ReplyServer(this);
     connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
 }
 
 O2::~O2() {
+    delete crypt_;
 }
 
 void O2::link() {
@@ -98,12 +103,12 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
 
 QString O2::code() {
     QString key = QString("code.%1").arg(clientId_);
-    return QSettings().value(key).toString();
+    return crypt_->decryptToString(QSettings().value(key).toString());
 }
 
 void O2::setCode(const QString &c) {
     QString key = QString("code.%1").arg(clientId_);
-    QSettings().setValue(key, c);
+    QSettings().setValue(key, crypt_->encryptToString(c));
 }
 
 void O2::onTokenReplyFinished() {
@@ -144,12 +149,12 @@ QByteArray O2::buildRequestBody(const QMap<QString, QString> &parameters) {
 
 QString O2::token() {
     QString key = QString("token.%1").arg(clientId_);
-    return QSettings().value(key).toString();
+    return crypt_->decryptToString(QSettings().value(key).toString());
 }
 
 void O2::setToken(const QString &v) {
     QString key = QString("token.%1").arg(clientId_);
-    QSettings().setValue(key, v);
+    QSettings().setValue(key, crypt_->encryptToString(v));
 }
 
 int O2::expires() {
@@ -164,10 +169,10 @@ void O2::setExpires(int v) {
 
 QString O2::refreshToken() {
     QString key = QString("refreshtoken.%1").arg(clientId_);
-    return QSettings().value(key).toString();
+    return crypt_->decryptToString(QSettings().value(key).toString());
 }
 
 void O2::setRefreshToken(const QString &v) {
     QString key = QString("refreshtoken.%1").arg(clientId_);
-    QSettings().setValue(key, v);
+    QSettings().setValue(key, crypt_->encryptToString(v));
 }
