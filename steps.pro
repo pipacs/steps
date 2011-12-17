@@ -27,6 +27,11 @@ contains(MEEGO_EDITION,harmattan) {
         # Use official UID in release mode
         TARGET.UID3 = 0x20034d0f
     }
+
+    my_deployment.pkg_prerules += vendorinfo
+    DEPLOYMENT += my_deployment
+    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
+
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
@@ -156,13 +161,3 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
-
-symbian {
-    my_deployment.pkg_prerules += vendorinfo
-
-    DEPLOYMENT += my_deployment
-
-    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
-
-    TARGET.UID3 += 0x20034d0f
-}

@@ -13,11 +13,6 @@ StepsPageStackWindow {
         id: mainPage
     }
 
-    Beep {
-        id: applause
-        source: platform.soundUrl("applause")
-    }
-
     function rawCountChanged(val) {
         prefs.rawCount = val
     }
@@ -53,11 +48,7 @@ StepsPageStackWindow {
         // Check for new day
         var date = new Date()
         var dateString = date.toDateString()
-        console.log("* main.setDailyCount " + c)
-        console.log("*  Today: '" + dateString + "'")
-        console.log("*  Last day: '" + prefs.dailyCountDate + "'")
-        if (dateString != prefs.dailyCountDate) {
-            console.log("*  New day!")
+        if (dateString !== prefs.dailyCountDate) {
             c = 0
             prefs.dailyCountDate = dateString
         }
@@ -98,7 +89,7 @@ StepsPageStackWindow {
         counter.step.connect(main.countChanged)
         counter.runningChanged.connect(main.runningChanged)
 
-        logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.version})
+        logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion})
 
         // Restore step counts from settings
         setDailyCount(prefs.dailyCount)

@@ -14,6 +14,7 @@ static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontabl
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
 static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
 static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "FIXME";
+const int GFT_RECORDS_PER_UPLOAD = 500;
 
 static Gft *instance_;
 
@@ -88,7 +89,11 @@ void Gft::upload(const QString &archive_) {
         emit uploadFinished(false);
         return;
     }
+    int numRecords = 0;
     while (query.next()) {
+        if (++numRecords > GFT_RECORDS_PER_UPLOAD) {
+            break;
+        }
         qlonglong id = query.value(0).toLongLong();
         QString date = sanitize(query.value(1).toString());
         int steps = query.value(2).toInt();

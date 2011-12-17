@@ -74,18 +74,19 @@ StepsPage {
         source: platform.soundUrl("stop")
     }
 
-    Beep {
-        id: settingsSound
-        source: platform.soundUrl("settings")
-    }
-
     ActionsPage {
         id: actions
+    }
+
+    function onCounterRunningChanged() {
+        var sound = counter.running? startSound: stopSound
+        sound.beep()
     }
 
     Component.onCompleted: {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        counter.runningChanged.connect(onCounterRunningChanged);
     }
 
     onActiveChanged: {
@@ -104,17 +105,12 @@ StepsPage {
 
     function onVolumeUpPressed() {
         if (active) {
-            console.log("* MainPage.onVolumeUpPressed")
             counter.running = !counter.running
-            var sound = counter.running? startSound: stopSound
-            sound.beep()
         }
     }
 
     function onVolumeDownPressed() {
         if (active) {
-            console.log("* MainPage.onVolumeDownPressed")
-            settingsSound.beep()
             main.pageStack.push(actions)
         }
     }
