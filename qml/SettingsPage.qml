@@ -78,17 +78,6 @@ StepsPage {
                     }
                 }
             }
-
-            StepsButton {
-                text: "Reset all"
-                id: resetAll
-                negative: true
-                anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: {
-                    dialogOpen = true
-                    confirmResetAllDialog.open()
-                }
-            }
         }
     }
 

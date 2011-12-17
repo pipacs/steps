@@ -20,9 +20,14 @@ contains(MEEGO_EDITION,harmattan) {
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
     QML_IMPORT_PATH = qml/meego
 } else:symbian {
+    CONFIG(debug, debug|release) {
+        # Use vanilla UID in debug mode
+        TARGET.UID3 = 0xE1584C4E
+    } else {
+        # Use official UID in release mode
+        TARGET.UID3 = 0x20034d0f
+    }
     TARGET.CAPABILITY += NetworkServices
-    # TARGET.UID3 = 0xE1584C4E
-    TARGET.UID3 = 0x20034d0f
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
@@ -117,7 +122,18 @@ OTHER_FILES += \
     qml/meego/StepsSpinner.qml \
     qml/symbian/StepsSpinner.qml \
     qml/meego/StepsBanner.qml \
-    qml/symbian/StepsBanner.qml
+    qml/symbian/StepsBanner.qml \
+    publishing/steps256.png \
+    publishing/screenshots/meego/2011-12-17_19-28-06.png \
+    publishing/screenshots/meego/2011-12-17_19-27-39.png \
+    publishing/screenshots/meego/2011-12-17_19-26-44.png \
+    publishing/screenshots/meego/2011-12-17_19-26-37.png \
+    publishing/screenshots/meego/2011-12-17_19-26-21.png \
+    publishing/screenshots/meego/2011-12-17_19-28-32.png \
+    publishing/screenshots/symbian/symbian-3.png \
+    publishing/screenshots/symbian/symbian-2.png \
+    publishing/screenshots/symbian/symbian-1.png \
+    publishing/screenshots/symbian/symbian-4.png
 
 HEADERS += \
     counter.h \
