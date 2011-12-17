@@ -57,22 +57,17 @@ LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1) {
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
-    Trace t("LoggerWorker::log");
     archiveIfOld();
     insertLog(steps, tags);
 }
 
-void LoggerWorker::archiveIfOld() {
-    Trace t("LoggerWorker::archiveIfOld");
+void LoggerWorker::archiveIfOld() {    Trace t("LoggerWorker::archiveIfOld");
     if (QDate::currentDate() != Preferences::instance()->logDate()) {
-        qDebug() << "Archiving needed";
         archive();
     }
 }
 
 void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
-    Trace t("LoggerWorker::insertLog");
-
     QDateTime now = QDateTime::currentDateTime();
     if ((lastSteps == steps) && !tags.size() && (lastDate.secsTo(now) < MinTimeDiff)) {
         return;
@@ -131,8 +126,6 @@ void LoggerWorker::archive() {
 }
 
 void LoggerWorker::onAddSchema() {
-    Trace t("LoggerWorker::onAddSchema");
-
     // Set database schema
     QSqlQuery query(db->db());
     if (!query.exec("create table log (id integer primary key, date varchar, steps integer)")) {
