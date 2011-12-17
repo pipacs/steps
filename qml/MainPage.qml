@@ -32,7 +32,7 @@ StepsPage {
         StepsLabel {
             id: dailyLabel
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Today: " + counter.count
+            text: "Today: " + main.dailyCount
             font.pixelSize: 45
             horizontalAlignment: Text.AlignHCenter
         }

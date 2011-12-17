@@ -1,5 +1,8 @@
 steps (0.0.7) unstable; urgency=low
 
+  * Improve Symbian UI
+  * Clarify activity, daily and total step counts
+
  -- Akos Polster <akos@pipacs.com>  Sun, 11 Dec 2011 23:57:00 +0100
 
 steps (0.0.6) unstable; urgency=low

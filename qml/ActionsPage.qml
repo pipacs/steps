@@ -22,7 +22,7 @@ StepsPage {
         }
 
         BigButton {
-            text: "Reset total"
+            text: "Reset all"
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             negative: true
@@ -44,7 +44,7 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmResetDialog
-        titleText: "Reset total step count?"
+        titleText: "Reset all step counts?"
         onDialogAccepted: {
             console.log("* ActionsPage.confirmDialog.onDialogAccepted")
             main.resetCount()

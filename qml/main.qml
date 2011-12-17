@@ -53,7 +53,11 @@ StepsPageStackWindow {
         // Check for new day
         var date = new Date()
         var dateString = date.toDateString()
+        console.log("* main.setDailyCount " + c)
+        console.log("*  Today: '" + dateString + "'")
+        console.log("*  Last day: '" + prefs.dailyCountDate + "'")
         if (dateString != prefs.dailyCountDate) {
+            console.log("*  New day!")
             c = 0
             prefs.dailyCountDate = dateString
         }
