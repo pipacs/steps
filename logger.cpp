@@ -61,7 +61,7 @@ void LoggerWorker::log(int steps, const QVariantMap &tags) {
     insertLog(steps, tags);
 }
 
-void LoggerWorker::archiveIfOld() {    Trace t("LoggerWorker::archiveIfOld");
+void LoggerWorker::archiveIfOld() {
     if (QDate::currentDate() != Preferences::instance()->logDate()) {
         archive();
     }
