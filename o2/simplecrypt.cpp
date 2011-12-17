@@ -183,6 +183,11 @@ QByteArray SimpleCrypt::decryptToByteArray(QByteArray cypher)
         return QByteArray();
     }
 
+    if (!cypher.length()) {
+        m_lastError = ErrorUnknownVersion;
+        return QByteArray();
+    }
+
     QByteArray ba = cypher;
 
     char version = ba.at(0);
