@@ -102,7 +102,7 @@ void GftProgram::step() {
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
-    qDebug() << "Request:" << ((method == GftGet)? "GET": "POST") << sql;
+    // qDebug() << "Request:" << ((method == GftGet)? "GET": "POST") << sql;
     reply = (method == GftGet)? manager->get(request): manager->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }
@@ -113,8 +113,6 @@ void GftProgram::stepDone() {
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
         QStringList lines = QString(data).split("\n");
-        qDebug() << lines;
-
         switch (instructions[ic].op) {
         case GftFindTable: {
             QString gftName = toGftTableName(instructions[ic].param);
@@ -139,7 +137,6 @@ void GftProgram::stepDone() {
                 status = Failed;
             }
             break;
-
         default:
             emit stepCompleted(instructions[ic].idList);
         }

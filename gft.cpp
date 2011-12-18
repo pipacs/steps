@@ -15,7 +15,7 @@ static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontabl
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
 static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
 static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "FIXME";
-const int GFT_RECORDS_PER_UPLOAD = 100;
+const int GFT_RECORDS_PER_UPLOAD = 150;
 
 static Gft *instance_;
 
@@ -160,12 +160,14 @@ void Gft::onProgramCompleted(bool failed) {
 
     // Delete uploaded records from local archive
     Database db(archive);
+    db.transaction();
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query(db.db());
         query.prepare("delete from log where id = ?");
         query.bindValue(0, id);
         query.exec();
     }
+    db.commit();
 
     // Determine upload result
     if (failed) {
