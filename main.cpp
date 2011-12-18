@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
     qDebug() << " uploader";
     viewer->rootContext()->setContextProperty("uploader", uploader);
     qDebug() << " setMainQmlFile";
-    viewer->setMainQmlFile(QLatin1String("qrc:/qml/main.qml"));
+    viewer->setSource(QUrl("qrc:/qml/main.qml"));
     qDebug() << " setOrientation";
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     qDebug() << " showExpanded";
