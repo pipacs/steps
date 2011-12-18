@@ -1,7 +1,8 @@
 steps (0.0.7) unstable; urgency=low
 
   * Improve Symbian UI
-  * Clarify activity, daily and total step counts
+  * Clarify step count types: activity, daily and total
+  * Upload in smaller batches
 
  -- Akos Polster <akos@pipacs.com>  Sun, 11 Dec 2011 23:57:00 +0100
 
