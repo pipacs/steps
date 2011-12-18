@@ -109,7 +109,6 @@ int main(int argc, char *argv[]) {
     qInstallMsgHandler(Trace::messageHandler);
 
     // Create singletons
-    qDebug() << "Create singletons";
     Preferences *prefs = Preferences::instance();
     Platform *platform = Platform::instance();
     Logger *logger = Logger::instance();
@@ -120,42 +119,24 @@ int main(int argc, char *argv[]) {
     QTimer::singleShot(30000, uploader, SLOT(upload()));
 
     // Set up and show QML viewer
-    qDebug() << "Set up QML viewer";
-    qDebug() << " Viewer";
     QmlApplicationViewer *viewer = new QmlApplicationViewer;
-    qDebug() << " Counter";
     Counter *counter = new Counter(viewer);
-    qDebug() << " MediaKey";
     MediaKey *mediaKey = new MediaKey(viewer);
-    qDebug() << " NetworkAccessManagerFactory";
     viewer->engine()->setNetworkAccessManagerFactory(namFactory);
-    qDebug() << " ScreenOrientation";
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    qDebug() << " counter";
     viewer->rootContext()->setContextProperty("counter", counter);
-    qDebug() << " prefs";
     viewer->rootContext()->setContextProperty("prefs", prefs);
-    qDebug() << " platform";
     viewer->rootContext()->setContextProperty("platform", platform);
-    qDebug() << " logger";
     viewer->rootContext()->setContextProperty("logger", logger);
-    qDebug() << " mediaKey";
     viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
-    qDebug() << " gft";
     viewer->rootContext()->setContextProperty("gft", gft);
-    qDebug() << " sipFixer";
     viewer->rootContext()->setContextProperty("sipFixer", sipFixer);
-    qDebug() << " uploader";
     viewer->rootContext()->setContextProperty("uploader", uploader);
-    qDebug() << " setMainQmlFile";
     viewer->setSource(QUrl("qrc:/qml/main.qml"));
-    qDebug() << " setOrientation";
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
-    qDebug() << " showExpanded";
     viewer->showExpanded();
 
     // Install event filter to capture/release volume keys
-    qDebug() << "Install event filters";
     viewer->installEventFilter(mediaKey);
 
     // Install event filter fixing VKB handing in WebView
@@ -165,7 +146,6 @@ int main(int argc, char *argv[]) {
     // mediaKey->connect(eventFilter, SIGNAL(activate(bool)), counter, SLOT(applicationActivated(bool)));
 
     // Run application
-    qDebug() << "Execute application";
     int ret = app.exec();
 
     // Delete singletons and exit
