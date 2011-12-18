@@ -32,6 +32,7 @@ class LoggerWorker: public QObject {
 
 public:
     explicit LoggerWorker(QObject *parent = 0);
+    ~LoggerWorker();
 
 public slots:
     /// Log the current number of steps and some optional tags.
@@ -54,9 +55,12 @@ protected:
     /// Get the name of new archive file.
     QString getArchiveName();
 
-    Database *db;
+    /// Return database, create it if doesn't exist.
+    Database *db();
+
     QDateTime lastDate;
     int lastSteps;
+    Database *db_;
 };
 
 #endif // LOGGER_H

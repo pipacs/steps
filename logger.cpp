@@ -51,9 +51,19 @@ void Logger::log(int steps, const QVariantMap &tags) {
     }
 }
 
-LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1) {
-    db = new Database(Platform::instance()->dbPath(), this);
-    connect(db, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
+LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1), db_(0) {
+}
+
+LoggerWorker::~LoggerWorker() {
+    delete db_;
+}
+
+Database *LoggerWorker::db() {
+    if (!db_) {
+        db_ = new Database(Platform::instance()->dbPath());
+        connect(db_, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
+    }
+    return db_;
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
@@ -75,12 +85,12 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
     lastSteps = steps;
     lastDate = now;
 
-    if (!db->transaction()) {
-        qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db->error();
+    if (!db()->transaction()) {
+        qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db()->error();
         return;
     }
 
-    QSqlQuery query(db->db());
+    QSqlQuery query(db()->db());
     query.prepare("insert into log (date, steps) values (?, ?)");
     query.bindValue(0, now.toString(Qt::ISODate));
     query.bindValue(1, steps);
@@ -89,7 +99,7 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
         qlonglong id = query.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
-            QSqlQuery tagQuery(db->db());
+            QSqlQuery tagQuery(db()->db());
             tagQuery.prepare("insert into tags (name, value, logid) values (?, ?, ?)");
             tagQuery.bindValue(0, key);
             tagQuery.bindValue(1, value);
@@ -101,10 +111,10 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
         }
     }
     if (success) {
-        db->commit();
+        db()->commit();
     } else {
-        qCritical() << "LoggerWorker::insertLog: Failed to log:" << db->error();
-        db->rollback();
+        qCritical() << "LoggerWorker::insertLog: Failed to log:" << db()->error();
+        db()->rollback();
     }
 }
 
@@ -116,7 +126,7 @@ void LoggerWorker::archive() {
         qDebug() << "No database:" << dbName << "does not exist";
         return;
     }
-    db->close();
+    db()->close();
     QString archiveName = getArchiveName();
     if (!file.rename(archiveName)) {
         qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << dbName << "to" << archiveName;
@@ -127,7 +137,7 @@ void LoggerWorker::archive() {
 
 void LoggerWorker::onAddSchema() {
     // Set database schema
-    QSqlQuery query(db->db());
+    QSqlQuery query(db()->db());
     if (!query.exec("create table log (id integer primary key, date varchar, steps integer)")) {
         qCritical() << "LoggerWorker::onAddSchema: Failed to create log table:" << query.lastError().text();
         return;
