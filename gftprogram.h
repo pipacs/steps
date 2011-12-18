@@ -15,22 +15,22 @@
 class QNetworkAccessManager;
 class QNetworkReply;
 
-/// An operation.
+/// Operation.
 enum GftOp {
-    GftFindTable,       ///< Find table, return ID in GftProgram::tableId. Parameter is the table name.
-    GftCreateTableIf,   ///< Create table if doesn't exist, return ID in GftProgram::tableId. Parameter is the table name.
-    GftQuery            ///< Execute a query. Parameter is an SQL statement; $T will be replaced by the table ID.
+    GftFindTable,       ///< Find table, return its ID in GftProgram::tableId. Parameter is the table name.
+    GftCreateTableIf,   ///< Create table if doesn't exist, return its ID in GftProgram::tableId. Parameter is the table name.
+    GftQuery            ///< Execute queries. Parameter is one or more SQL statements; $T will be replaced by the table ID.
 };
 
 /// Instruction.
 struct GftInstruction {
-    GftInstruction(GftOp op_, const QString &param_, qlonglong id_ = -1): op(op_), param(param_), id(id_) {}
-    GftOp op;           ///< Operation.
-    QString param;      ///< Table name or SQL statement.
-    qlonglong id;       ///< Local record ID.
+    GftInstruction(GftOp op_, const QString &param_, QList<qlonglong> idList_ = QList<qlonglong>()): op(op_), param(param_), idList(idList_) {}
+    GftOp op;               ///< Operation.
+    QString param;          ///< Table name or SQL statements.
+    QList<qlonglong> idList;///< Local record IDs to be uploaded by this instruction.
 };
 
-/// Program
+/// Upload program
 class GftProgram: public QObject {
     Q_OBJECT
 
@@ -56,11 +56,12 @@ public slots:
 
 signals:
     /// Emitted when an instruction step is completed.
-    /// @param  id      Record ID corresponding to the step.
-    void stepCompleted(qlonglong id);
+    /// @param  idList  Record IDs uploaded by to the step.
+    void stepCompleted(QList<qlonglong> idList);
 
     /// Emitted when all instructions are completed.
-    void programCompleted();
+    /// @param  failed  If true, execution had an error.
+    void programCompleted(bool failed);
 
 public:
     QList<GftInstruction> instructions;

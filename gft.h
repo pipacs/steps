@@ -8,6 +8,7 @@
 
 #include "o2/o2.h"
 #include "database.h"
+#include "uploader.h"
 
 class GftProgram;
 
@@ -17,13 +18,6 @@ class Gft: public O2 {
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
-    /// Result of an upload.
-    enum UploadResult {
-        UploadFailed,       ///< Upload failed.
-        UploadSucceeded,    ///< Upload was successful, but there is more to upload from the archive.
-        UploadCompleted     ///< Upload was successful, the complete archive has been uploaded.
-    };
-
     static Gft *instance();
     static void close();
 
@@ -38,8 +32,8 @@ signals:
     void enabledChanged();
 
     /// Emitted when an upload batch has finished.
-    /// @param  complete    True, if all records from the archive are uploaded.
-    void uploadFinished(bool complete);
+    /// @param  result  Status of the finished upload.
+    void uploadFinished(int result);
 
 public slots:
     /// Enable/disable uploads.
@@ -47,10 +41,10 @@ public slots:
 
 protected slots:
     /// Handle step completion: Add record ID to the list of uploaded record IDs.
-    void onStepCompleted(qlonglong recordId);
+    void onStepCompleted(QList<qlonglong> recordIdList);
 
     /// Handle program completion.
-    void onProgramCompleted();
+    void onProgramCompleted(bool failed);
 
 protected:
     explicit Gft(QObject *parent = 0);

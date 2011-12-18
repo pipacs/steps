@@ -31,13 +31,13 @@ void GftProgram::step() {
 
     if (status == Failed) {
         qDebug() << "Failed";
-        emit programCompleted();
+        emit programCompleted(true);
         return;
     }
 
     if (ic >= instructions.length()) {
         qDebug() << "Completed";
-        emit programCompleted();
+        emit programCompleted(false);
         return;
     }
 
@@ -47,13 +47,13 @@ void GftProgram::step() {
 
     Gft *gft = Gft::instance();
     if (!gft->enabled()) {
-        qDebug() << "Upload disabled";
-        emit programCompleted();
+        qDebug() << "Not enabled";
+        emit programCompleted(false);
         return;
     }
     if (!gft->linked()) {
         qDebug() << "Not logged in";
-        emit programCompleted();
+        emit programCompleted(false);
         return;
     }
 
@@ -83,7 +83,7 @@ void GftProgram::step() {
         // At this point, we should have a table ID. If we don't, fail.
         if (tableId.isNull()) {
             qDebug() << "No table ID";
-            emit programCompleted();
+            emit programCompleted(true);
             return;
         }
         sql = instructions[ic].param;
@@ -141,10 +141,11 @@ void GftProgram::stepDone() {
             break;
 
         default:
-            if ((lines.length() >= 2) && (lines[0] == "rowid")) {
-                emit stepCompleted(instructions[ic].id);
-            }
+            emit stepCompleted(instructions[ic].idList);
         }
+    } else {
+        qCritical() << "GftProgram::stepDone:" << reply->error() << ":" << reply->errorString();
+        status = Failed;
     }
 
     reply->deleteLater();

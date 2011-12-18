@@ -9,12 +9,13 @@
 #include "gft.h"
 #include "gftsecret.h"
 #include "database.h"
+#include "trace.h"
 
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
 static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
 static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "FIXME";
-const int GFT_RECORDS_PER_UPLOAD = 500;
+const int GFT_RECORDS_PER_UPLOAD = 100;
 
 static Gft *instance_;
 
@@ -47,13 +48,14 @@ void Gft::setEnabled(bool v) {
 }
 
 void Gft::upload(const QString &archive_) {
-    qDebug() << "Gft::upload" << archive_;
+    Trace t("Gft::upload");
+    qDebug() << "Archive:" << archive_;
 
     // Create program if doesn't exist
     if (!program) {
         program = new GftProgram;
-        connect(program, SIGNAL(stepCompleted(qlonglong)), this, SLOT(onStepCompleted(qlonglong)));
-        connect(program, SIGNAL(programCompleted()), this, SLOT(onProgramCompleted()));
+        connect(program, SIGNAL(stepCompleted(QList<qlonglong>)), this, SLOT(onStepCompleted(QList<qlonglong>)));
+        connect(program, SIGNAL(programCompleted(bool)), this, SLOT(onProgramCompleted(bool)));
     }
 
     archive = archive_;
@@ -67,8 +69,8 @@ void Gft::upload(const QString &archive_) {
         query.next();
         total = query.value(0).toLongLong();
         if (total == 0) {
-            qDebug() << " Database empty";
-            emit uploadFinished(true);
+            qDebug() << "Database empty";
+            emit uploadFinished(UploadComplete);
             return;
         }
     }
@@ -86,10 +88,12 @@ void Gft::upload(const QString &archive_) {
     query.setForwardOnly(true);
     if (!query.exec("select id, date, steps from log")) {
         qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
-        emit uploadFinished(false);
+        emit uploadFinished(UploadFailed);
         return;
     }
     int numRecords = 0;
+    QString sql;
+    QList<qlonglong> idList;
     while (query.next()) {
         if (++numRecords > GFT_RECORDS_PER_UPLOAD) {
             break;
@@ -98,10 +102,10 @@ void Gft::upload(const QString &archive_) {
         QString date = sanitize(query.value(1).toString());
         int steps = query.value(2).toInt();
         QString tags = getTags(db, id);
-        GftInstruction instruction(GftQuery, QString("INSERT INTO $T (steps, date, tags) VALUES (%1, '%2', '%3')").arg(steps).arg(date).arg(tags), id);
-        qDebug() << "" << instruction.param;
-        instructions.append(instruction);
+        sql.append(QString("INSERT INTO $T (steps,date,tags) VALUES (%1,'%2','%3');\n").arg(steps).arg(date, tags));
+        idList.append(id);
     }
+    instructions.append(GftInstruction(GftQuery, sql, idList));
 
     // Execute Gft program
     qDebug() << " Executing GFT program";
@@ -143,15 +147,18 @@ QString Gft::sanitize(const QString &s) {
     return ret;
 }
 
-void Gft::onStepCompleted(qlonglong recordId) {
-    qDebug() << "Gft::onStepCompleted" << recordId;
-    if (recordId != -1) {
+void Gft::onStepCompleted(QList<qlonglong> recordIdList) {
+    Trace t("Gft::onStepCompleted");
+    foreach (qlonglong recordId, recordIdList) {
         uploadedRecords.append(recordId);
     }
 }
 
-void Gft::onProgramCompleted() {
-    qDebug() << "Gft::onProgramCompleted";
+void Gft::onProgramCompleted(bool failed) {
+    Trace t("Gft::onProgramCompleted");
+    int result = UploadFailed;
+
+    // Delete uploaded records from local archive
     Database db(archive);
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query(db.db());
@@ -160,10 +167,25 @@ void Gft::onProgramCompleted() {
         query.exec();
     }
 
-    qlonglong total = -1;
-    QSqlQuery query("select count(*) from log", db.db());
-    query.next();
-    total = query.value(0).toLongLong();
-    qDebug() << "" << total << "records left";
-    emit uploadFinished(total == 0);
+    // Determine upload result
+    if (failed) {
+        qDebug() << "Result: Failed";
+        result = UploadFailed;
+    } else {
+        // Are there any records left in the archive?
+        qlonglong total = -1;
+        QSqlQuery query("select count(*) from log", db.db());
+        query.next();
+        total = query.value(0).toLongLong();
+        qDebug() << total << "records left";
+
+        if (total == 0) {
+            qDebug() << "Result: Complete";
+            result = UploadComplete;
+        } else {
+            qDebug() << "Result: Incomplete";
+            result = UploadIncomplete;
+        }
+    }
+    emit uploadFinished(result);
 }

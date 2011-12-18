@@ -11,7 +11,8 @@
 #include "trace.h"
 
 static Uploader *instance_;
-const int UPLOADER_IDLE = 1000 * 60 * 30;    ///< Idle time between two uploads (ms).
+const int UPLOADER_IDLE = 1000 * 60 * 30; ///< Idle time between complete/failed uploads (ms).
+const int UPLOADER_IDLE_INCOMPLETE = 1000 * 10; ///< Idle time between incomplete uploads (ms).
 
 Uploader *Uploader::instance() {
     if (!instance_) {
@@ -27,7 +28,7 @@ void Uploader::close() {
 
 Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
     worker = new UploaderWorker();
-    connect(worker, SIGNAL(uploadComplete()), this, SLOT(onUploadComplete()));
+    connect(worker, SIGNAL(uploadComplete(int)), this, SLOT(onUploadComplete(int)));
     workerThread = new QThread(this);
     worker->moveToThread(workerThread);
     workerThread->start(QThread::LowestPriority);
@@ -49,16 +50,20 @@ void Uploader::upload() {
     QMetaObject::invokeMethod(worker, "upload");
 }
 
-void Uploader::onUploadComplete() {
+void Uploader::onUploadComplete(int result) {
     Trace t("Uploader::onUploadComplete");
     uploading_ = false;
     emit uploadingChanged(false);
-    QTimer::singleShot(UPLOADER_IDLE, this, SLOT(upload()));
+    int timeout = UPLOADER_IDLE;
+    if (result == UploadIncomplete) {
+        timeout = UPLOADER_IDLE_INCOMPLETE;
+    }
+    QTimer::singleShot(timeout, this, SLOT(upload()));
 }
 
 UploaderWorker::UploaderWorker(QObject *parent): QObject(parent) {
     Gft *gft = Gft::instance();
-    connect(gft, SIGNAL(uploadFinished(bool)), this, SLOT(onGftUploadFinished(bool)));
+    connect(gft, SIGNAL(uploadFinished(int)), this, SLOT(onGftUploadFinished(int)));
 }
 
 UploaderWorker::~UploaderWorker() {
@@ -80,23 +85,23 @@ void UploaderWorker::upload() {
         skip = true;
     }
     if (skip) {
-        emit uploadComplete();
+        emit uploadComplete(UploadComplete);
         return;
     }
     archive = archives[0];
     Gft::instance()->upload(archive);
 }
 
-void UploaderWorker::onGftUploadFinished(bool complete) {
+void UploaderWorker::onGftUploadFinished(int result) {
     Trace t("UploaderWorker::onGftUploadFinished");
-    qDebug() << "Complete?" << complete;
-    if (complete) {
+    qDebug() << "Result" << (int)result;
+    if (result == UploadComplete) {
         QFile file(archive);
         if (!file.remove()) {
             qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
         }
     }
-    emit uploadComplete();
+    emit uploadComplete(result);
 }
 
 QStringList UploaderWorker::listArchives() {
