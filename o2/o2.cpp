@@ -23,6 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 #include <QScriptEngine>
 #include <QDateTime>
 #include <QCryptographicHash>
+#include <QTimer>
 
 #include "o2.h"
 #include "o2replyserver.h"
@@ -33,7 +34,13 @@ O2::O2(const QString &clientId, const QString &clientSecret, const QString &scop
     crypt_ = new SimpleCrypt(*((quint64 *)(void *)hash.data()));
     manager_ = new QNetworkAccessManager(this);
     replyServer_ = new O2ReplyServer(this);
+    refreshTimer_ = new QTimer(this);
+    refreshTimer_->setSingleShot(true);
+    connect(refreshTimer_, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
+    if (linked()) {
+        scheduleRefresh();
+    }
 }
 
 O2::~O2() {
@@ -41,6 +48,10 @@ O2::~O2() {
 }
 
 void O2::link() {
+    if (linked()) {
+        return;
+    }
+
     // Start listening to authentication replies
     replyServer_->listen();
 
@@ -61,13 +72,12 @@ void O2::link() {
 }
 
 void O2::unlink() {
+    if (!linked()) {
+        return;
+    }
     setToken(QString());
     setExpires(0);
     emit linkedChanged();
-}
-
-void O2::refresh() {
-    // FIXME
 }
 
 bool O2::linked() {
@@ -120,6 +130,7 @@ void O2::onTokenReplyFinished() {
         setToken(value.property("access_token").toString());
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
+        scheduleRefresh();
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
@@ -175,4 +186,31 @@ QString O2::refreshToken() {
 void O2::setRefreshToken(const QString &v) {
     QString key = QString("refreshtoken.%1").arg(clientId_);
     QSettings().setValue(key, crypt_->encryptToString(v));
+}
+
+void O2::scheduleRefresh() {
+    int secsToGo = expires() - QDateTime::currentMSecsSinceEpoch() / 1000 - 60;
+    if (secsToGo < 0) {
+        secsToGo = 0;
+    }
+    qDebug() << "O2::scheduleRefresh: Refreshing in" << secsToGo << "seconds";
+    refreshTimer_->stop();
+    refreshTimer_->start(secsToGo * 1000);
+}
+
+void O2::refresh() {
+    qDebug() << "O2::refresh";
+    QNetworkRequest tokenRequest(refreshTokenUrl_);
+    tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QMap<QString, QString> parameters;
+    parameters.insert("code", code());
+    parameters.insert("client_id", clientId_);
+    parameters.insert("client_secret", clientSecret_);
+    parameters.insert("refresh_token", refreshToken());
+    parameters.insert("grant_type", "refresh_token");
+    QByteArray data = buildRequestBody(parameters);
+    tokenError_ = QNetworkReply::NoError;
+    tokenReply_ = manager_->post(tokenRequest, data);
+    connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
+    connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
 }

@@ -23,6 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 class O2ReplyServer;
 class SimpleCrypt;
+class QTimer;
 
 /// Simple OAuth2 authenticator.
 class O2: public QObject {
@@ -46,7 +47,6 @@ public:
 public slots:
     Q_INVOKABLE void link();
     Q_INVOKABLE void unlink();
-    void refresh();
 
 signals:
     void openBrowser(const QUrl &url);
@@ -61,9 +61,11 @@ protected slots:
     void onVerificationReceived(QMap<QString, QString>);
     void onTokenReplyFinished();
     void onTokenReplyError(QNetworkReply::NetworkError error);
+    void refresh();
 
 protected:
     QByteArray buildRequestBody(const QMap<QString, QString> &parameters);
+    void scheduleRefresh();
 
 protected:
     QString clientId_;
@@ -79,6 +81,7 @@ protected:
     QNetworkReply::NetworkError tokenError_;
     QNetworkReply *tokenReply_;
     SimpleCrypt *crypt_;
+    QTimer *refreshTimer_;
 };
 
 #endif // O2_H
