@@ -80,7 +80,7 @@ StepsPageStackWindow {
     }
 
     Component.onCompleted: {
-        counter.calibration = prefs.calibration
+        // counter.calibration = prefs.calibration
         counter.rawCount = prefs.rawCount
         main.prevCount = counter.count
         counter.sensitivity = prefs.sensitivity

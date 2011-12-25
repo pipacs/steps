@@ -25,24 +25,25 @@ StepsPage {
                 checked: !prefs.muted
             }
 
-            StepsLabel {
-                id: calibrationLabel
-                width: parent.width
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "Calibration: Measured " + main.dailyCount + " steps, but it should be:"
-                enabled: main.dailyCount
-            }
+            //
+            // StepsLabel {
+            //     id: calibrationLabel
+            //     width: parent.width
+            //     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            //     text: "Calibration: Measured " + main.activityCount + " steps, but it should be:"
+            //     enabled: main.activityCount
+            // }
 
-            StepsSlider {
-                id: calibrationSlider
-                width: parent.width - 15
-                enabled: main.dailyCount
-                stepSize: 1
-                valueIndicatorVisible: true
-                minimumValue: Math.ceil(main.dailyCount - main.dailyCount / 3)
-                maximumValue: Math.ceil(main.dailyCount + main.dailyCount / 3)
-                value: main.dailyCount
-            }
+            // StepsSlider {
+            //     id: calibrationSlider
+            //     width: parent.width - 15
+            //     enabled: main.activityCount
+            //     stepSize: 1
+            //     valueIndicatorVisible: true
+            //     minimumValue: Math.ceil(main.activityCount - main.activityCount / 3)
+            //     maximumValue: Math.ceil(main.activityCount + main.activityCount / 3)
+            //     value: main.activityCount
+            // }
 
             StepsLabel {text: "Sensitivity:"}
 
@@ -118,12 +119,11 @@ StepsPage {
     onBack: {
         console.log("* SettingsPage.onBack")
         main.pageStack.pop()
-        if (calibrationSlider.changed && counter.rawCount) {
-            var dailyDelta = calibrationSlider.value - main.dailyCount
-            main.dailyCount = calibrationSlider.value
-            counter.calibration = (counter.count + dailyDelta) / counter.rawCount
-            prefs.calibration = counter.calibration
-        }
+        // if (calibrationSlider.changed && counter.rawCount) {
+        //     var activityDelta = calibrationSlider.value - main.activityCount
+        //     counter.calibration = (counter.count + activityDelta) / counter.rawCount
+        //     prefs.calibration = counter.calibration
+        // }
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
         prefs.sensitivity = counter.sensitivity
@@ -131,7 +131,6 @@ StepsPage {
     }
 
     function openBrowser(url) {
-        console.log("* SettingsPage.openBrowser " + url)
         spinner.running = false
         main.pageStack.push(loginBrowser)
         loginBrowser.openUrl(url)
