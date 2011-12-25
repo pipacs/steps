@@ -14,7 +14,7 @@
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
 static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
-static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "FIXME";
+static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
 const int GFT_RECORDS_PER_UPLOAD = 150;
 
 static Gft *instance_;

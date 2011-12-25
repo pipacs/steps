@@ -141,6 +141,9 @@ void O2::onTokenReplyFinished() {
 void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
     qDebug() << "O2::onTokenReplyError" << error << tokenReply_->errorString();
     emit linkingFailed();
+    setToken("");
+    emit tokenChanged();
+    emit linkedChanged();
 }
 
 QByteArray O2::buildRequestBody(const QMap<QString, QString> &parameters) {
@@ -180,7 +183,9 @@ void O2::setExpires(int v) {
 
 QString O2::refreshToken() {
     QString key = QString("refreshtoken.%1").arg(clientId_);
-    return crypt_->decryptToString(QSettings().value(key).toString());
+    QString ret = crypt_->decryptToString(QSettings().value(key).toString());
+    qDebug() << "O2::refreshToken: ..." << ret.right(7);
+    return ret;
 }
 
 void O2::setRefreshToken(const QString &v) {
@@ -199,11 +204,10 @@ void O2::scheduleRefresh() {
 }
 
 void O2::refresh() {
-    qDebug() << "O2::refresh";
+    qDebug() << ">O2::refresh";
     QNetworkRequest tokenRequest(refreshTokenUrl_);
     tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QMap<QString, QString> parameters;
-    parameters.insert("code", code());
     parameters.insert("client_id", clientId_);
     parameters.insert("client_secret", clientSecret_);
     parameters.insert("refresh_token", refreshToken());
@@ -213,4 +217,5 @@ void O2::refresh() {
     tokenReply_ = manager_->post(tokenRequest, data);
     connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
     connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
+    qDebug() << "<O2::refresh";
 }
