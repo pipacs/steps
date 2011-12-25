@@ -57,10 +57,10 @@ StepsPage {
                 value: counter.sensitivity
             }
 
-            StepsLabel {text: "Share to Google Docs:"}
+            StepsLabel {text: "Save to Google Docs:"}
 
             StepsCheckBox {
-                text: "Enable sharing"
+                text: "Enable saving"
                 id: enableSharing
                 checked: gft.enabled
                 enabled: gft.linked
