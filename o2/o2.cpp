@@ -38,7 +38,7 @@ O2::O2(const QString &clientId, const QString &clientSecret, const QString &scop
     refreshTimer_->setSingleShot(true);
     connect(refreshTimer_, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
-    if (linked()) {
+    if (token().length()) {
         scheduleRefresh();
     }
 }
