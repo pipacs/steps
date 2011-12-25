@@ -140,9 +140,9 @@ void O2::onTokenReplyFinished() {
 
 void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
     qDebug() << "O2::onTokenReplyError" << error << tokenReply_->errorString();
-    emit linkingFailed();
     setToken("");
     emit tokenChanged();
+    emit linkingFailed();
     emit linkedChanged();
 }
 
