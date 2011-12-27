@@ -105,7 +105,6 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
     parameters.insert("redirect_uri", redirectUri_);
     parameters.insert("grant_type", "authorization_code");
     QByteArray data = buildRequestBody(parameters);
-    tokenError_ = QNetworkReply::NoError;
     tokenReply_ = manager_->post(tokenRequest, data);
     connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
     connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
@@ -213,7 +212,6 @@ void O2::refresh() {
     parameters.insert("refresh_token", refreshToken());
     parameters.insert("grant_type", "refresh_token");
     QByteArray data = buildRequestBody(parameters);
-    tokenError_ = QNetworkReply::NoError;
     tokenReply_ = manager_->post(tokenRequest, data);
     connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
     connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));

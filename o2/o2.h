@@ -29,43 +29,94 @@ class QTimer;
 class O2: public QObject {
     Q_OBJECT
     Q_PROPERTY(bool linked READ linked NOTIFY linkedChanged)
-    Q_PROPERTY(QString token READ token WRITE setToken NOTIFY tokenChanged)
+    Q_PROPERTY(QString token READ token NOTIFY tokenChanged)
 
 public:
+    /// Constructor.
+    /// @param  clientId        Client ID.
+    /// @param  clientSecret    Client secret.
+    /// @param  scope           Scope of authentication.
+    /// @param  requestUrl      Authentication request target.
+    /// @param  tokenUrl        Token exchange target.
+    /// @param  refreshTokenUrl Token refresh target.
+    /// @param  parent          Parent object.
     explicit O2(const QString &clientId, const QString &clientSecret, const QString &scope, const QUrl &requestUrl, const QUrl &tokenUrl, const QUrl &refreshTokenUrl, QObject *parent = 0);
+
+    /// Destructor.
     virtual ~O2();
+
+    /// Are we authenticated?
     bool linked();
+
+    /// Get authentication code.
     QString code();
-    void setCode(const QString &v);
+
+    /// Get authentication token.
     QString token();
-    void setToken(const QString &v);
+
+    /// Get refresh token.
     QString refreshToken();
-    void setRefreshToken(const QString &v);
+
+    /// Get token expiration time (seconds from Epoch).
     int expires();
-    void setExpires(int v);
 
 public slots:
+    /// Authenticate.
     Q_INVOKABLE void link();
+
+    /// De-authenticate.
     Q_INVOKABLE void unlink();
 
 signals:
+    /// Emitted when client needs to open a web browser window, with the given URL.
     void openBrowser(const QUrl &url);
+
+    /// Emitted when client can close the browser window.
     void closeBrowser();
+
+    /// Emitted when authentication succeeded.
     void linkingSucceeded();
+
+    /// Emitted when authentication failed.
     void linkingFailed();
-    void linkingTimedOut();
+
+    /// Emitted when the authentication status changed.
     void linkedChanged();
+
+    /// Emitted when the request token changed.
     void tokenChanged();
 
 protected slots:
+    /// Handle verification response.
     void onVerificationReceived(QMap<QString, QString>);
+
+    /// Handle completion of requesing a token.
     void onTokenReplyFinished();
+
+    /// Handle error while requesting a token.
     void onTokenReplyError(QNetworkReply::NetworkError error);
+
+    /// Refresh token.
     void refresh();
 
 protected:
+    /// Build HTTP request body.
     QByteArray buildRequestBody(const QMap<QString, QString> &parameters);
+
+    /// Schedule next token refresh.
     void scheduleRefresh();
+
+    /// Set authentication code.
+    void setCode(const QString &v);
+
+    /// Set authentication token.
+    void setToken(const QString &v);
+
+    /// Set refresh token.
+    void setRefreshToken(const QString &v);
+
+    /// Set token expiration time.
+    void setExpires(int v);
 
 protected:
     QString clientId_;
@@ -78,7 +129,6 @@ protected:
     QNetworkAccessManager *manager_;
     O2ReplyServer *replyServer_;
     QString code_;
-    QNetworkReply::NetworkError tokenError_;
     QNetworkReply *tokenReply_;
     SimpleCrypt *crypt_;
     QTimer *refreshTimer_;
