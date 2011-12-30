@@ -1,8 +1,10 @@
 import QtQuick 1.1
-import "symbian"
+import "meego"
+import com.nokia.meego 1.0
 
 StepsPage {
     property bool dialogOpen: false
+    property int newActivity: 0
     id: actionsPage
 
     Column {
@@ -10,25 +12,42 @@ StepsPage {
         spacing: 32
         width: actionsPage.width
 
-        BigButton {
-            text: "Reset activity"
+        ButtonColumn {
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
-            negative: true
-            onClicked: {
-                dialogOpen = true
-                confirmResetActivityDialog.open()
+            BigButton {
+                id: activity0
+                text: main.activityName(0)
+                checked: main.activity === 0
+                onClicked: setActivity(0)
+            }
+            BigButton {
+                id: activity1
+                text: main.activityName(1)
+                checked: main.activity === 1
+                onClicked: setActivity(1)
+            }
+            BigButton {
+                id: activity2
+                text: main.activityName(2)
+                checked: main.activity === 2
+                onClicked: setActivity(2)
+            }
+            BigButton {
+                id: activity3
+                text: main.activityName(3)
+                checked: main.activity === 3
+                onClicked: setActivity(3)
             }
         }
 
-        BigButton {
-            text: "Reset all"
+        BigRedButton {
+            text: "Reset step count"
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
-            negative: true
             onClicked: {
                 dialogOpen = true
-                confirmResetDialog.open()
+                confirmResetActivityDialog.open()
             }
         }
 
@@ -43,21 +62,8 @@ StepsPage {
     }
 
     StepsYesNoDialog {
-        id: confirmResetDialog
-        titleText: "Reset all step counts?"
-        onDialogAccepted: {
-            console.log("* ActionsPage.confirmDialog.onDialogAccepted")
-            main.resetCount()
-            main.pageStack.pop()
-        }
-        onDialogClosed: {
-            dialogOpen = false;
-        }
-    }
-
-    StepsYesNoDialog {
         id: confirmResetActivityDialog
-        titleText: "Reset current activity step count?"
+        title: "Reset current activity step count?"
         onDialogAccepted: {
             main.resetActivityCount()
             main.pageStack.pop()
@@ -67,16 +73,40 @@ StepsPage {
         }
     }
 
+    StepsYesNoDialog {
+        id: confirmChangeActivityDialog
+        title: "Change activity to " + main.activityName(newActivity) + "?"
+        onDialogAccepted: {
+            main.setActivity(newActivity)
+            main.pageStack.pop()
+        }
+        onDialogRejected: {
+            activity0.checked = (main.activity === 0)
+            activity1.checked = (main.activity === 1)
+            activity2.checked = (main.activity === 2)
+            activity3.checked = (main.activity === 3)
+        }
+        onDialogClosed: {
+            dialogOpen = false;
+        }
+    }
+
     SettingsPage {id: settings}
 
     onBack: {
-        console.log("* ActionsPage.onBack")
         main.pageStack.pop()
+    }
+
+    function setActivity(a) {
+        if (a !== main.activity) {
+            newActivity = a
+            dialogOpen = true
+            confirmChangeActivityDialog.open()
+        }
     }
 
     function onVolumeDownPressed() {
         if (active && !dialogOpen) {
-            console.log("* ActionsPage.onVolumeDownPressed")
             main.pageStack.pop()
         }
     }

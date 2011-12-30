@@ -13,7 +13,7 @@ QueryDialog {
     // icon: "/images/steps.png"
 
     onStatusChanged: {
-        if (status == DialogStatus.Closed) {
+        if (status === DialogStatus.Closed) {
             dialogClosed()
         }
     }

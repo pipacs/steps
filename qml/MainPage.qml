@@ -6,6 +6,7 @@ StepsPage {
     id: mainPage
     showBack: false
 
+    // Upload indicator
     Image {
         source: "qrc:/images/reset.png"
         width: 28
@@ -20,6 +21,7 @@ StepsPage {
         spacing: 32
         width: mainPage.width
 
+        // Current activity step count
         StepsLabel {
             id: activityLabel
             y: screen.height / 3
@@ -29,14 +31,15 @@ StepsPage {
             font.bold: true
         }
 
+        // Daily step count
         StepsLabel {
             id: dailyLabel
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Today: " + main.dailyCount
-            font.pixelSize: 45
             horizontalAlignment: Text.AlignHCenter
         }
 
+        // Total step count
         StepsLabel {
             id: totalLabel
             anchors.horizontalCenter: parent.horizontalCenter
@@ -44,21 +47,23 @@ StepsPage {
             horizontalAlignment: Text.AlignHCenter
         }
 
+        // Name of current activity
         StepsLabel {
             id: pausedLabel
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: counter.running? "": qsTr("Paused")
+            text: main.activityName(main.activity) + (counter.running? "": qsTr(" (Paused)"))
             font.pixelSize: 45
             color: "#ff9999"
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
 
+        // Help text
         StepsLabel {
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: qsTr("Press Volume Up to start/pause counter, Volume Down to show settings")
+            text: qsTr("Press Volume Up to start/pause activity, Volume Down to show settings")
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
@@ -90,7 +95,6 @@ StepsPage {
     }
 
     onActiveChanged: {
-        console.log("* MainPage: onActiveChanged: " + active)
         if (active) {
             counter.running = counterWasRunning
         } else {

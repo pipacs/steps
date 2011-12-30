@@ -1,6 +1,7 @@
 steps (0.0.8) unstable; urgency=low
 
   * Optimize uploads
+  * Have named activities
 
  -- Akos Polster <akos@pipacs.com>  Sun, 19 Dec 2011 23:57:00 +0100
 

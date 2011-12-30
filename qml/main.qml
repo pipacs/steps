@@ -8,6 +8,7 @@ StepsPageStackWindow {
     property int prevCount: 0
     property int dailyCount: 0
     property int activityCount: 0
+    property int activity: 0
 
     MainPage {
         id: mainPage
@@ -79,6 +80,26 @@ StepsPageStackWindow {
         logger.log(counter.count, {"counting": counter.running})
     }
 
+    function setActivity(a) {
+        if (a !== activity) {
+            logger.log(counter.count, {"activity": a})
+            activity = a
+            prefs.activity = a
+            resetActivityCount()
+        }
+    }
+
+    function activityName(a) {
+        if (a === 0)
+            return "Walking"
+        else if (a === 1)
+            return "Running"
+        else if (a === 2)
+            return "Custom 1"
+        else if (a === 3)
+            return "Custom 2"
+    }
+
     Component.onCompleted: {
         // counter.calibration = prefs.calibration
         counter.rawCount = prefs.rawCount
@@ -93,6 +114,7 @@ StepsPageStackWindow {
 
         // Restore step counts from settings
         setDailyCount(prefs.dailyCount)
+        setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
     }
 

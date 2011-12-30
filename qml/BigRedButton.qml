@@ -1,7 +1,7 @@
 import QtQuick 1.0
 import "meego"
 
-StepsButton {
+StepsRedButton {
     font.pixelSize: 36
     height: 82
 }

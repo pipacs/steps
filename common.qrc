@@ -10,6 +10,7 @@
         <file>images/reset.png</file>
         <file>images/settings.png</file>
         <file>qml/LoginBrowser.qml</file>
+        <file>qml/BigRedButton.qml</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

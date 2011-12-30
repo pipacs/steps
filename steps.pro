@@ -138,7 +138,10 @@ OTHER_FILES += \
     publishing/screenshots/symbian/symbian-3.png \
     publishing/screenshots/symbian/symbian-2.png \
     publishing/screenshots/symbian/symbian-1.png \
-    publishing/screenshots/symbian/symbian-4.png
+    publishing/screenshots/symbian/symbian-4.png \
+    qml/meego/StepsRedButton.qml \
+    qml/symbian/StepsRedButton.qml \
+    qml/BigRedButton.qml
 
 HEADERS += \
     counter.h \
