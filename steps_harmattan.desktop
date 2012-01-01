@@ -4,7 +4,7 @@ Version=1.0
 Type=Application
 Terminal=false
 Name=Steps
-Exec=/usr/bin/single-instance /opt/steps/bin/steps
+Exec=/usr/bin/invoker --type=e --single-instance /opt/steps/bin/steps
 Icon=/usr/share/icons/hicolor/80x80/apps/steps80.png
 X-Window-Icon=
 X-HildonDesk-ShowInToolbar=true
