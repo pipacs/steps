@@ -79,10 +79,6 @@ StepsPage {
         source: platform.soundUrl("stop")
     }
 
-    ActionsPage {
-        id: actions
-    }
-
     function onCounterRunningChanged() {
         var sound = counter.running? startSound: stopSound
         sound.beep()
@@ -115,7 +111,7 @@ StepsPage {
 
     function onVolumeDownPressed() {
         if (active) {
-            main.pageStack.push(actions)
+            main.pageStack.push(Qt.resolvedUrl("ActionsPage.qml"))
         }
     }
 }

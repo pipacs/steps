@@ -25,26 +25,6 @@ StepsPage {
                 checked: !prefs.muted
             }
 
-            //
-            // StepsLabel {
-            //     id: calibrationLabel
-            //     width: parent.width
-            //     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            //     text: "Calibration: Measured " + main.activityCount + " steps, but it should be:"
-            //     enabled: main.activityCount
-            // }
-
-            // StepsSlider {
-            //     id: calibrationSlider
-            //     width: parent.width - 15
-            //     enabled: main.activityCount
-            //     stepSize: 1
-            //     valueIndicatorVisible: true
-            //     minimumValue: Math.ceil(main.activityCount - main.activityCount / 3)
-            //     maximumValue: Math.ceil(main.activityCount + main.activityCount / 3)
-            //     value: main.activityCount
-            // }
-
             StepsLabel {text: "Sensitivity:"}
 
             StepsSlider {

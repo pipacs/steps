@@ -56,7 +56,7 @@ StepsPage {
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                main.pageStack.push(settings)
+                main.pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
             }
         }
     }
@@ -90,8 +90,6 @@ StepsPage {
             dialogOpen = false;
         }
     }
-
-    SettingsPage {id: settings}
 
     onBack: {
         main.pageStack.pop()
