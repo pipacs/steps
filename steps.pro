@@ -52,11 +52,13 @@ contains(MEEGO_EDITION,harmattan) {
     error("Unsupported platform")
 }
 
-# Add sounds folder to the application.
-# Sounds cannot be played back from resource on Symbian
+# Add extra folders to the application
+# (Sounds cannot be played back from resource on Symbian)
 folder_01.source = sounds
 folder_01.target = $$DATADIR
-DEPLOYMENTFOLDERS = folder_01
+folder_02.source = splash
+folder_02.target = $$DATADIR
+DEPLOYMENTFOLDERS = folder_01 folder_02
 
 SOURCES += \
     main.cpp \
@@ -141,7 +143,10 @@ OTHER_FILES += \
     publishing/screenshots/symbian/symbian-4.png \
     qml/meego/StepsRedButton.qml \
     qml/symbian/StepsRedButton.qml \
-    qml/BigRedButton.qml
+    qml/BigRedButton.qml \
+    publishing/splash-n9.pxm \
+    splash/splash-n9.jpg \
+    publishing/splash-n9.png
 
 HEADERS += \
     counter.h \
