@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <qplatformdefs.h>
 #include <QDir>
+#include <QProcess>
 
 #include "platform.h"
 
@@ -27,6 +28,9 @@
 #else
 #   define STEPS_OS_NAME "unknown"
 #endif
+
+/// Minimum free disk space (in K)
+const int STEPS_MIN_FREE = 4096;
 
 static Platform *theInstance;
 
@@ -65,11 +69,28 @@ QUrl Platform::soundUrl(const QString &name) {
     } else {
         qWarning() << "Platform.soundUrl: No file for" << name;
     }
-    qDebug() << "Platform::soundUrl" << name << ":" << ret;
     return ret;
 }
 
 QString Platform::dbPath() {
     QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
     return QDir(base).absoluteFilePath("current.db");
+}
+
+bool Platform::dbFull() {
+    bool ret = false;
+#if defined(MEEGO_EDITION_HARMATTAN)
+    QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
+    QProcess df;
+    df.start("/bin/df", QStringList() << "-k" << base);
+    df.waitForFinished();
+    QList<QByteArray> lines = df.readAll().split('\n');
+    if (lines.length() > 1) {
+        QStringList fields = QString(lines[1]).split(QRegExp("\\s+"));
+        if (fields.length() > 3) {
+            ret = fields.at(3).toInt() < STEPS_MIN_FREE;
+        }
+    }
+#endif
+    return ret;
 }

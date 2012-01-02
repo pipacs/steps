@@ -51,7 +51,7 @@ void Logger::log(int steps, const QVariantMap &tags) {
     }
 }
 
-LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1), db_(0) {
+LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1), db_(0), logCount(0), diskFull(false) {
 }
 
 LoggerWorker::~LoggerWorker() {
@@ -82,6 +82,16 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
     if ((lastSteps == steps) && !tags.size() && (lastDate.secsTo(now) < MinTimeDiff)) {
         return;
     }
+    if ((logCount++ % 50) == 0) {
+        diskFull = Platform::instance()->dbFull();
+        if (diskFull) {
+            qCritical() << "LoggerWorker::insertLog: Disk full";
+        }
+    }
+    if (diskFull) {
+        return;
+    }
+
     lastSteps = steps;
     lastDate = now;
 

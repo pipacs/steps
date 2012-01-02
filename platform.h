@@ -24,8 +24,11 @@ public:
     /// Get full path for a sound file with base name "name".
     Q_INVOKABLE QUrl soundUrl(const QString &name);
 
-    /// Full path name of the database directory to use.
+    /// Full path name of the database file to use.
     Q_INVOKABLE QString dbPath();
+
+    /// Is the disk containing the database full?
+    bool dbFull();
 
 protected:
     Platform();

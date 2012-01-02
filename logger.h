@@ -61,6 +61,8 @@ protected:
     QDateTime lastDate;
     int lastSteps;
     Database *db_;
+    int logCount;
+    bool diskFull;
 };
 
 #endif // LOGGER_H
