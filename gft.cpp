@@ -99,7 +99,7 @@ void Gft::upload(const QString &archive_) {
             break;
         }
         qlonglong id = query.value(0).toLongLong();
-        QString date = sanitize(query.value(1).toString());
+        QString date = sanitize(query.value(1).toString().replace('T', ' '));
         int steps = query.value(2).toInt();
         QString tags = getTags(db, id);
         sql.append(QString("INSERT INTO $T (steps,date,tags) VALUES (%1,'%2','%3');\n").arg(steps).arg(date, tags));
