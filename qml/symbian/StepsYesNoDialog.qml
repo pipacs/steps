@@ -7,7 +7,8 @@ QueryDialog {
     signal dialogAccepted
     signal dialogRejected
 
-    titleText: "Steps"
+    height: 190
+    titleText: "Steps" // titlec
     message: title
     buttonTexts: ["Yes", "No"]
     // icon: "/images/steps.png"

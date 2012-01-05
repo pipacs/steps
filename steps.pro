@@ -145,7 +145,9 @@ OTHER_FILES += \
     qml/BigRedButton.qml \
     publishing/splash-n9.pxm \
     splash/splash-n9.jpg \
-    publishing/splash-n9.png
+    publishing/splash-n9.png \
+    qml/symbian/StepsButtonColumn.qml \
+    qml/meego/StepsButtonColumn.qml
 
 HEADERS += \
     counter.h \

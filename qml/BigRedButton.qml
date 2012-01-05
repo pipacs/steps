@@ -1,7 +1,7 @@
 import QtQuick 1.0
-import "meego"
+import "symbian"
 
 StepsRedButton {
     font.pixelSize: 36
-    height: 82
+    height: 78
 }

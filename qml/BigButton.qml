@@ -3,5 +3,5 @@ import "meego"
 
 StepsButton {
     font.pixelSize: 36
-    height: 82
+    height: 78
 }
