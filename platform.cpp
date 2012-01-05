@@ -11,6 +11,11 @@
 #include <QDir>
 #include <QProcess>
 
+#if defined(Q_OS_SYMBIAN)
+#   include <sysutil.h>
+#   include <f32file.h>
+#endif // Q_OS_SYMBIAN
+
 #include "platform.h"
 
 #if defined(Q_OS_SYMBIAN)
@@ -79,8 +84,8 @@ QString Platform::dbPath() {
 
 bool Platform::dbFull() {
     bool ret = false;
-#if defined(MEEGO_EDITION_HARMATTAN)
     QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
+#if defined(MEEGO_EDITION_HARMATTAN)
     QProcess df;
     df.start("/bin/df", QStringList() << "-k" << base);
     df.waitForFinished();
@@ -91,6 +96,12 @@ bool Platform::dbFull() {
             ret = fields.at(3).toInt() < STEPS_MIN_FREE;
         }
     }
+#elif defined(Q_OS_SYMBAN)
+    TInt drive = base[0].toLower().unicode() - QChar('a').unicode() + EDriveA;
+    ret = SysUtil::DiskSpaceBelowCriticalLevelL(&iFsSession, STEPS_MIN_FREE * 1024, drive);
 #endif
+    if (ret) {
+        qCritical() << "Platform::dbFull: Disk full";
+    }
     return ret;
 }

@@ -34,8 +34,7 @@ contains(MEEGO_EDITION,harmattan) {
 
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
     DATADIR = c:/data/steps
