@@ -96,6 +96,10 @@ void UploaderWorker::onGftUploadFinished(int result) {
     Trace t("UploaderWorker::onGftUploadFinished");
     qDebug() << "Result" << (int)result;
     if (result == UploadComplete) {
+        if (listArchives().length() > 1) {
+            qDebug() << "There are more archives to upload";
+            result = UploadIncomplete;
+        }
         QFile file(archive);
         if (!file.remove()) {
             qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
