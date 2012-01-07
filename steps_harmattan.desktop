@@ -4,8 +4,8 @@ Version=1.0
 Type=Application
 Terminal=false
 Name=Steps
-Exec=/usr/bin/invoker --type=e --single-instance --splash=/opt/steps/share/splash/splash-n9.jpg /opt/steps/bin/steps
-Icon=/usr/share/icons/hicolor/80x80/apps/steps80.png
+Exec=/usr/bin/invoker --type=e --single-instance --splash=/opt/Steps/share/splash/splash-n9.jpg /opt/Steps/bin/Steps
+Icon=/usr/share/icons/hicolor/80x80/apps/Steps80.png
 X-Window-Icon=
 X-HildonDesk-ShowInToolbar=true
 X-Osso-Type=application/x-executable

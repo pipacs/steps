@@ -23,7 +23,7 @@ contains(MEEGO_EDITION,harmattan) {
     RESOURCES += meego.qrc
     SOURCES += mediakeyprivate-meego.cpp
     DATADIR = share
-    DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
+    DEFINES += STEPS_DATADIR=\\\"/opt/Steps/share\\\"
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
     QML_IMPORT_PATH = qml/meego
 
@@ -49,8 +49,8 @@ contains(MEEGO_EDITION,harmattan) {
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
-    DATADIR = c:/data/steps
-    DEFINES += STEPS_DATADIR='"c:/data/steps"'
+    DATADIR = c:/data/Steps
+    DEFINES += STEPS_DATADIR='"c:/data/Steps"'
     DEFINES += STEPS_VERSION='"$$VERSION"'
     QML_IMPORT_PATH = qml/symbian
     # Smart Installer package's UID
