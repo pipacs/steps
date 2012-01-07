@@ -54,7 +54,7 @@ void Gft::upload(const QString &archive_) {
     // Create program if doesn't exist
     if (!program) {
         program = new GftProgram;
-        connect(program, SIGNAL(stepCompleted(QList<qlonglong>)), this, SLOT(onStepCompleted(QList<qlonglong>)));
+        connect(program, SIGNAL(stepCompleted(GftIdList)), this, SLOT(onStepCompleted(GftIdList)));
         connect(program, SIGNAL(programCompleted(bool)), this, SLOT(onProgramCompleted(bool)));
     }
 
@@ -147,7 +147,7 @@ QString Gft::sanitize(const QString &s) {
     return ret;
 }
 
-void Gft::onStepCompleted(QList<qlonglong> recordIdList) {
+void Gft::onStepCompleted(GftIdList recordIdList) {
     Trace t("Gft::onStepCompleted");
     foreach (qlonglong recordId, recordIdList) {
         uploadedRecords.append(recordId);

@@ -11,6 +11,7 @@
 enum GftMethod {GftGet, GftPost};
 
 GftProgram::GftProgram(QObject *parent): QObject(parent) {
+    qRegisterMetaType<GftIdList>();
     manager = new QNetworkAccessManager;
 }
 
