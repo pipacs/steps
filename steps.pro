@@ -1,4 +1,5 @@
 VERSION = 0.0.8
+TARGET = Steps
 
 # Qt packages to use
 CONFIG += mobility
