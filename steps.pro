@@ -9,12 +9,6 @@ QT += sql
 QT += network
 QT += script
 
-# Add "sounds" folder to the application
-# (Sounds cannot be played back from resource on Symbian)
-folder_sounds.source = sounds
-folder_sounds.target = $$DATADIR
-DEPLOYMENTFOLDERS = folder_sounds
-
 # Platform-specific
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
@@ -62,6 +56,12 @@ contains(MEEGO_EDITION,harmattan) {
 } else {
     error("Unsupported platform")
 }
+
+# Add "sounds" folder to the application
+# (Sounds cannot be played back from resource on Symbian)
+folder_sounds.source = sounds
+folder_sounds.target = $$DATADIR
+DEPLOYMENTFOLDERS += folder_sounds
 
 SOURCES += \
     main.cpp \

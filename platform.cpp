@@ -72,7 +72,7 @@ QUrl Platform::soundUrl(const QString &name) {
     } else if (QFileInfo(mp3).exists()) {
         ret = QUrl::fromLocalFile(mp3);
     } else {
-        qWarning() << "Platform.soundUrl: No file for" << name;
+        qWarning() << "Platform.soundUrl: No file for" << name << "in" << (QString(STEPS_DATADIR) + "/sounds");
     }
     return ret;
 }
