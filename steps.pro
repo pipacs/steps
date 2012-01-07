@@ -8,6 +8,12 @@ QT += sql
 QT += network
 QT += script
 
+# Add "sounds" folder to the application
+# (Sounds cannot be played back from resource on Symbian)
+folder_sounds.source = sounds
+folder_sounds.target = $$DATADIR
+DEPLOYMENTFOLDERS = folder_sounds
+
 # Platform-specific
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
@@ -19,6 +25,11 @@ contains(MEEGO_EDITION,harmattan) {
     DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
     QML_IMPORT_PATH = qml/meego
+
+    # Add a splash image for the Meego launcher
+    folder_splash.source = splash
+    folder_splash.target = $$DATADIR
+    DEPLOYMENTFOLDERS += folder_splash
 } else:symbian {
     CONFIG(debug, debug|release) {
         # Use vanilla UID in debug mode
@@ -50,14 +61,6 @@ contains(MEEGO_EDITION,harmattan) {
 } else {
     error("Unsupported platform")
 }
-
-# Add extra folders to the application
-# (Sounds cannot be played back from resource on Symbian)
-folder_01.source = sounds
-folder_01.target = $$DATADIR
-folder_02.source = splash
-folder_02.target = $$DATADIR
-DEPLOYMENTFOLDERS = folder_01 folder_02
 
 SOURCES += \
     main.cpp \
@@ -147,7 +150,9 @@ OTHER_FILES += \
     splash/splash-n9.jpg \
     publishing/splash-n9.png \
     qml/symbian/StepsButtonColumn.qml \
-    qml/meego/StepsButtonColumn.qml
+    qml/meego/StepsButtonColumn.qml \
+    qml/Splash.qml \
+    images/splash.jpg
 
 HEADERS += \
     counter.h \

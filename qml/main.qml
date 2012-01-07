@@ -1,6 +1,6 @@
 import QtQuick 1.1
 import QtMultimediaKit 1.1
-import "meego"
+import "symbian"
 
 StepsPageStackWindow {
     id: main
@@ -12,6 +12,12 @@ StepsPageStackWindow {
 
     MainPage {
         id: mainPage
+    }
+
+    Splash {
+        id: splash
+        Component.onCompleted: splash.activate();
+        onFinished: splash.destroy();
     }
 
     function rawCountChanged(val) {
