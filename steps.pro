@@ -9,7 +9,7 @@ QT += sql
 QT += network
 QT += script
 
-# Platform-specific
+# Meego Harmattan rules
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
     CONFIG += qmsystem2
@@ -25,7 +25,10 @@ contains(MEEGO_EDITION,harmattan) {
     folder_splash.source = splash
     folder_splash.target = $$DATADIR
     DEPLOYMENTFOLDERS += folder_splash
-} else:symbian {
+}
+
+# Symbian rules
+symbian {
     CONFIG(debug, debug|release) {
         # Use vanilla UID in debug mode
         TARGET.UID3 = 0xE1584C4E
@@ -33,10 +36,6 @@ contains(MEEGO_EDITION,harmattan) {
         # Use official UID in release mode
         TARGET.UID3 = 0x20034d0f
     }
-
-    my_deployment.pkg_prerules += vendorinfo
-    DEPLOYMENT += my_deployment
-    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
 
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
@@ -53,8 +52,11 @@ contains(MEEGO_EDITION,harmattan) {
     # range value if unprotected UID is defined for the application and
     # 0x2002CCCF value if protected UID is given to the application
     #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-} else {
-    error("Unsupported platform")
+
+    # For Nokia Store
+    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
+    my_deployment.pkg_prerules += vendorinfo
+    DEPLOYMENT += my_deployment
 }
 
 # Add "sounds" folder to the application
@@ -176,3 +178,4 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
+
