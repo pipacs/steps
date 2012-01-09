@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QDateTime>
 #include <QVariantMap>
+#include <QtGlobal>
 
 class LoggerWorker;
 class Database;
@@ -49,8 +50,16 @@ protected:
     /// Archive database if it is older than one day.
     void archiveIfOld();
 
+    /// Save log entry into an existing database: Insert new record or update the last one.
+    /// On insert, lastInsertId is updated as well.
+    void saveLog(int steps, const QVariantMap &tags);
+
     /// Insert a log entry into an existing database.
-    void insertLog(int steps, const QVariantMap &tags);
+    /// @return Last insert ID.
+    qlonglong insertLog(const QDateTime &now, int steps, const QVariantMap &tags);
+
+    /// Update last log entry in an existing database.
+    void updateLog(const QDateTime &now, int steps);
 
     /// Get the name of new archive file.
     QString getArchiveName();
@@ -63,6 +72,7 @@ protected:
     Database *db_;
     int logCount;
     bool diskFull;
+    qlonglong lastInsertId;
 };
 
 #endif // LOGGER_H

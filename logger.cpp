@@ -14,6 +14,9 @@
 /// Minimum time difference for logging unchanged information (seconds).
 const int MinTimeDiff = 60 * 60;
 
+/// Minimum time difference to force logging a new record (otherwise the last record gets updated).
+const int MinInsertTimeDiff = 60;
+
 Logger *instance_;
 
 Logger *Logger::instance() {
@@ -51,7 +54,7 @@ void Logger::log(int steps, const QVariantMap &tags) {
     }
 }
 
-LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1), db_(0), logCount(0), diskFull(false) {
+LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1), db_(0), logCount(0), diskFull(false), lastInsertId(0) {
 }
 
 LoggerWorker::~LoggerWorker() {
@@ -68,7 +71,7 @@ Database *LoggerWorker::db() {
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
     archiveIfOld();
-    insertLog(steps, tags);
+    saveLog(steps, tags);
 }
 
 void LoggerWorker::archiveIfOld() {
@@ -77,7 +80,7 @@ void LoggerWorker::archiveIfOld() {
     }
 }
 
-void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
+void LoggerWorker::saveLog(int steps, const QVariantMap &tags) {
     QDateTime now = QDateTime::currentDateTime();
     if ((lastSteps == steps) && !tags.size() && (lastDate.secsTo(now) < MinTimeDiff)) {
         return;
@@ -85,19 +88,43 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
     if ((logCount++ % 50) == 0) {
         diskFull = Platform::instance()->dbFull();
         if (diskFull) {
-            qCritical() << "LoggerWorker::insertLog: Disk full";
+            qCritical() << "LoggerWorker::saveLog: Disk full";
         }
     }
     if (diskFull) {
         return;
     }
+    if (tags.count() || (lastDate.secsTo(now) > MinInsertTimeDiff)) {
+        // Always insert new record if there are some tags to save, or after a minute
+        lastInsertId = 0;
+    }
+    if (lastInsertId) {
+        updateLog(now, steps);
+    } else {
+        lastInsertId = insertLog(now, steps, tags);
+    }
 
     lastSteps = steps;
     lastDate = now;
+}
+
+void LoggerWorker::updateLog(const QDateTime &now, int steps) {
+    QSqlQuery query(db()->db());
+    query.prepare("update log set date=?, steps=? where id=?");
+    query.bindValue(0, now.toString(Qt::ISODate));
+    query.bindValue(1, steps);
+    query.bindValue(2, lastInsertId);
+    if (!query.exec()) {
+        qCritical() << "LoggerWorker::updateLog: Failed to log:" << db()->error();
+    }
+}
+
+qlonglong LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap &tags) {
+    qlonglong id = 0;
 
     if (!db()->transaction()) {
         qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db()->error();
-        return;
+        return 0;
     }
 
     QSqlQuery query(db()->db());
@@ -106,7 +133,7 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
     query.bindValue(1, steps);
     bool success = query.exec();
     if (success) {
-        qlonglong id = query.lastInsertId().toLongLong();
+        id = query.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
             QSqlQuery tagQuery(db()->db());
@@ -120,12 +147,15 @@ void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
             }
         }
     }
+
     if (success) {
         db()->commit();
     } else {
         qCritical() << "LoggerWorker::insertLog: Failed to log:" << db()->error();
         db()->rollback();
     }
+
+    return id;
 }
 
 void LoggerWorker::archive() {
@@ -137,6 +167,7 @@ void LoggerWorker::archive() {
         return;
     }
     db()->close();
+    lastInsertId = 0;
     QString archiveName = getArchiveName();
     if (!file.rename(archiveName)) {
         qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << dbName << "to" << archiveName;
@@ -166,7 +197,7 @@ void LoggerWorker::onAddSchema() {
     QDateTime nowUtc(now);
     nowUtc.setTimeSpec(Qt::UTC);
     tags.insert("secondsFromUtc", now.secsTo(nowUtc));
-    insertLog(-1, tags);
+    saveLog(-1, tags);
 }
 
 QString LoggerWorker::getArchiveName() {
