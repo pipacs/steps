@@ -79,10 +79,8 @@ void Gft::upload(const QString &archive_) {
 
     QList<GftInstruction> instructions;
 
-    QFileInfo info(archive);
-    QString dbName = info.baseName();
-    instructions.append(GftInstruction(GftFindTable, dbName));
-    instructions.append(GftInstruction(GftCreateTableIf, dbName));
+    instructions.append(GftInstruction(GftFindTable, "Steps"));
+    instructions.append(GftInstruction(GftCreateTableIf, "Steps"));
 
     QSqlQuery query(db.db());
     query.setForwardOnly(true);

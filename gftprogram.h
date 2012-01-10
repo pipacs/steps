@@ -49,9 +49,6 @@ public:
     /// Set instructions, reset instruction counter and status.
     void setInstructions(const QList<GftInstruction> instructions_);
 
-    /// Convert a local database name to GFT table name.
-    QString toGftTableName(const QString &localName);
-
 public slots:
     /// Execute next instruction.
     void step();
