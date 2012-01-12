@@ -52,7 +52,7 @@ StepsPage {
             id: pausedLabel
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: main.activityName(main.activity) + (counter.running? "": qsTr(" (Paused)"))
+            text: main.activityNames[main.activity] + (counter.running? "": qsTr(" (Paused)"))
             font.pixelSize: 45
             color: "#ff9999"
             horizontalAlignment: Text.AlignHCenter
@@ -88,6 +88,7 @@ StepsPage {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
         counter.runningChanged.connect(onCounterRunningChanged);
+        // main.activityChanged.connect(onActivityChanged)
     }
 
     onActiveChanged: {
@@ -101,6 +102,10 @@ StepsPage {
 
     onBack: {
         Qt.quit()
+    }
+
+    function onActivityChanged() {
+        pausedLabel.text = main.activityNames[main.activity] + (counter.running? "": qsTr(" (Paused)"))
     }
 
     function onVolumeUpPressed() {

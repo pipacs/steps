@@ -9,6 +9,7 @@ StepsPageStackWindow {
     property int dailyCount: 0
     property int activityCount: 0
     property int activity: 0
+    property variant activityNames: ["Walking", "Running", prefs.value("activity2Name", "Custom 1"), prefs.value("activity3Name", "Custom 2")]
 
     MainPage {
         id: mainPage
@@ -95,15 +96,9 @@ StepsPageStackWindow {
         }
     }
 
-    function activityName(a) {
-        if (a === 0)
-            return "Walking"
-        else if (a === 1)
-            return "Running"
-        else if (a === 2)
-            return "Custom 1"
-        else if (a === 3)
-            return "Custom 2"
+    onActivityNamesChanged: {
+        prefs.setValue("activity2Name", activityNames[2])
+        prefs.setValue("activity3Name", activityNames[3])
     }
 
     Component.onCompleted: {

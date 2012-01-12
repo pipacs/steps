@@ -16,7 +16,7 @@ StepsPage {
         Column {
             id: col2
             anchors.top: parent.top
-            spacing: 31
+            spacing: 25
             width: settings.width - 60
 
             StepsCheckBox {
@@ -51,7 +51,6 @@ StepsPage {
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (gft.linked) {
-                        dialogOpen = true
                         confirmLogoutDialog.open()
                     } else {
                         spinner.running = true
@@ -59,19 +58,22 @@ StepsPage {
                     }
                 }
             }
-        }
-    }
 
-    StepsYesNoDialog {
-        id: confirmResetAllDialog
-        titleText: "Reset all settings?"
-        onDialogAccepted: {
-            prefs.muted = true
-            audioFeedback.checked = false
-            counter.resetSettings()
-            sensitivitySlider.value = counter.sensitivity
-            gft.enabled = false
-            enableSharing.checked = false
+            StepsLabel {text: "Name of activity \"Custom 1\""}
+
+            StepsTextField {
+                id: custom1Text
+                width: parent.width
+                text: main.activityNames[2]
+            }
+
+            StepsLabel {text: "Name of activity \"Custom 2\":"}
+
+            StepsTextField {
+                id: custom2Text
+                width: parent.width
+                text: main.activityNames[3]
+            }
         }
     }
 
@@ -99,15 +101,11 @@ StepsPage {
     onBack: {
         console.log("* SettingsPage.onBack")
         main.pageStack.pop()
-        // if (calibrationSlider.changed && counter.rawCount) {
-        //     var activityDelta = calibrationSlider.value - main.activityCount
-        //     counter.calibration = (counter.count + activityDelta) / counter.rawCount
-        //     prefs.calibration = counter.calibration
-        // }
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
         prefs.sensitivity = counter.sensitivity
         gft.enabled = enableSharing.checked
+        main.activityNames = [main.activityNames[0], main.activityNames[1], custom1Text.text, custom2Text.text]
     }
 
     function openBrowser(url) {

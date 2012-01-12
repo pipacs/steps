@@ -17,28 +17,28 @@ StepsPage {
             BigButton {
                 id: activity0
                 anchors.left: parent.left; anchors.right: parent.right
-                text: main.activityName(0)
+                text: main.activityNames[0]
                 checked: main.activity === 0
                 onClicked: setActivity(0)
             }
             BigButton {
                 id: activity1
                 anchors.left: parent.left; anchors.right: parent.right
-                text: main.activityName(1)
+                text: main.activityNames[1]
                 checked: main.activity === 1
                 onClicked: setActivity(1)
             }
             BigButton {
                 id: activity2
                 anchors.left: parent.left; anchors.right: parent.right
-                text: main.activityName(2)
+                text: main.activityNames[2]
                 checked: main.activity === 2
                 onClicked: setActivity(2)
             }
             BigButton {
                 id: activity3
                 anchors.left: parent.left; anchors.right: parent.right
-                text: main.activityName(3)
+                text: main.activityNames[3]
                 checked: main.activity === 3
                 onClicked: setActivity(3)
             }
@@ -78,7 +78,7 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmChangeActivityDialog
-        title: "Change activity to " + main.activityName(newActivity) + "?"
+        title: "Change activity to " + main.activityNames[newActivity] + "?"
         onDialogAccepted: {
             main.setActivity(newActivity)
             main.pageStack.pop()

@@ -155,7 +155,8 @@ OTHER_FILES += \
     qml/symbian/StepsButtonColumn.qml \
     qml/meego/StepsButtonColumn.qml \
     qml/Splash.qml \
-    images/splash.jpg
+    images/splash.jpg \
+    qml/symbian/StepsTextField.qml
 
 HEADERS += \
     counter.h \

@@ -2,6 +2,7 @@ steps (0.0.9) unstable; urgency=low
 
   * Don't log intermediate steps
   * Always upload to the same table
+  * Activities can be renamed
 
  -- Akos Polster <akos@pipacs.com>  Sun, 9  Jan 2012 23:57:00 +0100
 
