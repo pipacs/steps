@@ -2,9 +2,9 @@ import QtQuick 1.1
 import "symbian"
 
 StepsPage {
+    id: actionsPage
     property bool dialogOpen: false
     property int newActivity: 0
-    id: actionsPage
     property variant buttons: []
 
     Column {

@@ -6,15 +6,15 @@ Page {
     property bool active
     property bool lockOrientation: true
     property bool showBack: true
+    property bool showTools: true
     signal back
 
     active: status === PageStatus.Active
     orientationLock: lockOrientation? PageOrientation.LockPortrait: PageOrientation.Automatic
-    tools: pageTools
+    tools: showTools? pageTools: null
 
     ToolBarLayout {
         id: pageTools
-        visible: showBack
         ToolIcon {
             iconId: "toolbar-back";
             onClicked: back()

@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "meego"
+import "symbian"
 
 StepsPage {
     id: settings
@@ -23,6 +23,12 @@ StepsPage {
                 id: audioFeedback
                 text: "Sound effects"
                 checked: !prefs.muted
+            }
+
+            StepsCheckBox {
+                id: showExit
+                text: "Show Exit icon"
+                checked: prefs.showExit
             }
 
             StepsLabel {text: "Sensitivity:"}
@@ -106,6 +112,7 @@ StepsPage {
         prefs.sensitivity = counter.sensitivity
         gft.enabled = enableSharing.checked
         main.activityNames = [main.activityNames[0], main.activityNames[1], custom1Text.text, custom2Text.text]
+        prefs.showExit = showExit.checked
     }
 
     function openBrowser(url) {
@@ -117,5 +124,9 @@ StepsPage {
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
         gft.linkedChanged.connect(linkInfo.show)
+        if (platform.osName !== "symbian") {
+            showExit.height = 0
+            showExit.visible = false
+        }
     }
 }

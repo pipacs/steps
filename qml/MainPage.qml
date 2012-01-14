@@ -4,7 +4,8 @@ import "symbian"
 StepsPage {
     property bool counterWasRunning: false
     id: mainPage
-    showBack: false
+    showBack: prefs.showExit
+    showTools: prefs.showExit
 
     // Upload indicator
     Image {

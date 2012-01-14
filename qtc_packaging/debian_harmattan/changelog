@@ -3,6 +3,7 @@ steps (0.0.9) unstable; urgency=low
   * Don't log intermediate steps
   * Always upload to the same table
   * Activities can be renamed
+  * Add setting to show/hide exit icon on Symbian
 
  -- Akos Polster <akos@pipacs.com>  Sun, 9  Jan 2012 23:57:00 +0100
 

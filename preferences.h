@@ -30,6 +30,9 @@ class Preferences: public QObject {
     /// Current activity type
     Q_PROPERTY(int activity READ activity WRITE setActivity NOTIFY valueChanged)
 
+    /// Show/hide exit icon on main toolbar
+    Q_PROPERTY(bool showExit READ showExit WRITE setShowExit NOTIFY valueChanged)
+
 public:
     static Preferences *instance();
     static void close();
@@ -64,6 +67,9 @@ public:
 
     int activity() {return value("activity").toInt();}
     void setActivity(int v) {setValue("activity", v);}
+
+    bool showExit() {return value("showexit").toBool();}
+    void setShowExit(bool v) {setValue("showexit", v);}
 
 signals:
     void valueChanged(const QString &key);
