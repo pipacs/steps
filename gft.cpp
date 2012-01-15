@@ -10,6 +10,7 @@
 #include "gftsecret.h"
 #include "database.h"
 #include "trace.h"
+#include "platform.h"
 
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
@@ -100,7 +101,8 @@ void Gft::upload(const QString &archive_) {
         QString date = sanitize(query.value(1).toString().replace('T', ' '));
         int steps = query.value(2).toInt();
         QString tags = getTags(db, id);
-        sql.append(QString("INSERT INTO $T (steps,date,tags) VALUES (%1,'%2','%3');\n").arg(steps).arg(date, tags));
+        QString device = Platform::instance()->deviceId();
+        sql.append(QString("INSERT INTO $T (steps,date,tags,device) VALUES (%1,'%2','%3');\n").arg(steps).arg(date, tags, device));
         idList.append(id);
     }
     instructions.append(GftInstruction(GftQuery, sql, idList));

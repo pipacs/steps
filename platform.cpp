@@ -10,6 +10,7 @@
 #include <qplatformdefs.h>
 #include <QDir>
 #include <QProcess>
+#include <QUuid>
 
 #if defined(Q_OS_SYMBIAN)
 #   include <sysutil.h>
@@ -17,6 +18,7 @@
 #endif // Q_OS_SYMBIAN
 
 #include "platform.h"
+#include "preferences.h"
 
 #if defined(Q_OS_SYMBIAN)
 #   define STEPS_BASEDIR "steps"
@@ -104,4 +106,8 @@ bool Platform::dbFull() {
         qCritical() << "Platform::dbFull: Disk full";
     }
     return ret;
+}
+
+QString Platform::deviceId() {
+    return Preferences::instance()->value("deviceid", QUuid::createUuid().toString()).toString();
 }

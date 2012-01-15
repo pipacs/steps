@@ -76,7 +76,7 @@ void GftProgram::step() {
             QTimer::singleShot(0, this, SLOT(step()));
             return;
         }
-        sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: DATETIME, tags: STRING)").arg(instructions[ic].param);
+        sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: DATETIME, tags: STRING, device: STRING)").arg(instructions[ic].param);
         method = GftPost;
         break;
 
