@@ -102,7 +102,7 @@ void Gft::upload(const QString &archive_) {
         int steps = query.value(2).toInt();
         QString tags = getTags(db, id);
         QString device = Platform::instance()->deviceId();
-        sql.append(QString("INSERT INTO $T (steps,date,tags,device) VALUES (%1,'%2','%3');\n").arg(steps).arg(date, tags, device));
+        sql.append(QString("INSERT INTO $T (steps,date,tags,device) VALUES (%1,'%2','%3','%4');\n").arg(steps).arg(date, tags, device));
         idList.append(id);
     }
     instructions.append(GftInstruction(GftQuery, sql, idList));

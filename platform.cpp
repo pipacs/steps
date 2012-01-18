@@ -109,5 +109,10 @@ bool Platform::dbFull() {
 }
 
 QString Platform::deviceId() {
-    return Preferences::instance()->value("deviceid", QUuid::createUuid().toString()).toString();
+    QString id = Preferences::instance()->value("deviceid").toString();
+    if (!id.length()) {
+        id = QUuid::createUuid().toString();
+        Preferences::instance()->setValue("deviceid", id);
+    }
+    return id;
 }
