@@ -54,19 +54,19 @@ void Logger::log(int steps, const QVariantMap &tags) {
     }
 }
 
-LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), lastSteps(-1), db_(0), logCount(0), diskFull(false), lastInsertId(0) {
+LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false), lastInsertId(0), totalSteps(0) {
 }
 
 LoggerWorker::~LoggerWorker() {
-    delete db_;
+    delete database;
 }
 
 Database *LoggerWorker::db() {
-    if (!db_) {
-        db_ = new Database(Platform::instance()->dbPath());
-        connect(db_, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
+    if (!database) {
+        database = new Database(Platform::instance()->dbPath());
+        connect(database, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
     }
-    return db_;
+    return database;
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
@@ -81,50 +81,58 @@ void LoggerWorker::archiveIfOld() {
 }
 
 void LoggerWorker::saveLog(int steps, const QVariantMap &tags) {
-    QDateTime now = QDateTime::currentDateTime();
-    if ((lastSteps == steps) && !tags.size() && (lastDate.secsTo(now) < MinTimeDiff)) {
+    // Return if nothing to log
+    if ((steps == 0) && !tags.size()) {
         return;
     }
+
+    // Check disk space every now and then
     if ((logCount++ % 50) == 0) {
         diskFull = Platform::instance()->dbFull();
         if (diskFull) {
             qCritical() << "LoggerWorker::saveLog: Disk full";
         }
     }
+
+    // Don't log if the disk is full
     if (diskFull) {
         return;
     }
-    if (tags.count() || (lastDate.secsTo(now) > MinInsertTimeDiff)) {
-        // Always insert new record if there are some tags to save, or after a minute
-        lastInsertId = 0;
-    }
-    if (lastInsertId) {
-        updateLog(now, steps);
+
+    // Insert new record or update the last one
+    QDateTime now = QDateTime::currentDateTime();
+    if (!lastInsertId || tags.count()) {
+        insertLog(now, steps, tags);
     } else {
-        lastInsertId = insertLog(now, steps, tags);
+        updateLog(now, steps);
     }
 
-    lastSteps = steps;
-    lastDate = now;
+    // If there were tags to log, force a new insert next time
+    if (tags.count()) {
+        lastInsertId = 0;
+    }
 }
 
 void LoggerWorker::updateLog(const QDateTime &now, int steps) {
     QSqlQuery query(db()->db());
     query.prepare("update log set date=?, steps=? where id=?");
     query.bindValue(0, now.toString(Qt::ISODate));
-    query.bindValue(1, steps);
+    query.bindValue(1, totalSteps + steps);
     query.bindValue(2, lastInsertId);
     if (!query.exec()) {
         qCritical() << "LoggerWorker::updateLog: Failed to log:" << db()->error();
+    } else {
+        totalSteps += steps;
     }
 }
 
-qlonglong LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap &tags) {
-    qlonglong id = 0;
+void LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap &tags) {
+    lastInsertId = 0;
+    totalSteps = 0;
 
     if (!db()->transaction()) {
         qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db()->error();
-        return 0;
+        return;
     }
 
     QSqlQuery query(db()->db());
@@ -133,14 +141,14 @@ qlonglong LoggerWorker::insertLog(const QDateTime &now, int steps, const QVarian
     query.bindValue(1, steps);
     bool success = query.exec();
     if (success) {
-        id = query.lastInsertId().toLongLong();
+        lastInsertId = query.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
             QSqlQuery tagQuery(db()->db());
             tagQuery.prepare("insert into tags (name, value, logid) values (?, ?, ?)");
             tagQuery.bindValue(0, key);
             tagQuery.bindValue(1, value);
-            tagQuery.bindValue(2, id);
+            tagQuery.bindValue(2, lastInsertId);
             if (!tagQuery.exec()) {
                 success = false;
                 break;
@@ -150,20 +158,19 @@ qlonglong LoggerWorker::insertLog(const QDateTime &now, int steps, const QVarian
 
     if (success) {
         db()->commit();
+        totalSteps = steps;
     } else {
         qCritical() << "LoggerWorker::insertLog: Failed to log:" << db()->error();
         db()->rollback();
+        lastInsertId = 0;
     }
-
-    return id;
 }
 
 void LoggerWorker::archive() {
-    Trace t("LoggerWorker::archive");
     QString dbName = Platform::instance()->dbPath();
     QFile file(dbName);
     if (!file.exists()) {
-        qDebug() << "No database:" << dbName << "does not exist";
+        qWarning() << "LoggerWorker::archive: No database:" << dbName << "does not exist";
         return;
     }
     db()->close();
@@ -171,8 +178,6 @@ void LoggerWorker::archive() {
     QString archiveName = getArchiveName();
     if (!file.rename(archiveName)) {
         qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << dbName << "to" << archiveName;
-    } else {
-        qDebug() << "Renamed" << dbName << "to" << archiveName;
     }
 }
 
@@ -197,7 +202,7 @@ void LoggerWorker::onAddSchema() {
     QDateTime nowUtc(now);
     nowUtc.setTimeSpec(Qt::UTC);
     tags.insert("secondsFromUtc", now.secsTo(nowUtc));
-    saveLog(-1, tags);
+    saveLog(0, tags);
 }
 
 QString LoggerWorker::getArchiveName() {

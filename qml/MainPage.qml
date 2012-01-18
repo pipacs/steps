@@ -89,7 +89,6 @@ StepsPage {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
         counter.runningChanged.connect(onCounterRunningChanged);
-        // main.activityChanged.connect(onActivityChanged)
     }
 
     onActiveChanged: {

@@ -30,10 +30,9 @@ StepsPageStackWindow {
             return
         }
 
-        logger.log(count, {})
-
         var delta = count - prevCount
         prevCount = count
+        logger.log(delta, {})
 
         // Register activity step count
         setActivityCount(activityCount + delta)
@@ -71,7 +70,7 @@ StepsPageStackWindow {
     // Reset current activity counter
     function resetActivityCount() {
         setActivityCount(0)
-        logger.log(counter.count, {"resetActivityCount": 0})
+        logger.log(0, {"resetActivityCount": 0})
     }
 
     // Reset all counters
@@ -84,12 +83,12 @@ StepsPageStackWindow {
     }
 
     function runningChanged() {
-        logger.log(counter.count, {"counting": counter.running})
+        logger.log(0, {"counting": counter.running})
     }
 
     function setActivity(a) {
         if (a !== activity) {
-            logger.log(counter.count, {"activity": a})
+            logger.log(0, {"activity": a})
             activity = a
             prefs.activity = a
             resetActivityCount()
@@ -111,7 +110,7 @@ StepsPageStackWindow {
         counter.step.connect(main.countChanged)
         counter.runningChanged.connect(main.runningChanged)
 
-        logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion})
+        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion})
 
         // Restore step counts from settings
         setDailyCount(prefs.dailyCount)
@@ -120,6 +119,6 @@ StepsPageStackWindow {
     }
 
     Component.onDestruction: {
-        logger.log(counter.count, {"appStopped": "com.pipacs.steps"})
+        logger.log(0, {"appStopped": "com.pipacs.steps"})
     }
 }
