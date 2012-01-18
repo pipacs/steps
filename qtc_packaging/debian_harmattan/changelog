@@ -4,6 +4,9 @@ steps (0.0.9) unstable; urgency=low
   * Always upload to the same table
   * Activities can be renamed
   * Add setting to show/hide exit icon on Symbian
+  * Log activity deltas, not total step count
+  * Upload to Google with unique device ID
+  * Improve help text on main screen
 
  -- Akos Polster <akos@pipacs.com>  Sun, 9  Jan 2012 23:57:00 +0100
 

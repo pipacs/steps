@@ -64,7 +64,7 @@ StepsPage {
         StepsLabel {
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: qsTr("Press Volume Up to start/pause activity, Volume Down to show settings")
+            text: qsTr("Press Volume Up to start/pause activity, Volume Down to show more options")
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
