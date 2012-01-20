@@ -65,7 +65,7 @@ StepsPage {
                 }
             }
 
-            StepsLabel {text: "Name of activity \"Custom 1\""}
+            StepsLabel {text: "Rename activity \"Custom 1\":"}
 
             StepsTextField {
                 id: custom1Text
@@ -73,7 +73,7 @@ StepsPage {
                 text: main.activityNames[2]
             }
 
-            StepsLabel {text: "Name of activity \"Custom 2\":"}
+            StepsLabel {text: "Rename activity \"Custom 2\":"}
 
             StepsTextField {
                 id: custom2Text
