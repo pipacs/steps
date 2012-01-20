@@ -7,6 +7,7 @@ steps (0.0.9) unstable; urgency=low
   * Log activity deltas, not total step count
   * Upload to Google with unique device ID
   * Improve help text on main screen
+  * Fix Smart Installer dependency on Nokia N8
 
  -- Akos Polster <akos@pipacs.com>  Sun, 9  Jan 2012 23:57:00 +0100
 

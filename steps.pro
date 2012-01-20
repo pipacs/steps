@@ -3,6 +3,7 @@ TARGET = Steps
 
 # Qt packages to use
 CONFIG += mobility
+CONFIG += qt-components
 MOBILITY += sensors
 MOBILITY += multimedia
 QT += sql
@@ -32,9 +33,13 @@ symbian {
     CONFIG(debug, debug|release) {
         # Use vanilla UID in debug mode
         TARGET.UID3 = 0xE1584C4E
+        # Use unprotected UID for wrapper package
+        DEPLOYMENT.installer_header = 0xA000D7CE
     } else {
         # Use official UID in release mode
         TARGET.UID3 = 0x20034d0f
+        # Use official UID for wrapper package
+        DEPLOYMENT.installer_header = 0x2002CCCF
     }
 
     TARGET.CAPABILITY += NetworkServices
@@ -46,12 +51,6 @@ symbian {
     DEFINES += STEPS_DATADIR='"c:/data/Steps"'
     DEFINES += STEPS_VERSION='"$$VERSION"'
     QML_IMPORT_PATH = qml/symbian
-    # Smart Installer package's UID
-    # This UID is from the protected range and therefore the package will
-    # fail to install if self-signed. By default qmake uses the unprotected
-    # range value if unprotected UID is defined for the application and
-    # 0x2002CCCF value if protected UID is given to the application
-    #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 
     # For Nokia Store
     vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
@@ -179,4 +178,3 @@ HEADERS += \
 
 RESOURCES += \
     common.qrc
-
