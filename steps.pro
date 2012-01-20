@@ -38,8 +38,6 @@ symbian {
     } else {
         # Use official UID in release mode
         TARGET.UID3 = 0x20034d0f
-        # Use official UID for wrapper package
-        DEPLOYMENT.installer_header = 0x2002CCCF
     }
 
     TARGET.CAPABILITY += NetworkServices
@@ -56,6 +54,18 @@ symbian {
     vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
     my_deployment.pkg_prerules += vendorinfo
     DEPLOYMENT += my_deployment
+
+    # Use official UI for Steps
+    TARGET.UID3 += 0x20034d0f
+    # Use official UID for wrapper package
+    # DEPLOYMENT.installer_header = 0x2002CCCF
+
+    CONFIG(debug, debug|release) {
+        # Use vanilla UID in debug mode
+        TARGET.UID3 = 0xE1584C4E
+        # Use unprotected UID for wrapper package
+        DEPLOYMENT.installer_header = 0xA000D7CE
+    }
 }
 
 # Add "sounds" folder to the application
