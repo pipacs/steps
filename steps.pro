@@ -42,7 +42,8 @@ symbian {
 
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil
+    INCLUDEPATH += psm-symbian/include
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil $$PWD/psm-symbian/armv5/lib/psmclient.lib
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
     DATADIR = c:/data/Steps
@@ -165,7 +166,15 @@ OTHER_FILES += \
     qml/meego/StepsButtonColumn.qml \
     qml/Splash.qml \
     images/splash.jpg \
-    qml/symbian/StepsTextField.qml
+    qml/symbian/StepsTextField.qml \
+    psm-symbian/armv5/lib/psmclient{000a0000}.dso \
+    psm-symbian/armv5/lib/psmclient.lib \
+    psm-symbian/armv5/lib/psmclient.dso \
+    psm-symbian/armv5/lib/psmclient{000a0000}.lib \
+    psm-symbian/armv5/udeb/psmclient.dll \
+    psm-symbian/armv5/udeb/psmclient.dll.map \
+    psm-symbian/armv5/urel/psmclient.dll \
+    psm-symbian/armv5/urel/psmclient.dll.map
 
 HEADERS += \
     counter.h \
@@ -185,6 +194,10 @@ HEADERS += \
     gftsecret.h \
     database.h \
     trace.h \
+    psm-symbian/include/psmsettings.h \
+    psm-symbian/include/psmclientobserver.h \
+    psm-symbian/include/psmclient.h \
+    psm-symbian/include/psmtypes.h
 
 RESOURCES += \
     common.qrc

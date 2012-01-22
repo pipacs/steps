@@ -15,6 +15,7 @@
 #if defined(Q_OS_SYMBIAN)
 #   include <sysutil.h>
 #   include <f32file.h>
+#   include <psmclient.h>
 #elif defined(MEEGO_EDITION_HARMATTAN)
 #   include <qmdevicemode.h>
 #endif
