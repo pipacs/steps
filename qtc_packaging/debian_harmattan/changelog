@@ -1,5 +1,7 @@
 steps (0.1.0) unstable; urgency=low
 
+  * Enable power save mode on Meego
+
  -- Akos Polster <akos@pipacs.com>  Sat, 21 Jan 2012 13:29:00 +0100
 
 steps (0.0.9) unstable; urgency=low
