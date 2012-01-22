@@ -18,6 +18,9 @@ class Platform: public QObject {
     /// Universally unique device ID.
     Q_PROPERTY(QString deviceId READ deviceId CONSTANT)
 
+    /// Power save mode.
+    Q_PROPERTY(bool savePower READ savePower WRITE setSavePower NOTIFY savePowerChanged)
+
 public:
     static Platform *instance();
     static void close();
@@ -39,6 +42,15 @@ public:
 
     /// Device ID.
     QString deviceId();
+
+    /// Get power save mode.
+    bool savePower();
+
+    /// Set power save mode.
+    void setSavePower(bool v);
+
+signals:
+    void savePowerChanged();
 
 protected:
     Platform();

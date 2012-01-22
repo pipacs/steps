@@ -15,7 +15,9 @@
 #if defined(Q_OS_SYMBIAN)
 #   include <sysutil.h>
 #   include <f32file.h>
-#endif // Q_OS_SYMBIAN
+#elif defined(MEEGO_EDITION_HARMATTAN)
+#   include <qmdevicemode.h>
+#endif
 
 #include "platform.h"
 #include "preferences.h"
@@ -115,4 +117,20 @@ QString Platform::deviceId() {
         Preferences::instance()->setValue("deviceid", id);
     }
     return id;
+}
+
+void Platform::setSavePower(bool v) {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    if (MeeGo::QmDeviceMode().setPSMState(v? MeeGo::QmDeviceMode::PSMStateOn: MeeGo::QmDeviceMode::PSMStateOff)) {
+        emit savePowerChanged();
+    }
+#endif
+}
+
+bool Platform::savePower() {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    return MeeGo::QmDeviceMode().getPSMState() == MeeGo::QmDeviceMode::PSMStateOn;
+#else
+    return false;
+#endif
 }

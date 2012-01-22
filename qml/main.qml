@@ -84,6 +84,9 @@ StepsPageStackWindow {
 
     function runningChanged() {
         logger.log(0, {"counting": counter.running})
+        if (prefs.savePower) {
+            platform.savePower = counter.running
+        }
     }
 
     function setActivity(a) {

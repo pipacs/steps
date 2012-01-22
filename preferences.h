@@ -33,6 +33,9 @@ class Preferences: public QObject {
     /// Show/hide exit icon on main toolbar
     Q_PROPERTY(bool showExit READ showExit WRITE setShowExit NOTIFY valueChanged)
 
+    /// Power saving.
+    Q_PROPERTY(bool savePower READ savePower WRITE setSavePower NOTIFY valueChanged)
+
 public:
     static Preferences *instance();
     static void close();
@@ -70,6 +73,9 @@ public:
 
     bool showExit() {return value("showexit").toBool();}
     void setShowExit(bool v) {setValue("showexit", v);}
+
+    bool savePower() {return value("savepower").toBool();}
+    void setSavePower(bool v) {setValue("savepower", v);}
 
 signals:
     void valueChanged(const QString &key);

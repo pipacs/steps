@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "symbian"
+import "meego"
 
 StepsPage {
     id: settings
@@ -18,6 +18,12 @@ StepsPage {
             anchors.top: parent.top
             spacing: 25
             width: settings.width - 60
+
+            StepsCheckBox {
+                id: savePower
+                text: "Conserve power"
+                checked: prefs.savePower
+            }
 
             StepsCheckBox {
                 id: audioFeedback
@@ -113,6 +119,7 @@ StepsPage {
         gft.enabled = enableSharing.checked
         main.activityNames = [main.activityNames[0], main.activityNames[1], custom1Text.text, custom2Text.text]
         prefs.showExit = showExit.checked
+        prefs.savePower = savePower.checked
     }
 
     function openBrowser(url) {
