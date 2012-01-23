@@ -16,6 +16,7 @@
 #   include <sysutil.h>
 #   include <f32file.h>
 #   include <psmclient.h>
+#   include <psmsettings.h>
 #elif defined(MEEGO_EDITION_HARMATTAN)
 #   include <qmdevicemode.h>
 #endif
@@ -44,7 +45,31 @@ const int STEPS_MIN_FREE = 4096;
 
 static Platform *theInstance;
 
+#if defined(Q_OS_SYMBIAN)
+class PsmObserver: public MPsmClientObserver {
+public:
+    void PowerSaveModeChangeError(const TInt error) {
+        qDebug() << "PsmObserver::PowerSaveModeChangeError" << error;
+    }
+
+    void PowerSaveModeChanged(const TPsmsrvMode mode) {
+        qDebug() << "PsmObserver::PowerSaveModeChanged: To" << (int)mode;
+    }
+};
+#endif
+
 Platform::Platform(): QObject() {
+#if defined(Q_OS_SYMBIAN)
+    psmObserver = new PsmObserver;
+    QT_TRAP_THROWING(psmClient = CPsmClient::NewL(*psmObserver));
+#endif
+}
+
+Platform::~Platform() {
+#if defined(Q_OS_SYMBIAN)
+    delete psmClient;
+    delete psmObserver;
+#endif
 }
 
 Platform *Platform::instance() {
@@ -125,12 +150,18 @@ void Platform::setSavePower(bool v) {
     if (MeeGo::QmDeviceMode().setPSMState(v? MeeGo::QmDeviceMode::PSMStateOn: MeeGo::QmDeviceMode::PSMStateOff)) {
         emit savePowerChanged();
     }
+#elif defined(Q_OS_SYMBIAN)
+    psmClient->ChangePowerSaveMode(v? EPsmsrvModePowerSave: EPsmsrvModeNormal);
 #endif
 }
 
 bool Platform::savePower() {
 #if defined(MEEGO_EDITION_HARMATTAN)
     return MeeGo::QmDeviceMode().getPSMState() == MeeGo::QmDeviceMode::PSMStateOn;
+#elif defined(Q_OS_SYMBIAN)
+    TInt mode;
+    (void)psmClient->PsmSettings().GetCurrentMode(mode);
+    return mode == EPsmsrvModePowerSave;
 #else
     return false;
 #endif

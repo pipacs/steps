@@ -5,6 +5,11 @@
 #include <QString>
 #include <QUrl>
 
+#if defined(Q_OS_SYMBIAN)
+#include <psmclientobserver.h>
+#include <psmclient.h>
+#endif
+
 /// Platform abstractions.
 class Platform: public QObject {
     Q_OBJECT
@@ -54,6 +59,13 @@ signals:
 
 protected:
     Platform();
+    virtual ~Platform();
+
+private:
+#if defined(Q_OS_SYMBIAN)
+    MPsmClientObserver *psmObserver;
+    CPsmClient *psmClient;
+#endif
 };
 
 #endif // PLATFORM_H
