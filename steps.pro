@@ -30,9 +30,7 @@ contains(MEEGO_EDITION,harmattan) {
 
 # Symbian rules
 symbian {
-    TARGET.CAPABILITY += NetworkServices
-    INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
-    INCLUDEPATH += psm-symbian/include
+    TARGET.CAPABILITY += NetworkServices WriteDeviceData ReadDeviceData
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil -lpsmclient
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
@@ -46,17 +44,10 @@ symbian {
     my_deployment.pkg_prerules += vendorinfo
     DEPLOYMENT += my_deployment
 
-    # Use official UI for Steps
+    # Use official UID for Steps
     TARGET.UID3 += 0x20034d0f
     # Use official UID for wrapper package
     # DEPLOYMENT.installer_header = 0x2002CCCF
-
-    CONFIG(debug, debug|release) {
-        # Use vanilla UID in debug mode
-        TARGET.UID3 = 0xE1584C4E
-        # Use unprotected UID for wrapper package
-        DEPLOYMENT.installer_header = 0xA000D7CE
-    }
 }
 
 # Add "sounds" folder to the application
