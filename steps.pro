@@ -30,16 +30,6 @@ contains(MEEGO_EDITION,harmattan) {
 
 # Symbian rules
 symbian {
-    CONFIG(debug, debug|release) {
-        # Use vanilla UID in debug mode
-        TARGET.UID3 = 0xE1584C4E
-        # Use unprotected UID for wrapper package
-        DEPLOYMENT.installer_header = 0xA000D7CE
-    } else {
-        # Use official UID in release mode
-        TARGET.UID3 = 0x20034d0f
-    }
-
     TARGET.CAPABILITY += NetworkServices
     INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
     INCLUDEPATH += psm-symbian/include
