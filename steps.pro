@@ -148,7 +148,8 @@ OTHER_FILES += \
     qml/Splash.qml \
     images/splash.jpg \
     qml/symbian/StepsTextField.qml \
-    psm-symbian/install.bat
+    psm-symbian/install.bat \
+    qml/steps.ts
 
 HEADERS += \
     counter.h \

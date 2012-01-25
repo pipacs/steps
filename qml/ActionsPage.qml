@@ -76,7 +76,7 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmChangeActivityDialog
-        title: qsTr("Change activity to ") + main.activityNames[newActivity] + "?"
+        title: qsTr("Change activity to ") + main.activityNames[newActivity] + qsTr("?")
         onDialogAccepted: {
             main.setActivity(newActivity)
             main.pageStack.pop()
