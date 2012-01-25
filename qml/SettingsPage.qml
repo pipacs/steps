@@ -21,23 +21,23 @@ StepsPage {
 
             StepsCheckBox {
                 id: savePower
-                text: "Conserve power"
+                text: qsTr("Conserve power")
                 checked: prefs.savePower
             }
 
             StepsCheckBox {
                 id: audioFeedback
-                text: "Sound effects"
+                text: qsTr("Sound effects")
                 checked: !prefs.muted
             }
 
             StepsCheckBox {
                 id: showExit
-                text: "Show Exit icon"
+                text: qsTr("Show Exit icon")
                 checked: prefs.showExit
             }
 
-            StepsLabel {text: "Sensitivity:"}
+            StepsLabel {text: qsTr("Sensitivity:")}
 
             StepsSlider {
                 id: sensitivitySlider
@@ -49,17 +49,17 @@ StepsPage {
                 value: counter.sensitivity
             }
 
-            StepsLabel {text: "Save to Google Docs:"}
+            StepsLabel {text: qsTr("Save to Google Docs:")}
 
             StepsCheckBox {
-                text: "Enable saving"
+                text: qsTr("Enable saving")
                 id: enableSharing
                 checked: gft.enabled
                 enabled: gft.linked
             }
 
             StepsButton {
-                text: gft.linked? "Logout from Google": "Login to Google"
+                text: gft.linked? qsTr("Logout from Google"): qsTr("Login to Google")
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (gft.linked) {
@@ -71,7 +71,7 @@ StepsPage {
                 }
             }
 
-            StepsLabel {text: "Rename activity \"Custom 1\":"}
+            StepsLabel {text: qsTr("Rename activity \"Custom 1\":")}
 
             StepsTextField {
                 id: custom1Text
@@ -79,7 +79,7 @@ StepsPage {
                 text: main.activityNames[2]
             }
 
-            StepsLabel {text: "Rename activity \"Custom 2\":"}
+            StepsLabel {text: qsTr("Rename activity \"Custom 2\":")}
 
             StepsTextField {
                 id: custom2Text
@@ -91,7 +91,7 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmLogoutDialog
-        titleText: "Are you sure to log out?"
+        titleText: qsTr("Are you sure to log out?")
         onDialogAccepted: {
             gft.unlink()
         }
@@ -107,7 +107,7 @@ StepsPage {
 
     StepsBanner {
         id: linkInfo
-        text: gft.linked? "Logged in to Google Docs": "Logged out from Google Docs"
+        text: gft.linked? qsTr("Logged in to Google Docs"): qsTr("Logged out from Google Docs")
     }
 
     onBack: {

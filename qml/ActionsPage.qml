@@ -43,7 +43,7 @@ StepsPage {
         }
 
         BigRedButton {
-            text: "Reset step count"
+            text: qsTr("Reset step count")
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
@@ -53,7 +53,7 @@ StepsPage {
         }
 
         BigButton {
-            text: "Settings"
+            text: qsTr("Settings")
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
@@ -64,7 +64,7 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmResetActivityDialog
-        title: "Reset current activity step count?"
+        title: qsTr("Reset current activity step count?")
         onDialogAccepted: {
             main.resetActivityCount()
             main.pageStack.pop()
@@ -76,7 +76,7 @@ StepsPage {
 
     StepsYesNoDialog {
         id: confirmChangeActivityDialog
-        title: "Change activity to " + main.activityNames[newActivity] + "?"
+        title: qsTr("Change activity to ") + main.activityNames[newActivity] + "?"
         onDialogAccepted: {
             main.setActivity(newActivity)
             main.pageStack.pop()
