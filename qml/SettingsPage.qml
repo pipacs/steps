@@ -5,7 +5,8 @@ StepsPage {
     id: settings
 
     Flickable {
-        anchors.fill: parent
+        id: flickable
+        anchors {left: parent.left; right: parent.right; top: parent.top; bottom: splitViewInput.top}
         anchors.leftMargin: 30
         anchors.rightMargin: 30
         anchors.topMargin: 41
@@ -89,6 +90,38 @@ StepsPage {
         }
     }
 
+//    Item {
+//        id: splitViewInput
+//        anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
+//        Behavior on height {PropertyAnimation {duration: 200}}
+//        states: [
+//            State {
+//                name: "Visible"; when: inputContext.visible
+//                PropertyChanges {target: splitViewInput; height: inputContext.height}
+//                PropertyChanges {
+//                    target: flickable
+//                    interactive:false
+//                }
+//            },
+//            State {
+//                name: "Hidden"; when: !inputContext.visible
+//                PropertyChanges {target: splitViewInput; height: 0} // mainPage.pageStack.toolbar}
+//                PropertyChanges {
+//                    target: flickable
+//                    interactive:true
+//                }
+//            }
+//        ]
+//        onStateChanged: {
+//            if(state=="Visible") {
+//                console.debug("input now visible, height is " + inputContext.height);
+//                // flickable.contentY = flickable.lasty;
+//            } else if(state=="Hidden") {
+//                console.debug("input now hidden");
+//            }
+//        }
+//    }
+
     StepsYesNoDialog {
         id: confirmLogoutDialog
         titleText: qsTr("Are you sure to log out?")
@@ -111,7 +144,6 @@ StepsPage {
     }
 
     onBack: {
-        console.log("* SettingsPage.onBack")
         main.pageStack.pop()
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
@@ -128,6 +160,10 @@ StepsPage {
         loginBrowser.openUrl(url)
     }
 
+    function onInputVisibleChanged() {
+        console.log("* SettingsPage.onInputVisibleChanged " + inputContext.visible)
+    }
+
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
         gft.linkedChanged.connect(linkInfo.show)
@@ -135,5 +171,6 @@ StepsPage {
             showExit.height = 0
             showExit.visible = false
         }
+        inputContext.visibleChanged.connect(onInputVisibleChanged)
     }
 }
