@@ -9,8 +9,20 @@
 #include <QDebug>
 #include <qplatformdefs.h>
 #include <QDir>
+#include <QProcess>
+#include <QUuid>
+
+#if defined(Q_OS_SYMBIAN)
+#   include <sysutil.h>
+#   include <f32file.h>
+#   include <psmclient.h>
+#   include <psmsettings.h>
+#elif defined(MEEGO_EDITION_HARMATTAN)
+#   include <qmdevicemode.h>
+#endif
 
 #include "platform.h"
+#include "preferences.h"
 
 #if defined(Q_OS_SYMBIAN)
 #   define STEPS_BASEDIR "steps"
@@ -28,9 +40,36 @@
 #   define STEPS_OS_NAME "unknown"
 #endif
 
+/// Minimum free disk space (in K)
+const int STEPS_MIN_FREE = 4096;
+
 static Platform *theInstance;
 
+#if defined(Q_OS_SYMBIAN)
+class PsmObserver: public MPsmClientObserver {
+public:
+    void PowerSaveModeChangeError(const TInt error) {
+        qDebug() << "PsmObserver::PowerSaveModeChangeError" << error;
+    }
+
+    void PowerSaveModeChanged(const TPsmsrvMode mode) {
+        qDebug() << "PsmObserver::PowerSaveModeChanged: To" << (int)mode;
+    }
+};
+#endif
+
 Platform::Platform(): QObject() {
+#if defined(Q_OS_SYMBIAN)
+    psmObserver = new PsmObserver;
+    QT_TRAP_THROWING(psmClient = CPsmClient::NewL(*psmObserver));
+#endif
+}
+
+Platform::~Platform() {
+#if defined(Q_OS_SYMBIAN)
+    delete psmClient;
+    delete psmObserver;
+#endif
 }
 
 Platform *Platform::instance() {
@@ -63,13 +102,67 @@ QUrl Platform::soundUrl(const QString &name) {
     } else if (QFileInfo(mp3).exists()) {
         ret = QUrl::fromLocalFile(mp3);
     } else {
-        qWarning() << "Platform.soundUrl: No file for" << name;
+        qWarning() << "Platform.soundUrl: No file for" << name << "in" << (QString(STEPS_DATADIR) + "/sounds");
     }
-    qDebug() << "Platform::soundUrl" << name << ":" << ret;
     return ret;
 }
 
 QString Platform::dbPath() {
     QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
     return QDir(base).absoluteFilePath("current.db");
+}
+
+bool Platform::dbFull() {
+    bool ret = false;
+    QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
+#if defined(MEEGO_EDITION_HARMATTAN)
+    QProcess df;
+    df.start("/bin/df", QStringList() << "-k" << base);
+    df.waitForFinished();
+    QList<QByteArray> lines = df.readAll().split('\n');
+    if (lines.length() > 1) {
+        QStringList fields = QString(lines[1]).split(QRegExp("\\s+"));
+        if (fields.length() > 3) {
+            ret = fields.at(3).toInt() < STEPS_MIN_FREE;
+        }
+    }
+#elif defined(Q_OS_SYMBAN)
+    TInt drive = base[0].toLower().unicode() - QChar('a').unicode() + EDriveA;
+    ret = SysUtil::DiskSpaceBelowCriticalLevelL(&iFsSession, STEPS_MIN_FREE * 1024, drive);
+#endif
+    if (ret) {
+        qCritical() << "Platform::dbFull: Disk full";
+    }
+    return ret;
+}
+
+QString Platform::deviceId() {
+    QString id = Preferences::instance()->value("deviceid").toString();
+    if (!id.length()) {
+        id = QUuid::createUuid().toString();
+        Preferences::instance()->setValue("deviceid", id);
+    }
+    return id;
+}
+
+void Platform::setSavePower(bool v) {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    if (MeeGo::QmDeviceMode().setPSMState(v? MeeGo::QmDeviceMode::PSMStateOn: MeeGo::QmDeviceMode::PSMStateOff)) {
+        emit savePowerChanged();
+    }
+#elif defined(Q_OS_SYMBIAN)
+    psmClient->ChangePowerSaveMode(v? EPsmsrvModePowerSave: EPsmsrvModeNormal);
+#endif
+}
+
+bool Platform::savePower() {
+#if defined(MEEGO_EDITION_HARMATTAN)
+    return MeeGo::QmDeviceMode().getPSMState() == MeeGo::QmDeviceMode::PSMStateOn;
+#elif defined(Q_OS_SYMBIAN)
+    TInt mode;
+    (void)psmClient->PsmSettings().GetCurrentMode(mode);
+    return mode == EPsmsrvModePowerSave;
+#else
+    return false;
+#endif
 }

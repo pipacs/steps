@@ -3,21 +3,23 @@ import com.nokia.symbian 1.1
 
 Page {
     property bool active
-    property bool showBack: false
+    property bool showBack: true
+    property bool showTools: true
     property bool lockOrientation: true
-    signal back
-    orientationLock: lockOrientation? PageOrientation.LockPortrait: PageOrientation.Automatic
 
+    signal back
+
+    orientationLock: lockOrientation? PageOrientation.LockPortrait: PageOrientation.Automatic
     active: status === PageStatus.Active
 
+    // FIXME: This is causing problems on Symbian:
+    // tools: showTools? pageTools: null
     tools: pageTools
 
     ToolBarLayout {
         id: pageTools
-        visible: showBack
         ToolButton {
-            // "Back"/"Exit" is always visible on Symbian as some phones don't have hard keys to exit the app
-            // visible: showBack
+            visible: showBack
 
             // There is no toolbar-exit icon, so let's stick to toolbar-back for now
             // iconSource: (pageStack.depth > 1)? "toolbar-back": "toolbar-back"

@@ -10,6 +10,7 @@
 #include "gftsecret.h"
 #include "database.h"
 #include "trace.h"
+#include "platform.h"
 
 static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
 static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
@@ -54,7 +55,7 @@ void Gft::upload(const QString &archive_) {
     // Create program if doesn't exist
     if (!program) {
         program = new GftProgram;
-        connect(program, SIGNAL(stepCompleted(QList<qlonglong>)), this, SLOT(onStepCompleted(QList<qlonglong>)));
+        connect(program, SIGNAL(stepCompleted(GftIdList)), this, SLOT(onStepCompleted(GftIdList)));
         connect(program, SIGNAL(programCompleted(bool)), this, SLOT(onProgramCompleted(bool)));
     }
 
@@ -79,10 +80,8 @@ void Gft::upload(const QString &archive_) {
 
     QList<GftInstruction> instructions;
 
-    QFileInfo info(archive);
-    QString dbName = info.baseName();
-    instructions.append(GftInstruction(GftFindTable, dbName));
-    instructions.append(GftInstruction(GftCreateTableIf, dbName));
+    instructions.append(GftInstruction(GftFindTable, "Steps"));
+    instructions.append(GftInstruction(GftCreateTableIf, "Steps"));
 
     QSqlQuery query(db.db());
     query.setForwardOnly(true);
@@ -99,10 +98,11 @@ void Gft::upload(const QString &archive_) {
             break;
         }
         qlonglong id = query.value(0).toLongLong();
-        QString date = sanitize(query.value(1).toString());
+        QString date = sanitize(query.value(1).toString().replace('T', ' '));
         int steps = query.value(2).toInt();
         QString tags = getTags(db, id);
-        sql.append(QString("INSERT INTO $T (steps,date,tags) VALUES (%1,'%2','%3');\n").arg(steps).arg(date, tags));
+        QString device = Platform::instance()->deviceId();
+        sql.append(QString("INSERT INTO $T (steps,date,tags,device) VALUES (%1,'%2','%3','%4');\n").arg(steps).arg(date, tags, device));
         idList.append(id);
     }
     instructions.append(GftInstruction(GftQuery, sql, idList));
@@ -147,7 +147,7 @@ QString Gft::sanitize(const QString &s) {
     return ret;
 }
 
-void Gft::onStepCompleted(QList<qlonglong> recordIdList) {
+void Gft::onStepCompleted(GftIdList recordIdList) {
     Trace t("Gft::onStepCompleted");
     foreach (qlonglong recordId, recordIdList) {
         uploadedRecords.append(recordId);

@@ -11,11 +11,11 @@ QueryDialog {
     acceptButtonText: "Yes"
     rejectButtonText: "No"
     message: title
-    titleText: Steps
+    titleText: "Steps"
     icon: "/images/steps.png"
 
     onStatusChanged: {
-        if (status == DialogStatus.Closed) {
+        if (status === DialogStatus.Closed) {
             dialogClosed()
         }
     }

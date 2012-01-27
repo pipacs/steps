@@ -11,5 +11,7 @@
         <file alias="StepsTextField.qml">qml/meego/StepsTextField.qml</file>
         <file alias="StepsSpinner.qml">qml/meego/StepsSpinner.qml</file>
         <file alias="StepsBanner.qml">qml/meego/StepsBanner.qml</file>
+        <file alias="StepsRedButton.qml">qml/meego/StepsRedButton.qml</file>
+        <file alias="StepsButtonColumn.qml">qml/meego/StepsButtonColumn.qml</file>
     </qresource>
 </RCC>

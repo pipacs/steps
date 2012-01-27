@@ -5,7 +5,8 @@ StepsPage {
     id: settings
 
     Flickable {
-        anchors.fill: parent
+        id: flickable
+        anchors {left: parent.left; right: parent.right; top: parent.top; bottom: splitViewInput.top}
         anchors.leftMargin: 30
         anchors.rightMargin: 30
         anchors.topMargin: 41
@@ -16,36 +17,28 @@ StepsPage {
         Column {
             id: col2
             anchors.top: parent.top
-            spacing: 31
+            spacing: 25
             width: settings.width - 60
 
             StepsCheckBox {
+                id: savePower
+                text: qsTr("Conserve power")
+                checked: prefs.savePower
+            }
+
+            StepsCheckBox {
                 id: audioFeedback
-                text: "Sound effects"
+                text: qsTr("Sound effects")
                 checked: !prefs.muted
             }
 
-            //
-            // StepsLabel {
-            //     id: calibrationLabel
-            //     width: parent.width
-            //     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            //     text: "Calibration: Measured " + main.activityCount + " steps, but it should be:"
-            //     enabled: main.activityCount
-            // }
+            StepsCheckBox {
+                id: showExit
+                text: qsTr("Show Exit icon")
+                checked: prefs.showExit
+            }
 
-            // StepsSlider {
-            //     id: calibrationSlider
-            //     width: parent.width - 15
-            //     enabled: main.activityCount
-            //     stepSize: 1
-            //     valueIndicatorVisible: true
-            //     minimumValue: Math.ceil(main.activityCount - main.activityCount / 3)
-            //     maximumValue: Math.ceil(main.activityCount + main.activityCount / 3)
-            //     value: main.activityCount
-            // }
-
-            StepsLabel {text: "Sensitivity:"}
+            StepsLabel {text: qsTr("Sensitivity:")}
 
             StepsSlider {
                 id: sensitivitySlider
@@ -57,21 +50,20 @@ StepsPage {
                 value: counter.sensitivity
             }
 
-            StepsLabel {text: "Save to Google Docs:"}
+            StepsLabel {text: qsTr("Save to Google Docs:")}
 
             StepsCheckBox {
-                text: "Enable saving"
+                text: qsTr("Enable saving")
                 id: enableSharing
                 checked: gft.enabled
                 enabled: gft.linked
             }
 
             StepsButton {
-                text: gft.linked? "Logout from Google": "Login to Google"
+                text: gft.linked? qsTr("Logout from Google"): qsTr("Login to Google")
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     if (gft.linked) {
-                        dialogOpen = true
                         confirmLogoutDialog.open()
                     } else {
                         spinner.running = true
@@ -79,25 +71,60 @@ StepsPage {
                     }
                 }
             }
+
+            StepsLabel {text: qsTr("Rename activity \"Custom 1\":")}
+
+            StepsTextField {
+                id: custom1Text
+                width: parent.width
+                text: main.activityNames[2]
+            }
+
+            StepsLabel {text: qsTr("Rename activity \"Custom 2\":")}
+
+            StepsTextField {
+                id: custom2Text
+                width: parent.width
+                text: main.activityNames[3]
+            }
         }
     }
 
-    StepsYesNoDialog {
-        id: confirmResetAllDialog
-        titleText: "Reset all settings?"
-        onDialogAccepted: {
-            prefs.muted = true
-            audioFeedback.checked = false
-            counter.resetSettings()
-            sensitivitySlider.value = counter.sensitivity
-            gft.enabled = false
-            enableSharing.checked = false
-        }
-    }
+//    Item {
+//        id: splitViewInput
+//        anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
+//        Behavior on height {PropertyAnimation {duration: 200}}
+//        states: [
+//            State {
+//                name: "Visible"; when: inputContext.visible
+//                PropertyChanges {target: splitViewInput; height: inputContext.height}
+//                PropertyChanges {
+//                    target: flickable
+//                    interactive:false
+//                }
+//            },
+//            State {
+//                name: "Hidden"; when: !inputContext.visible
+//                PropertyChanges {target: splitViewInput; height: 0} // mainPage.pageStack.toolbar}
+//                PropertyChanges {
+//                    target: flickable
+//                    interactive:true
+//                }
+//            }
+//        ]
+//        onStateChanged: {
+//            if(state=="Visible") {
+//                console.debug("input now visible, height is " + inputContext.height);
+//                // flickable.contentY = flickable.lasty;
+//            } else if(state=="Hidden") {
+//                console.debug("input now hidden");
+//            }
+//        }
+//    }
 
     StepsYesNoDialog {
         id: confirmLogoutDialog
-        titleText: "Are you sure to log out?"
+        titleText: qsTr("Are you sure to log out?")
         onDialogAccepted: {
             gft.unlink()
         }
@@ -113,21 +140,18 @@ StepsPage {
 
     StepsBanner {
         id: linkInfo
-        text: gft.linked? "Logged in to Google Docs": "Logged out from Google Docs"
+        text: gft.linked? qsTr("Logged in to Google Docs"): qsTr("Logged out from Google Docs")
     }
 
     onBack: {
-        console.log("* SettingsPage.onBack")
         main.pageStack.pop()
-        // if (calibrationSlider.changed && counter.rawCount) {
-        //     var activityDelta = calibrationSlider.value - main.activityCount
-        //     counter.calibration = (counter.count + activityDelta) / counter.rawCount
-        //     prefs.calibration = counter.calibration
-        // }
         prefs.muted = !audioFeedback.checked
         counter.setSensitivity(sensitivitySlider.value)
         prefs.sensitivity = counter.sensitivity
         gft.enabled = enableSharing.checked
+        main.activityNames = [main.activityNames[0], main.activityNames[1], custom1Text.text, custom2Text.text]
+        prefs.showExit = showExit.checked
+        prefs.savePower = savePower.checked
     }
 
     function openBrowser(url) {
@@ -136,8 +160,17 @@ StepsPage {
         loginBrowser.openUrl(url)
     }
 
+    function onInputVisibleChanged() {
+        console.log("* SettingsPage.onInputVisibleChanged " + inputContext.visible)
+    }
+
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
         gft.linkedChanged.connect(linkInfo.show)
+        if (platform.osName !== "symbian") {
+            showExit.height = 0
+            showExit.visible = false
+        }
+        inputContext.visibleChanged.connect(onInputVisibleChanged)
     }
 }

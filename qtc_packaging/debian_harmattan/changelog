@@ -1,6 +1,29 @@
+steps (0.1.0) unstable; urgency=low
+
+  * Enable power save mode
+  * Make texts localizable
+  * Add Hungarian translation
+
+ -- Akos Polster <akos@pipacs.com>  Sat, 21 Jan 2012 13:29:00 +0100
+
+steps (0.0.9) unstable; urgency=low
+
+  * Don't log intermediate steps
+  * Always upload to the same table
+  * Activities can be renamed
+  * Add setting to show/hide exit icon on Symbian
+  * Log activity deltas, not total step count
+  * Upload to Google with unique device ID
+  * Improve help text on main screen
+  * Fix Smart Installer dependency on Nokia N8
+
+ -- Akos Polster <akos@pipacs.com>  Sun, 9  Jan 2012 23:57:00 +0100
+
 steps (0.0.8) unstable; urgency=low
 
   * Optimize uploads
+  * Have named activities
+  * Speed up startup
 
  -- Akos Polster <akos@pipacs.com>  Sun, 19 Dec 2011 23:57:00 +0100
 

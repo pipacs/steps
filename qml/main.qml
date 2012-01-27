@@ -1,6 +1,6 @@
 import QtQuick 1.1
 import QtMultimediaKit 1.1
-import "meego"
+import "symbian"
 
 StepsPageStackWindow {
     id: main
@@ -8,9 +8,17 @@ StepsPageStackWindow {
     property int prevCount: 0
     property int dailyCount: 0
     property int activityCount: 0
+    property int activity: 0
+    property variant activityNames: [qsTr("Walking"), qsTr("Running"), prefs.value("activity2Name", qsTr("Custom 1")), prefs.value("activity3Name", qsTr("Custom 2"))]
 
     MainPage {
         id: mainPage
+    }
+
+    Splash {
+        id: splash
+        Component.onCompleted: splash.activate();
+        onFinished: splash.destroy();
     }
 
     function rawCountChanged(val) {
@@ -22,10 +30,9 @@ StepsPageStackWindow {
             return
         }
 
-        logger.log(count, {})
-
         var delta = count - prevCount
         prevCount = count
+        logger.log(delta, {})
 
         // Register activity step count
         setActivityCount(activityCount + delta)
@@ -63,7 +70,7 @@ StepsPageStackWindow {
     // Reset current activity counter
     function resetActivityCount() {
         setActivityCount(0)
-        logger.log(counter.count, {"resetActivityCount": 0})
+        logger.log(0, {"resetActivityCount": 0})
     }
 
     // Reset all counters
@@ -76,7 +83,24 @@ StepsPageStackWindow {
     }
 
     function runningChanged() {
-        logger.log(counter.count, {"counting": counter.running})
+        logger.log(0, {"counting": counter.running})
+        if (prefs.savePower) {
+            platform.savePower = counter.running
+        }
+    }
+
+    function setActivity(a) {
+        if (a !== activity) {
+            logger.log(0, {"activity": a})
+            activity = a
+            prefs.activity = a
+            resetActivityCount()
+        }
+    }
+
+    onActivityNamesChanged: {
+        prefs.setValue("activity2Name", activityNames[2])
+        prefs.setValue("activity3Name", activityNames[3])
     }
 
     Component.onCompleted: {
@@ -89,14 +113,15 @@ StepsPageStackWindow {
         counter.step.connect(main.countChanged)
         counter.runningChanged.connect(main.runningChanged)
 
-        logger.log(counter.count, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion})
+        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion})
 
         // Restore step counts from settings
         setDailyCount(prefs.dailyCount)
+        setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
     }
 
     Component.onDestruction: {
-        logger.log(counter.count, {"appStopped": "com.pipacs.steps"})
+        logger.log(0, {"appStopped": "com.pipacs.steps"})
     }
 }

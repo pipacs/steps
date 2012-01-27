@@ -9,8 +9,7 @@
 #include "o2/o2.h"
 #include "database.h"
 #include "uploader.h"
-
-class GftProgram;
+#include "gftprogram.h"
 
 /// Google Fusion Tables account connector and uploader.
 class Gft: public O2 {
@@ -41,7 +40,7 @@ public slots:
 
 protected slots:
     /// Handle step completion: Add record ID to the list of uploaded record IDs.
-    void onStepCompleted(QList<qlonglong> recordIdList);
+    void onStepCompleted(GftIdList recordIdList);
 
     /// Handle program completion.
     void onProgramCompleted(bool failed);

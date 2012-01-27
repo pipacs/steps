@@ -14,7 +14,7 @@ Sheet {
     rejectButtonText: rejectText
 
     onStatusChanged: {
-        if (status == DialogStatus.Closed) {
+        if (status === DialogStatus.Closed) {
             dialogClosed()
         }
     }

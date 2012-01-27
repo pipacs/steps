@@ -1,0 +1,273 @@
+ARM Linker, RVCT2.2 [Build 616]
+
+================================================================================
+
+Image Symbol Table
+
+    Local Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    ../../unhosted.s                         0x00000000   Number         0  switch8.o ABSOLUTE
+    M:\\epoc32\\build\\euser\\c_e18a23aea4fd210f\\edll_lib\\armv5\\urel\\uc_dll_.cpp 0x00000000   Number         0  uc_dll_.o ABSOLUTE
+    M:\\sf\\os\\kernelhwsrv\\kernel\\eka\\compsupp\\rvct\\ucppinit.cpp 0x00000000   Number         0  ucppinit.o ABSOLUTE
+    M:\epoc32\build\euser\c_e18a23aea4fd210f\edll_lib\armv5\urel\uc_dll_.cpp 0x00000000   Number         0  uc_dll_.o ABSOLUTE
+    M:\sf\os\devicesrv\psmservices\psmserver\src\client\psmclient.cpp 0x00000000   Number         0  psmclient.o ABSOLUTE
+    M:\sf\os\devicesrv\psmservices\psmserver\src\client\psmclientactive.cpp 0x00000000   Number         0  psmclientactive.o ABSOLUTE
+    M:\sf\os\devicesrv\psmservices\psmserver\src\client\psmclientimpl.cpp 0x00000000   Number         0  psmclientimpl.o ABSOLUTE
+    M:\sf\os\devicesrv\psmservices\psmserver\src\client\psmsession.cpp 0x00000000   Number         0  psmsession.o ABSOLUTE
+    M:\sf\os\devicesrv\psmservices\psmserver\src\client\psmsettings.cpp 0x00000000   Number         0  psmsettings.o ABSOLUTE
+    M:\sf\os\devicesrv\psmservices\psmserver\src\client\psmsettingsimpl.cpp 0x00000000   Number         0  psmsettingsimpl.o ABSOLUTE
+    M:\sf\os\kernelhwsrv\kernel\eka\compsupp\rvct\dllexp.cpp 0x00000000   Number         0  dllexp.o ABSOLUTE
+    M:\sf\os\kernelhwsrv\kernel\eka\compsupp\rvct\ucppinit.cpp 0x00000000   Number         0  ucppinit.o ABSOLUTE
+    M:\sf\os\kernelhwsrv\kernel\eka\euser\epoc\arm\uc_dll.cpp 0x00000000   Number         0  uc_dll.o ABSOLUTE
+    .emb_text                                0x00008000   Section       40  uc_dll_.o(.emb_text)
+    .emb_text                                0x00008028   Section       52  ucppinit.o(.emb_text)
+    loop                                     0x0000803c   ARM Code       0  ucppinit.o(.emb_text)
+    base                                     0x00008054   Data           0  ucppinit.o(.emb_text)
+    limit                                    0x00008058   Data           0  ucppinit.o(.emb_text)
+    .text                                    0x000081b4   Section       48  psmclient.o(.text)
+    .text                                    0x000081e4   Section      320  psmclientimpl.o(.text)
+    .text                                    0x00008324   Section       44  psmsettings.o(.text)
+    .text                                    0x00008350   Section      528  psmsettingsimpl.o(.text)
+    .text                                    0x00008560   Section      304  psmsession.o(.text)
+    .text                                    0x00008690   Section      108  psmclientactive.o(.text)
+    .text                                    0x000086fc   Section       24  switch8.o(.text)
+    .text                                    0x00008714   Section       60  uc_dll.o(.text)
+    .text                                    0x00008750   Section        4  dllexp.o(.text)
+    .text.clean                              0x00008754   Section       10  psmclientimpl.o(.text.clean)
+    .text.clean                              0x0000875e   Section       34  psmsettingsimpl.o(.text.clean)
+    .text.clean                              0x00008780   Section       20  psmclientactive.o(.text.clean)
+    i._ZN10CPsmClientD2Ev                    0x00008794   Section        8  psmclientimpl.o(i._ZN10CPsmClientD2Ev)
+    i._ZN12CPsmSettingsC2Ev                  0x0000879c   Section       12  psmsettingsimpl.o(i._ZN12CPsmSettingsC2Ev)
+    i._ZN12CPsmSettingsD0Ev                  0x000087a8   Section       16  psmsettingsimpl.o(i._ZN12CPsmSettingsD0Ev)
+    i._ZN12CPsmSettingsD2Ev                  0x000087b8   Section        8  psmsettingsimpl.o(i._ZN12CPsmSettingsD2Ev)
+    t._ZN6RArrayI17TPsmsrvConfigInfoEixEi    0x000087c0   Section        8  psmsettingsimpl.o(t._ZN6RArrayI17TPsmsrvConfigInfoEixEi)
+    .extab._ZN14CPsmClientImplD1Ev           0x000087c8   Data           0  psmclientimpl.o(.ARM.extab)
+    .extab._ZN16CPsmSettingsImplD1Ev         0x000087d8   Data           0  psmsettingsimpl.o(.ARM.extab)
+    .extab._ZN16CPsmSettingsImpl21HandleSettingsRequestER6RArrayI17TPsmsrvConfigInfoEm17TPsmServerRequest 0x000087e8   Data           0  psmsettingsimpl.o(.ARM.extab)
+    .extab._ZN16CPsmSettingsImpl14GetCurrentModeERi 0x00008810   Data           0  psmsettingsimpl.o(.ARM.extab)
+    .extab._ZN16CPsmClientActiveC1ER18MPsmClientObserver 0x00008838   Data           0  psmclientactive.o(.ARM.extab)
+    .extab._ZN16CPsmClientActiveD1Ev         0x00008848   Data           0  psmclientactive.o(.ARM.extab)
+    .constdata$1                             0x00008858   Data           0  psmsettingsimpl.o(.constdata)
+    KCRUidPowerSaveMode                      0x00008858   Data           4  psmsettingsimpl.o(.constdata)
+    .constdata                               0x00008858   Section        4  psmsettingsimpl.o(.constdata)
+    .constdata$1                             0x0000885c   Data           0  psmsession.o(.constdata)
+    KPsmServerUid2                           0x0000885c   Data           4  psmsession.o(.constdata)
+    .constdata                               0x0000885c   Section      108  psmsession.o(.constdata)
+    KNullDesC                                0x00008860   Data           8  psmsession.o(.constdata)
+    KDC_PROGRAMS_DIR                         0x00008868   Data          24  psmsession.o(.constdata)
+    KPsmProcessName                          0x00008880   Data          28  psmsession.o(.constdata)
+    KPsmExeName                              0x0000889c   Data          32  psmsession.o(.constdata)
+    KPsmExeDrive                             0x000088bc   Data          12  psmsession.o(.constdata)
+    .constdata__ZTI10CPsmClient              0x000088c8   Section       12  psmclientimpl.o(.constdata__ZTI10CPsmClient)
+    .constdata__ZTI12CPsmSettings            0x000088d4   Section       12  psmsettingsimpl.o(.constdata__ZTI12CPsmSettings)
+    .constdata__ZTI14CPsmClientImpl          0x000088e0   Section       12  psmclientimpl.o(.constdata__ZTI14CPsmClientImpl)
+    .constdata__ZTI16CPsmClientActive        0x000088ec   Section       12  psmclientactive.o(.constdata__ZTI16CPsmClientActive)
+    .constdata__ZTI16CPsmSettingsImpl        0x000088f8   Section       12  psmsettingsimpl.o(.constdata__ZTI16CPsmSettingsImpl)
+    .constdata__ZTS10CPsmClient              0x00008904   Section       13  psmclientimpl.o(.constdata__ZTS10CPsmClient)
+    .constdata__ZTS12CPsmSettings            0x00008911   Section       15  psmsettingsimpl.o(.constdata__ZTS12CPsmSettings)
+    .constdata__ZTS14CPsmClientImpl          0x00008920   Section       17  psmclientimpl.o(.constdata__ZTS14CPsmClientImpl)
+    .constdata__ZTS16CPsmClientActive        0x00008931   Section       19  psmclientactive.o(.constdata__ZTS16CPsmClientActive)
+    .constdata__ZTS16CPsmSettingsImpl        0x00008944   Section       19  psmsettingsimpl.o(.constdata__ZTS16CPsmSettingsImpl)
+    .constdata__ZTV12CPsmSettings            0x00008958   Section       36  psmsettingsimpl.o(.constdata__ZTV12CPsmSettings)
+    .constdata__ZTV14CPsmClientImpl          0x0000897c   Section       40  psmclientimpl.o(.constdata__ZTV14CPsmClientImpl)
+    .constdata__ZTV16CPsmClientActive        0x000089a4   Section       32  psmclientactive.o(.constdata__ZTV16CPsmClientActive)
+    .constdata__ZTV16CPsmSettingsImpl        0x000089c4   Section       36  psmsettingsimpl.o(.constdata__ZTV16CPsmSettingsImpl)
+    .ARM.exidx                               0x000089e8   Section        8  ucppinit.o(.ARM.exidx)
+
+    Global Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    BuildAttributes$$THUMB_ISAv2$ARM_ISAv5$M$PE$A:L22$X:L11$S22$IEEE1$IW$USESV6$~STKCKD$USESV7$~SHL$OSPACE$ROPI$IEEEJ$EBA8$UX$FPIC$INDIRECT$REQ8$PRES8$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
+    centralrepository{000a0000}[101fbc70].dll 0x00000000   Data           0  anon$$obj.o ABSOLUTE
+    drtaeabi{000a0000}.dll                   0x00000000   Data           0  anon$$obj.o ABSOLUTE
+    euser{000a0000}[100039e5].dll            0x00000000   Data           0  anon$$obj.o ABSOLUTE
+    psmclient{000a0000}[2000b188].dll        0x00000000   Data           0  anon$$obj.o ABSOLUTE
+    scppnwdl{000a0000}.dll                   0x00000000   Data           0  anon$$obj.o ABSOLUTE
+    SHT$$INIT_ARRAY$$Base                     - Undefined Weak Reference
+    SHT$$INIT_ARRAY$$Limit                    - Undefined Weak Reference
+    RArrayBase::Close()                       - Undefined Reference
+    _ZN10RArrayBase5CloseEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RArrayBase::Reset()                       - Undefined Reference
+    _ZN10RArrayBase5ResetEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RArrayBase::Append(const void*)           - Undefined Reference
+    _ZN10RArrayBase6AppendEPKv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RArrayBase::RArrayBase(int)               - Undefined Reference
+    _ZN10RArrayBaseC1Ei@euser{000a0000}[100039e5].dll  - Undefined Reference
+    TBufBase16::TBufBase16(const TDesC16&, int)  - Undefined Reference
+    _ZN10TBufBase16C1ERK7TDesC16i@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CRepository::Get(unsigned long, int&)     - Undefined Reference
+    _ZN11CRepository3GetEmRi@centralrepository{000a0000}[101fbc70].dll  - Undefined Reference
+    CRepository::NewL(TUid)                   - Undefined Reference
+    _ZN11CRepository4NewLE4TUid@centralrepository{000a0000}[101fbc70].dll  - Undefined Reference
+    RHandleBase::Close()                      - Undefined Reference
+    _ZN11RHandleBase5CloseEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CleanupStack::Pop()                       - Undefined Reference
+    _ZN12CleanupStack3PopEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CleanupStack::PushL(CBase*)               - Undefined Reference
+    _ZN12CleanupStack5PushLEP5CBase@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RSessionBase::CreateSession(const TDesC16&, const TVersion&, int)  - Undefined Reference
+    _ZN12RSessionBase13CreateSessionERK7TDesC16RK8TVersioni@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActiveScheduler::Add(CActive*)           - Undefined Reference
+    _ZN16CActiveScheduler3AddEP7CActive@euser{000a0000}[100039e5].dll  - Undefined Reference
+    User::LeaveIfError(int)                   - Undefined Reference
+    _ZN4User12LeaveIfErrorEi@euser{000a0000}[100039e5].dll  - Undefined Reference
+    User::WaitForRequest(TRequestStatus&)     - Undefined Reference
+    _ZN4User14WaitForRequestER14TRequestStatus@euser{000a0000}[100039e5].dll  - Undefined Reference
+    User::MarkCleanupStack()                  - Undefined Reference
+    _ZN4User16MarkCleanupStackEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    User::UnMarkCleanupStack(TTrapHandler*)   - Undefined Reference
+    _ZN4User18UnMarkCleanupStackEP12TTrapHandler@euser{000a0000}[100039e5].dll  - Undefined Reference
+    User::AllocZL(int)                        - Undefined Reference
+    _ZN4User7AllocZLEi@euser{000a0000}[100039e5].dll  - Undefined Reference
+    User::Invariant()                         - Undefined Reference
+    _ZN4User9InvariantEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CBase::Extension_(unsigned, void*&, void*)  - Undefined Reference
+    _ZN5CBase10Extension_EjRPvS0_@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CBase::~CBase()                           - Undefined Reference
+    _ZN5CBaseD1Ev@euser{000a0000}[100039e5].dll  - Undefined Reference
+    TDes8::Copy(const TDesC8&)                - Undefined Reference
+    _ZN5TDes84CopyERK6TDesC8@euser{000a0000}[100039e5].dll  - Undefined Reference
+    TPtr8::TPtr8(unsigned char*, int, int)    - Undefined Reference
+    _ZN5TPtr8C1EPhii@euser{000a0000}[100039e5].dll  - Undefined Reference
+    TDes16::Append(const TDesC16&)            - Undefined Reference
+    _ZN6TDes166AppendERK7TDesC16@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActive::Extension_(unsigned, void*&, void*)  - Undefined Reference
+    _ZN7CActive10Extension_EjRPvS0_@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActive::Cancel()                         - Undefined Reference
+    _ZN7CActive6CancelEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActive::RunError(int)                    - Undefined Reference
+    _ZN7CActive8RunErrorEi@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActive::SetActive()                      - Undefined Reference
+    _ZN7CActive9SetActiveEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActive::CActive__sub_object(int)         - Undefined Reference
+    _ZN7CActiveC2Ei@euser{000a0000}[100039e5].dll  - Undefined Reference
+    CActive::~CActive__sub_object()           - Undefined Reference
+    _ZN7CActiveD2Ev@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RProcess::Kill(int)                       - Undefined Reference
+    _ZN8RProcess4KillEi@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RProcess::Create(const TDesC16&, const TDesC16&, const TUidType&, TOwnerType)  - Undefined Reference
+    _ZN8RProcess6CreateERK7TDesC16S2_RK8TUidType10TOwnerType@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RProcess::Resume()                        - Undefined Reference
+    _ZN8RProcess6ResumeEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    TUidType::TUidType(TUid, TUid, TUid)      - Undefined Reference
+    _ZN8TUidTypeC1E4TUidS0_S0_@euser{000a0000}[100039e5].dll  - Undefined Reference
+    TVersion::TVersion(int, int, int)         - Undefined Reference
+    _ZN8TVersionC1Eiii@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RArrayBase::At(int) const                 - Undefined Reference
+    _ZNK10RArrayBase2AtEi@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RArrayBase::Count() const                 - Undefined Reference
+    _ZNK10RArrayBase5CountEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RSessionBase::DoSendReceive(int, const TIpcArgs*) const  - Undefined Reference
+    _ZNK12RSessionBase13DoSendReceiveEiPK8TIpcArgs@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RSessionBase::DoSendReceive(int, const TIpcArgs*, TRequestStatus&) const  - Undefined Reference
+    _ZNK12RSessionBase13DoSendReceiveEiPK8TIpcArgsR14TRequestStatus@euser{000a0000}[100039e5].dll  - Undefined Reference
+    XLeaveException::GetReason() const        - Undefined Reference
+    _ZNK15XLeaveException9GetReasonEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RProcess::Rendezvous(TRequestStatus&) const  - Undefined Reference
+    _ZNK8RProcess10RendezvousER14TRequestStatus@euser{000a0000}[100039e5].dll  - Undefined Reference
+    RProcess::ExitType() const                - Undefined Reference
+    _ZNK8RProcess8ExitTypeEv@euser{000a0000}[100039e5].dll  - Undefined Reference
+    typeinfo for XLeaveException              - Undefined Reference
+    _ZTI15XLeaveException@drtaeabi{000a0000}.dll  - Undefined Reference
+    typeinfo for CBase                        - Undefined Reference
+    _ZTI5CBase@euser{000a0000}[100039e5].dll  - Undefined Reference
+    typeinfo for CActive                      - Undefined Reference
+    _ZTI7CActive@euser{000a0000}[100039e5].dll  - Undefined Reference
+    vtable for __cxxabiv1::__si_class_type_info  - Undefined Reference
+    _ZTVN10__cxxabiv120__si_class_type_infoE@drtaeabi{000a0000}.dll  - Undefined Reference
+    operator delete (void*)                   - Undefined Reference
+    _ZdlPv@scppnwdl{000a0000}.dll             - Undefined Reference
+    __aeabi_memcpy4                           - Undefined Reference
+    __aeabi_memcpy4@drtaeabi{000a0000}.dll    - Undefined Reference
+    __aeabi_unwind_cpp_pr0                    - Undefined Reference
+    __aeabi_unwind_cpp_pr0@drtaeabi{000a0000}.dll  - Undefined Reference
+    __cxa_begin_catch                         - Undefined Reference
+    __cxa_begin_catch@drtaeabi{000a0000}.dll  - Undefined Reference
+    __cxa_end_catch                           - Undefined Reference
+    __cxa_end_catch@drtaeabi{000a0000}.dll    - Undefined Reference
+    __cxa_end_cleanup                         - Undefined Reference
+    __cxa_end_cleanup@drtaeabi{000a0000}.dll  - Undefined Reference
+    __cxa_pure_virtual                        - Undefined Reference
+    __cxa_pure_virtual@drtaeabi{000a0000}.dll  - Undefined Reference
+    run_static_dtors                          - Undefined Weak Reference
+    Image$$ER_RO$$Base                       0x00008000   Number         0  anon$$obj.o(linker$$defined$$symbols)
+    _E32Dll                                  0x00008000   ARM Code      40  uc_dll_.o(.emb_text)
+    Symbian$$CPP$$Exception$$Descriptor      0x00008014   Data           0  uc_dll_.o(.emb_text)
+    __cpp_initialize__aeabi_                 0x00008028   ARM Code      52  ucppinit.o(.emb_text)
+    std::nothrow                             0x0000805c   ARM Code       0  ucppinit.o(.emb_text)
+    __PLT                                    0x0000805c   ARM Code       0  anon$$obj.o(.plt)
+    CPsmClient::NewLC(MPsmClientObserver&)   0x000081b5   Thumb Code    32  psmclient.o(.text)
+    CPsmClient::NewL(MPsmClientObserver&)    0x000081d5   Thumb Code    16  psmclient.o(.text)
+    CPsmClientImpl::CancelPowerSaveModeChange() 0x000081e5   Thumb Code    32  psmclientimpl.o(.text)
+    CPsmClientImpl::~CPsmClientImpl()        0x00008205   Thumb Code    70  psmclientimpl.o(.text)
+    CPsmClientImpl::~CPsmClientImpl__sub_object() 0x00008205   Thumb Code     0  psmclientimpl.o(.text)
+    CPsmClientImpl::~CPsmClientImpl__deallocating() 0x0000824b   Thumb Code    16  psmclientimpl.o(.text)
+    CPsmClientImpl::ChangePowerSaveMode(int) 0x0000825b   Thumb Code    54  psmclientimpl.o(.text)
+    CPsmClientImpl::RequestPowerSaveModeNotification() 0x00008291   Thumb Code    50  psmclientimpl.o(.text)
+    CPsmClientImpl::CancelPowerSaveModeNotificationRequest() 0x000082c3   Thumb Code    30  psmclientimpl.o(.text)
+    CPsmClientImpl::PsmSettings() const      0x000082e1   Thumb Code     4  psmclientimpl.o(.text)
+    CPsmClientImpl::CPsmClientImpl(MPsmClientObserver&) 0x000082e5   Thumb Code    12  psmclientimpl.o(.text)
+    CPsmClientImpl::CPsmClientImpl__sub_object(MPsmClientObserver&) 0x000082e5   Thumb Code     0  psmclientimpl.o(.text)
+    CPsmClientImpl::ConstructL()             0x000082f1   Thumb Code    48  psmclientimpl.o(.text)
+    CPsmSettings::NewLC()                    0x00008325   Thumb Code    28  psmsettings.o(.text)
+    CPsmSettings::NewL()                     0x00008341   Thumb Code    16  psmsettings.o(.text)
+    CPsmSettingsImpl::~CPsmSettingsImpl()    0x00008351   Thumb Code    28  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::~CPsmSettingsImpl__sub_object() 0x00008351   Thumb Code     0  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::~CPsmSettingsImpl__deallocating() 0x0000836d   Thumb Code    16  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::CPsmSettingsImpl(RPsmServer&) 0x0000837d   Thumb Code    22  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::CPsmSettingsImpl__sub_object(RPsmServer&) 0x0000837d   Thumb Code     0  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::UpdateConfigArray(RArray<TPsmsrvConfigInfo>&, RArray<TPsmsrvConfigInfo>&) 0x00008393   Thumb Code   130  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::HandleSettingsRequest(RArray<TPsmsrvConfigInfo>&, unsigned long, TPsmServerRequest) 0x00008415   Thumb Code   190  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::BackupAndGetSettings(RArray<TPsmsrvConfigInfo>&, unsigned long) 0x000084d3   Thumb Code     4  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::GetSettings(RArray<TPsmsrvConfigInfo>&, unsigned long) 0x000084d7   Thumb Code     4  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::BackupSettings(RArray<TPsmsrvConfigInfo>&, unsigned long) 0x000084db   Thumb Code     4  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::GetCurrentMode(int&)   0x000084df   Thumb Code    86  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::CPsmSettingsImpl()     0x00008535   Thumb Code    16  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::CPsmSettingsImpl__sub_object() 0x00008535   Thumb Code     0  psmsettingsimpl.o(.text)
+    CPsmSettingsImpl::ConstructL()           0x00008545   Thumb Code    20  psmsettingsimpl.o(.text)
+    RPsmServer::ServerLocation() const       0x00008561   Thumb Code    58  psmsession.o(.text)
+    RPsmServer::StartServer() const          0x0000859b   Thumb Code   132  psmsession.o(.text)
+    RPsmServer::ServerVersion() const        0x0000861f   Thumb Code    18  psmsession.o(.text)
+    RPsmServer::Connect()                    0x00008631   Thumb Code    66  psmsession.o(.text)
+    RPsmServer::SendReceiveSync(TPsmServerRequest, const TIpcArgs&) const 0x00008673   Thumb Code     8  psmsession.o(.text)
+    RPsmServer::SendReceiveAsync(TPsmServerRequest, const TIpcArgs&, TRequestStatus&) const 0x0000867b   Thumb Code     8  psmsession.o(.text)
+    CPsmClientActive::CPsmClientActive(MPsmClientObserver&) 0x00008691   Thumb Code    28  psmclientactive.o(.text)
+    CPsmClientActive::CPsmClientActive__sub_object(MPsmClientObserver&) 0x00008691   Thumb Code     0  psmclientactive.o(.text)
+    CPsmClientActive::~CPsmClientActive()    0x000086ad   Thumb Code    22  psmclientactive.o(.text)
+    CPsmClientActive::~CPsmClientActive__sub_object() 0x000086ad   Thumb Code     0  psmclientactive.o(.text)
+    CPsmClientActive::~CPsmClientActive__deallocating() 0x000086c3   Thumb Code    16  psmclientactive.o(.text)
+    CPsmClientActive::SetActive()            0x000086d3   Thumb Code     8  psmclientactive.o(.text)
+    CPsmClientActive::RunL()                 0x000086db   Thumb Code    18  psmclientactive.o(.text)
+    CPsmClientActive::DoCancel()             0x000086ed   Thumb Code    12  psmclientactive.o(.text)
+    __ARM_switch8                            0x000086fc   ARM Code      24  switch8.o(.text)
+    __rt_switch8                             0x000086fc   ARM Code       0  switch8.o(.text)
+    _E32Dll_Body                             0x00008714   ARM Code      56  uc_dll.o(.text)
+    __DLL_Export_Table__                     0x00008750   ARM Code       4  dllexp.o(.text)
+    CPsmClient::~CPsmClient()                0x00008795   Thumb Code     0  psmclientimpl.o(i._ZN10CPsmClientD2Ev)
+    CPsmClient::~CPsmClient__sub_object()    0x00008795   Thumb Code     8  psmclientimpl.o(i._ZN10CPsmClientD2Ev)
+    CPsmSettings::CPsmSettings__sub_object() 0x0000879d   Thumb Code     6  psmsettingsimpl.o(i._ZN12CPsmSettingsC2Ev)
+    CPsmSettings::~CPsmSettings__deallocating() 0x000087a9   Thumb Code    16  psmsettingsimpl.o(i._ZN12CPsmSettingsD0Ev)
+    CPsmSettings::~CPsmSettings()            0x000087b9   Thumb Code     0  psmsettingsimpl.o(i._ZN12CPsmSettingsD2Ev)
+    CPsmSettings::~CPsmSettings__sub_object() 0x000087b9   Thumb Code     8  psmsettingsimpl.o(i._ZN12CPsmSettingsD2Ev)
+    RArray<TPsmsrvConfigInfo>::operator [](int) 0x000087c1   Thumb Code     8  psmsettingsimpl.o(t._ZN6RArrayI17TPsmsrvConfigInfoEixEi)
+    typeinfo for CPsmClient                  0x000088c8   Data          12  psmclientimpl.o(.constdata__ZTI10CPsmClient)
+    typeinfo for CPsmSettings                0x000088d4   Data          12  psmsettingsimpl.o(.constdata__ZTI12CPsmSettings)
+    typeinfo for CPsmClientImpl              0x000088e0   Data          12  psmclientimpl.o(.constdata__ZTI14CPsmClientImpl)
+    typeinfo for CPsmClientActive            0x000088ec   Data          12  psmclientactive.o(.constdata__ZTI16CPsmClientActive)
+    typeinfo for CPsmSettingsImpl            0x000088f8   Data          12  psmsettingsimpl.o(.constdata__ZTI16CPsmSettingsImpl)
+    typeinfo name for CPsmClient             0x00008904   Data          13  psmclientimpl.o(.constdata__ZTS10CPsmClient)
+    typeinfo name for CPsmSettings           0x00008911   Data          15  psmsettingsimpl.o(.constdata__ZTS12CPsmSettings)
+    typeinfo name for CPsmClientImpl         0x00008920   Data          17  psmclientimpl.o(.constdata__ZTS14CPsmClientImpl)
+    typeinfo name for CPsmClientActive       0x00008931   Data          19  psmclientactive.o(.constdata__ZTS16CPsmClientActive)
+    typeinfo name for CPsmSettingsImpl       0x00008944   Data          19  psmsettingsimpl.o(.constdata__ZTS16CPsmSettingsImpl)
+    vtable for CPsmSettings                  0x00008958   Data          36  psmsettingsimpl.o(.constdata__ZTV12CPsmSettings)
+    vtable for CPsmClientImpl                0x0000897c   Data          40  psmclientimpl.o(.constdata__ZTV14CPsmClientImpl)
+    vtable for CPsmClientActive              0x000089a4   Data          32  psmclientactive.o(.constdata__ZTV16CPsmClientActive)
+    vtable for CPsmSettingsImpl              0x000089c4   Data          36  psmsettingsimpl.o(.constdata__ZTV16CPsmSettingsImpl)
+    .ARM.exidx$$Base                         0x000089e8   Number         0  ucppinit.o(.ARM.exidx)
+    .ARM.exidx$$Limit                        0x00008ac8   Number         0  psmsettingsimpl.o(.ARM.exidx)
+    Image$$ER_RO$$Limit                      0x00008ac8   Number         0  anon$$obj.o(linker$$defined$$symbols)
+

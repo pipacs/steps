@@ -11,6 +11,7 @@
 enum GftMethod {GftGet, GftPost};
 
 GftProgram::GftProgram(QObject *parent): QObject(parent) {
+    qRegisterMetaType<GftIdList>();
     manager = new QNetworkAccessManager;
 }
 
@@ -75,7 +76,7 @@ void GftProgram::step() {
             QTimer::singleShot(0, this, SLOT(step()));
             return;
         }
-        sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: STRING, tags: STRING)").arg(toGftTableName(instructions[ic].param));
+        sql = QString("CREATE TABLE '%1' (steps: NUMBER, date: DATETIME, tags: STRING, device: STRING)").arg(instructions[ic].param);
         method = GftPost;
         break;
 
@@ -115,7 +116,7 @@ void GftProgram::stepDone() {
         QStringList lines = QString(data).split("\n");
         switch (instructions[ic].op) {
         case GftFindTable: {
-            QString gftName = toGftTableName(instructions[ic].param);
+            QString gftName = instructions[ic].param;
             foreach (QString line, lines) {
                 int commaIndex = line.indexOf(',');
                 if (commaIndex >= 0) {
@@ -148,8 +149,4 @@ void GftProgram::stepDone() {
     reply->deleteLater();
     ic++;
     QTimer::singleShot(0, this, SLOT(step()));
-}
-
-QString GftProgram::toGftTableName(const QString &localName) {
-    return QString("Steps ") + localName;
 }

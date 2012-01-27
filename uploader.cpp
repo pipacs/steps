@@ -12,7 +12,7 @@
 
 static Uploader *instance_;
 const int UPLOADER_IDLE = 1000 * 60 * 30; ///< Idle time between complete/failed uploads (ms).
-const int UPLOADER_IDLE_INCOMPLETE = 1000 * 10; ///< Idle time between incomplete uploads (ms).
+const int UPLOADER_IDLE_INCOMPLETE = 1000 * 3; ///< Idle time between incomplete uploads (ms).
 
 Uploader *Uploader::instance() {
     if (!instance_) {
@@ -96,9 +96,14 @@ void UploaderWorker::onGftUploadFinished(int result) {
     Trace t("UploaderWorker::onGftUploadFinished");
     qDebug() << "Result" << (int)result;
     if (result == UploadComplete) {
+        if (listArchives().length() > 1) {
+            qDebug() << "There are more archives to upload";
+            result = UploadIncomplete;
+        }
         QFile file(archive);
         if (!file.remove()) {
             qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
+            result = UploadFailed;
         }
     }
     emit uploadComplete(result);

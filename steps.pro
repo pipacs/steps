@@ -1,14 +1,16 @@
-VERSION = 0.0.8
+VERSION = 0.1.0
+TARGET = Steps
 
 # Qt packages to use
 CONFIG += mobility
+CONFIG += qt-components
 MOBILITY += sensors
 MOBILITY += multimedia
 QT += sql
 QT += network
 QT += script
 
-# Platform-specific
+# Meego Harmattan rules
 contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig
     CONFIG += qmsystem2
@@ -16,47 +18,43 @@ contains(MEEGO_EDITION,harmattan) {
     RESOURCES += meego.qrc
     SOURCES += mediakeyprivate-meego.cpp
     DATADIR = share
-    DEFINES += STEPS_DATADIR=\\\"/opt/steps/share\\\"
+    DEFINES += STEPS_DATADIR=\\\"/opt/Steps/share\\\"
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
     QML_IMPORT_PATH = qml/meego
-} else:symbian {
-    CONFIG(debug, debug|release) {
-        # Use vanilla UID in debug mode
-        TARGET.UID3 = 0xE1584C4E
-    } else {
-        # Use official UID in release mode
-        TARGET.UID3 = 0x20034d0f
-    }
 
-    my_deployment.pkg_prerules += vendorinfo
-    DEPLOYMENT += my_deployment
-    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
-
-    TARGET.CAPABILITY += NetworkServices
-    INCLUDEPATH += MW_LAYER_SYSTEMINCLUDE // Not sure if this is needed...
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
-    SOURCES += mediakeyprivate-symbian.cpp
-    RESOURCES += symbian.qrc
-    DATADIR = c:/data/steps
-    DEFINES += STEPS_DATADIR='"c:/data/steps"'
-    DEFINES += STEPS_VERSION='"$$VERSION"'
-    QML_IMPORT_PATH = qml/symbian
-    # Smart Installer package's UID
-    # This UID is from the protected range and therefore the package will
-    # fail to install if self-signed. By default qmake uses the unprotected
-    # range value if unprotected UID is defined for the application and
-    # 0x2002CCCF value if protected UID is given to the application
-    #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-} else {
-    error("Unsupported platform")
+    # Add a splash image for the Meego launcher
+    folder_splash.source = splash
+    folder_splash.target = $$DATADIR
+    DEPLOYMENTFOLDERS += folder_splash
 }
 
-# Add sounds folder to the application.
-# Sounds cannot be played back from resource on Symbian
-folder_01.source = sounds
-folder_01.target = $$DATADIR
-DEPLOYMENTFOLDERS = folder_01
+# Symbian rules
+symbian {
+    TARGET.CAPABILITY += NetworkServices WriteDeviceData ReadDeviceData
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil -lpsmclient
+    SOURCES += mediakeyprivate-symbian.cpp
+    RESOURCES += symbian.qrc
+    DATADIR = c:/data/Steps
+    DEFINES += STEPS_DATADIR='"c:/data/Steps"'
+    DEFINES += STEPS_VERSION='"$$VERSION"'
+    QML_IMPORT_PATH = qml/symbian
+
+    # For Nokia Store
+    vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
+    my_deployment.pkg_prerules += vendorinfo
+    DEPLOYMENT += my_deployment
+
+    # Use official UID for Steps
+    TARGET.UID3 += 0x20034d0f
+    # Use official UID for wrapper package
+    # DEPLOYMENT.installer_header = 0x2002CCCF
+}
+
+# Add "sounds" folder to the application
+# (Sounds cannot be played back from resource on Symbian)
+folder_sounds.source = sounds
+folder_sounds.target = $$DATADIR
+DEPLOYMENTFOLDERS += folder_sounds
 
 SOURCES += \
     main.cpp \
@@ -138,7 +136,20 @@ OTHER_FILES += \
     publishing/screenshots/symbian/symbian-3.png \
     publishing/screenshots/symbian/symbian-2.png \
     publishing/screenshots/symbian/symbian-1.png \
-    publishing/screenshots/symbian/symbian-4.png
+    publishing/screenshots/symbian/symbian-4.png \
+    qml/meego/StepsRedButton.qml \
+    qml/symbian/StepsRedButton.qml \
+    qml/BigRedButton.qml \
+    publishing/splash-n9.pxm \
+    splash/splash-n9.jpg \
+    publishing/splash-n9.png \
+    qml/symbian/StepsButtonColumn.qml \
+    qml/meego/StepsButtonColumn.qml \
+    qml/Splash.qml \
+    images/splash.jpg \
+    qml/symbian/StepsTextField.qml \
+    psm-symbian/install.bat \
+    qml/steps.ts
 
 HEADERS += \
     counter.h \
@@ -157,7 +168,7 @@ HEADERS += \
     o2/simplecrypt.h \
     gftsecret.h \
     database.h \
-    trace.h \
+    trace.h
 
 RESOURCES += \
     common.qrc

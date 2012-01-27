@@ -4,8 +4,10 @@ import "symbian"
 StepsPage {
     property bool counterWasRunning: false
     id: mainPage
-    showBack: false
+    showBack: prefs.showExit
+    showTools: prefs.showExit
 
+    // Upload indicator
     Image {
         source: "qrc:/images/reset.png"
         width: 28
@@ -20,6 +22,7 @@ StepsPage {
         spacing: 32
         width: mainPage.width
 
+        // Current activity step count
         StepsLabel {
             id: activityLabel
             y: screen.height / 3
@@ -29,14 +32,15 @@ StepsPage {
             font.bold: true
         }
 
+        // Daily step count
         StepsLabel {
             id: dailyLabel
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Today: " + main.dailyCount
-            font.pixelSize: 45
             horizontalAlignment: Text.AlignHCenter
         }
 
+        // Total step count
         StepsLabel {
             id: totalLabel
             anchors.horizontalCenter: parent.horizontalCenter
@@ -44,21 +48,23 @@ StepsPage {
             horizontalAlignment: Text.AlignHCenter
         }
 
+        // Name of current activity
         StepsLabel {
             id: pausedLabel
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: counter.running? "": qsTr("Paused")
+            text: main.activityNames[main.activity] + (counter.running? "": qsTr(" (Paused)"))
             font.pixelSize: 45
             color: "#ff9999"
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
 
+        // Help text
         StepsLabel {
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: qsTr("Press Volume Up to start/pause counter, Volume Down to show settings")
+            text: qsTr("Press Volume Up to start/pause activity, Volume Down to show more options")
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
@@ -74,10 +80,6 @@ StepsPage {
         source: platform.soundUrl("stop")
     }
 
-    ActionsPage {
-        id: actions
-    }
-
     function onCounterRunningChanged() {
         var sound = counter.running? startSound: stopSound
         sound.beep()
@@ -90,7 +92,6 @@ StepsPage {
     }
 
     onActiveChanged: {
-        console.log("* MainPage: onActiveChanged: " + active)
         if (active) {
             counter.running = counterWasRunning
         } else {
@@ -103,6 +104,10 @@ StepsPage {
         Qt.quit()
     }
 
+    function onActivityChanged() {
+        pausedLabel.text = main.activityNames[main.activity] + (counter.running? "": qsTr(" (Paused)"))
+    }
+
     function onVolumeUpPressed() {
         if (active) {
             counter.running = !counter.running
@@ -111,7 +116,7 @@ StepsPage {
 
     function onVolumeDownPressed() {
         if (active) {
-            main.pageStack.push(actions)
+            main.pageStack.push(Qt.resolvedUrl("ActionsPage.qml"))
         }
     }
 }

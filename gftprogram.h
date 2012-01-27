@@ -7,6 +7,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QList>
+#include <QMetaType>
 
 /// POST URL for SQL queries.
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
@@ -14,6 +15,10 @@
 
 class QNetworkAccessManager;
 class QNetworkReply;
+
+/// List of record IDs.
+typedef QList<qlonglong> GftIdList;
+Q_DECLARE_METATYPE(GftIdList)
 
 /// Operation.
 enum GftOp {
@@ -25,9 +30,9 @@ enum GftOp {
 /// Instruction.
 struct GftInstruction {
     GftInstruction(GftOp op_, const QString &param_, QList<qlonglong> idList_ = QList<qlonglong>()): op(op_), param(param_), idList(idList_) {}
-    GftOp op;               ///< Operation.
-    QString param;          ///< Table name or SQL statements.
-    QList<qlonglong> idList;///< Local record IDs to be uploaded by this instruction.
+    GftOp op;           ///< Operation.
+    QString param;      ///< Table name or SQL statements.
+    GftIdList idList;   ///< Local record IDs to be uploaded by this instruction.
 };
 
 /// Upload program
@@ -44,9 +49,6 @@ public:
     /// Set instructions, reset instruction counter and status.
     void setInstructions(const QList<GftInstruction> instructions_);
 
-    /// Convert a local database name to GFT table name.
-    QString toGftTableName(const QString &localName);
-
 public slots:
     /// Execute next instruction.
     void step();
@@ -57,7 +59,7 @@ public slots:
 signals:
     /// Emitted when an instruction step is completed.
     /// @param  idList  Record IDs uploaded by to the step.
-    void stepCompleted(QList<qlonglong> idList);
+    void stepCompleted(GftIdList idList);
 
     /// Emitted when all instructions are completed.
     /// @param  failed  If true, execution had an error.

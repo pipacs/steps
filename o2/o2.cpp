@@ -37,7 +37,7 @@ O2::O2(const QString &clientId, const QString &clientSecret, const QString &scop
     refreshTimer_->setSingleShot(true);
     connect(refreshTimer_, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
-    if (token().length()) {
+    if (refreshToken().length()) {
         scheduleRefresh();
     }
 }
@@ -75,6 +75,7 @@ void O2::unlink() {
         return;
     }
     setToken(QString());
+    setRefreshToken(QString());
     setExpires(0);
     emit linkedChanged();
 }
@@ -138,7 +139,8 @@ void O2::onTokenReplyFinished() {
 
 void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
     qDebug() << "O2::onTokenReplyError" << error << tokenReply_->errorString();
-    setToken("");
+    setToken(QString());
+    setRefreshToken(QString());
     emit tokenChanged();
     emit linkingFailed();
     emit linkedChanged();
@@ -203,6 +205,10 @@ void O2::scheduleRefresh() {
 
 void O2::refresh() {
     qDebug() << ">O2::refresh";
+    if (!refreshToken().length()) {
+        qDebug() << "No refresh token";
+        qDebug() << "<O2::refresh";
+    }
     QNetworkRequest tokenRequest(refreshTokenUrl_);
     tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QMap<QString, QString> parameters;

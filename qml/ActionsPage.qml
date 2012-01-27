@@ -2,19 +2,50 @@ import QtQuick 1.1
 import "symbian"
 
 StepsPage {
-    property bool dialogOpen: false
     id: actionsPage
+    property bool dialogOpen: false
+    property int newActivity: 0
+    property variant buttons: []
 
     Column {
         anchors.centerIn: parent
         spacing: 32
         width: actionsPage.width
 
-        BigButton {
-            text: "Reset activity"
+        StepsButtonColumn {
+            id: buttons
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
-            negative: true
+            BigButton {
+                id: activity0
+                anchors.left: parent.left; anchors.right: parent.right
+                text: main.activityNames[0]
+                onClicked: setActivity(0)
+            }
+            BigButton {
+                id: activity1
+                anchors.left: parent.left; anchors.right: parent.right
+                text: main.activityNames[1]
+                onClicked: setActivity(1)
+            }
+            BigButton {
+                id: activity2
+                anchors.left: parent.left; anchors.right: parent.right
+                text: main.activityNames[2]
+                onClicked: setActivity(2)
+            }
+            BigButton {
+                id: activity3
+                anchors.left: parent.left; anchors.right: parent.right
+                text: main.activityNames[3]
+                onClicked: setActivity(3)
+            }
+        }
+
+        BigRedButton {
+            text: qsTr("Reset step count")
+            width: parent.width - 64
+            anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 dialogOpen = true
                 confirmResetActivityDialog.open()
@@ -22,42 +53,18 @@ StepsPage {
         }
 
         BigButton {
-            text: "Reset all"
-            width: parent.width - 64
-            anchors.horizontalCenter: parent.horizontalCenter
-            negative: true
-            onClicked: {
-                dialogOpen = true
-                confirmResetDialog.open()
-            }
-        }
-
-        BigButton {
-            text: "Settings"
+            text: qsTr("Settings")
             width: parent.width - 64
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                main.pageStack.push(settings)
+                main.pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
             }
-        }
-    }
-
-    StepsYesNoDialog {
-        id: confirmResetDialog
-        titleText: "Reset all step counts?"
-        onDialogAccepted: {
-            console.log("* ActionsPage.confirmDialog.onDialogAccepted")
-            main.resetCount()
-            main.pageStack.pop()
-        }
-        onDialogClosed: {
-            dialogOpen = false;
         }
     }
 
     StepsYesNoDialog {
         id: confirmResetActivityDialog
-        titleText: "Reset current activity step count?"
+        title: qsTr("Reset current activity step count?")
         onDialogAccepted: {
             main.resetActivityCount()
             main.pageStack.pop()
@@ -67,21 +74,58 @@ StepsPage {
         }
     }
 
-    SettingsPage {id: settings}
+    StepsYesNoDialog {
+        id: confirmChangeActivityDialog
+        title: qsTr("Change activity to ") + main.activityNames[newActivity] + qsTr("?")
+        onDialogAccepted: {
+            main.setActivity(newActivity)
+            main.pageStack.pop()
+        }
+        onDialogRejected: {
+            onActivityChanged()
+        }
+        onDialogClosed: {
+            dialogOpen = false;
+        }
+    }
 
-    onBack: {
-        console.log("* ActionsPage.onBack")
-        main.pageStack.pop()
+    function setActivity(a) {
+        if (a !== main.activity) {
+            newActivity = a
+            dialogOpen = true
+            confirmChangeActivityDialog.open()
+        }
     }
 
     function onVolumeDownPressed() {
         if (active && !dialogOpen) {
-            console.log("* ActionsPage.onVolumeDownPressed")
             main.pageStack.pop()
         }
     }
 
+    function onActivityChanged() {
+        console.log("* ActionsPage.onActivityChanged " + main.activity)
+        if (main.activity === 0)
+            buttons.checkedButton = activity0
+        else if (main.activity === 1)
+            buttons.checkedButton = activity1
+        else if (main.activity === 2)
+            buttons.checkedButton = activity2
+        else
+            buttons.checkedButton = activity3
+    }
+
+    onBack: {
+        main.pageStack.pop()
+    }
+
     Component.onCompleted: {
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        main.activityChanged.connect(onActivityChanged)
+        onActivityChanged()
+    }
+
+    onStatusChanged: {
+        onActivityChanged()
     }
 }

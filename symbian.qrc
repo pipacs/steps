@@ -10,5 +10,8 @@
         <file alias="StepsYesNoDialog.qml">qml/symbian/StepsYesNoDialog.qml</file>
         <file alias="StepsSpinner.qml">qml/symbian/StepsSpinner.qml</file>
         <file alias="StepsBanner.qml">qml/symbian/StepsBanner.qml</file>
+        <file alias="StepsRedButton.qml">qml/symbian/StepsRedButton.qml</file>
+        <file alias="StepsButtonColumn.qml">qml/symbian/StepsButtonColumn.qml</file>
+        <file alias="StepsTextField.qml">qml/symbian/StepsTextField.qml</file>
     </qresource>
 </RCC>

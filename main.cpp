@@ -97,11 +97,11 @@ QNetworkAccessManager *NetworkAccessManagerFactory::create(QObject *parent) {
 
 int main(int argc, char *argv[]) {
     // Create application
-    QApplication app(argc, argv);
-    app.setApplicationName("Steps");
-    app.setOrganizationDomain("pipacs.com");
-    app.setOrganizationName("pipacs.com");
-    app.setApplicationVersion(Platform::instance()->appVersion());
+    QScopedPointer<QApplication> app(createApplication(argc, argv));
+    app->setApplicationName("Steps");
+    app->setOrganizationDomain("pipacs.com");
+    app->setOrganizationName("pipacs.com");
+    app->setApplicationVersion(Platform::instance()->appVersion());
 
     qDebug() << "Steps" << Platform::instance()->appVersion() << "starting up";
 
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
     // mediaKey->connect(eventFilter, SIGNAL(activate(bool)), counter, SLOT(applicationActivated(bool)));
 
     // Run application
-    int ret = app.exec();
+    int ret = app->exec();
 
     // Delete singletons and exit
     delete viewer;

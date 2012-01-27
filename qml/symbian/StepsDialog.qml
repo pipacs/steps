@@ -14,7 +14,7 @@ CommonDialog {
     anchors.fill: parent
 
     onStatusChanged: {
-        if (status == DialogStatus.Closed) {
+        if (status === DialogStatus.Closed) {
             console.log("* StepsDialog.dialogClosed")
             dialogClosed()
         }
