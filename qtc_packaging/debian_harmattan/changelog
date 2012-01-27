@@ -3,6 +3,7 @@ steps (0.1.0) unstable; urgency=low
   * Enable power save mode
   * Make texts localizable
   * Add Hungarian translation
+  * Disable renaming activities on Symbian
 
  -- Akos Polster <akos@pipacs.com>  Sat, 21 Jan 2012 13:29:00 +0100
 
