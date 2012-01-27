@@ -20,8 +20,6 @@ StepsPage {
             transformOrigin: Item.TopLeft
             pressGrabTime: 9999
             focus: true
-            settings.defaultFontSize: (platform.osName === "symbian")? 22: 28
-            settings.minimumFontSize: (platform.osName === "symbian")? 20: 26
             settings.javaEnabled: false
             settings.javascriptCanAccessClipboard: false
             settings.javascriptCanOpenWindows: false
@@ -36,6 +34,12 @@ StepsPage {
             preferredWidth: loginBrowser.width
             preferredHeight: loginBrowser.height
             contentsScale: 1
+            Component.onCompleted: {
+                if (platform.osName !== "symbian") {
+                    settings.defaultFontSiz = 28
+                    settings.minimumFontSize = 26
+                }
+            }
         }
     }
 
