@@ -72,18 +72,26 @@ StepsPage {
                 }
             }
 
-            StepsLabel {text: qsTr("Rename activity \"Custom 1\":")}
+            StepsLabel {
+                text: qsTr("Rename activity \"Custom 1\":")
+                visible: platform.osName !== "symbian"
+            }
 
             StepsTextField {
                 id: custom1Text
+                visible: platform.osName !== "symbian"
                 width: parent.width
                 text: main.activityNames[2]
             }
 
-            StepsLabel {text: qsTr("Rename activity \"Custom 2\":")}
+            StepsLabel {
+                text: qsTr("Rename activity \"Custom 2\":")
+                visible: platform.osName !== "symbian"
+            }
 
             StepsTextField {
                 id: custom2Text
+                visible: platform.osName !== "symbian"
                 width: parent.width
                 text: main.activityNames[3]
             }
@@ -160,10 +168,6 @@ StepsPage {
         loginBrowser.openUrl(url)
     }
 
-    function onInputVisibleChanged() {
-        console.log("* SettingsPage.onInputVisibleChanged " + inputContext.visible)
-    }
-
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
         gft.linkedChanged.connect(linkInfo.show)
@@ -171,6 +175,5 @@ StepsPage {
             showExit.height = 0
             showExit.visible = false
         }
-        inputContext.visibleChanged.connect(onInputVisibleChanged)
     }
 }
