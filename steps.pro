@@ -148,8 +148,7 @@ OTHER_FILES += \
     qml/Splash.qml \
     images/splash.jpg \
     qml/symbian/StepsTextField.qml \
-    psm-symbian/install.bat \
-    qml/steps.ts
+    psm-symbian/install.bat
 
 HEADERS += \
     counter.h \
@@ -171,4 +170,5 @@ HEADERS += \
     trace.h
 
 RESOURCES += \
-    common.qrc
+    common.qrc \
+    translations.qrc
