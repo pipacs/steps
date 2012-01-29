@@ -13,5 +13,8 @@
         <file alias="StepsBanner.qml">qml/meego/StepsBanner.qml</file>
         <file alias="StepsRedButton.qml">qml/meego/StepsRedButton.qml</file>
         <file alias="StepsButtonColumn.qml">qml/meego/StepsButtonColumn.qml</file>
+        <file alias="StepsToolBarLayout.qml">qml/meego/StepsToolBarLayout.qml</file>
+        <file alias="StepsToolIcon.qml">qml/meego/StepsToolIcon.qml</file>
+        <file alias="StepsScrollDecorator.qml">qml/meego/StepsScrollDecorator.qml</file>
     </qresource>
 </RCC>

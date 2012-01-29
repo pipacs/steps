@@ -6,13 +6,15 @@
         <file>qml/SettingsPage.qml</file>
         <file>qml/ActionsPage.qml</file>
         <file>qml/BigButton.qml</file>
+        <file>qml/AboutPage.qml</file>
+        <file>qml/BigRedButton.qml</file>
+        <file>qml/LoginBrowser.qml</file>
+        <file>qml/Splash.qml</file>
         <file>images/steps.png</file>
         <file>images/reset.png</file>
         <file>images/settings.png</file>
-        <file>qml/LoginBrowser.qml</file>
-        <file>qml/BigRedButton.qml</file>
-        <file>qml/Splash.qml</file>
         <file>images/splash.jpg</file>
+        <file>texts/about.html</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

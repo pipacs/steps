@@ -148,7 +148,15 @@ OTHER_FILES += \
     qml/Splash.qml \
     images/splash.jpg \
     qml/symbian/StepsTextField.qml \
-    psm-symbian/install.bat
+    psm-symbian/install.bat \
+    qml/meego/StepsToolBarLayout.qml \
+    qml/meego/StepsToolIcon.qml \
+    qml/symbian/StepsToolIcon.qml \
+    qml/symbian/StepsToolBarLayout.qml \
+    qml/AboutPage.qml \
+    qml/meego/StepsScrollDecorator.qml \
+    qml/symbian/StepsScrollDecorator.qml \
+    texts/about.html
 
 HEADERS += \
     counter.h \

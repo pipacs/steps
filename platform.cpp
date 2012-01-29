@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QUuid>
+#include <QDesktopServices>
 
 #if defined(Q_OS_SYMBIAN)
 #   include <sysutil.h>
@@ -165,4 +166,16 @@ bool Platform::savePower() {
 #else
     return false;
 #endif
+}
+
+void Platform::openUrl(const QString &url) {
+    QDesktopServices::openUrl(QUrl(url));
+}
+
+QString Platform::text(const QString &key) {
+    QFile resource(":/texts/" + key);
+    resource.open(QFile::ReadOnly);
+    QString ret = resource.readAll();
+    resource.close();
+    return ret;
 }

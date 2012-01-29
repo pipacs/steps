@@ -21,4 +21,14 @@ Page {
             visible: showBack
         }
     }
+
+    Component.onCompleted: {
+        console.log("* StepsPage.pageTools children[0]: " + pageTools.children[0].iconId)
+    }
+
+    function setToolBar(newToolBar) {
+        pageTools.visible = false
+        tools = newToolBar
+        return pageTools
+    }
 }

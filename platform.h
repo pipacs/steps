@@ -54,6 +54,12 @@ public:
     /// Set power save mode.
     void setSavePower(bool v);
 
+    /// Open URL with the default web browser.
+    Q_INVOKABLE void openUrl(const QString &url);
+
+    /// Load a text from a resource.
+    Q_INVOKABLE QString text(const QString &key);
+
 signals:
     void savePowerChanged();
 
