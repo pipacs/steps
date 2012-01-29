@@ -6,7 +6,7 @@ StepsPage {
 
     Flickable {
         id: flickable
-        anchors {left: parent.left; right: parent.right; top: parent.top; bottom: splitViewInput.top}
+        anchors {left: parent.left; right: parent.right; top: parent.top}
         anchors.leftMargin: 30
         anchors.rightMargin: 30
         anchors.topMargin: 41
