@@ -34,12 +34,12 @@
     <message>
         <location filename="../qml/MainPage.qml" line="39"/>
         <source>Today: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ma: </translation>
     </message>
     <message>
         <location filename="../qml/MainPage.qml" line="47"/>
         <source>Total: </source>
-        <translation type="unfinished"></translation>
+        <translation>Összesen: </translation>
     </message>
     <message>
         <location filename="../qml/MainPage.qml" line="56"/>
@@ -78,7 +78,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="53"/>
         <source>Save to Google Docs:</source>
-        <translation>Mentés Google Docs-ra</translation>
+        <translation>Mentés Google Docs-ra:</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="56"/>
@@ -119,6 +119,24 @@
         <location filename="../qml/SettingsPage.qml" line="151"/>
         <source>Logged out from Google Docs</source>
         <translation>Kilépett a Google Docs-ból</translation>
+    </message>
+</context>
+<context>
+    <name>StepsYesNoDialog</name>
+    <message>
+        <location filename="../qml/symbian/StepsYesNoDialog.qml" line="11"/>
+        <source>Steps</source>
+        <translation>Steps</translation>
+    </message>
+    <message>
+        <location filename="../qml/symbian/StepsYesNoDialog.qml" line="13"/>
+        <source>Yes</source>
+        <translation>Igen</translation>
+    </message>
+    <message>
+        <location filename="../qml/symbian/StepsYesNoDialog.qml" line="13"/>
+        <source>No</source>
+        <translation>Nem</translation>
     </message>
 </context>
 <context>
