@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "symbian"
+import "meego"
 
 StepsPage {
     id: actionsPage
@@ -51,15 +51,6 @@ StepsPage {
                 confirmResetActivityDialog.open()
             }
         }
-
-        BigButton {
-            text: qsTr("Settings")
-            width: parent.width - 64
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                main.pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
-            }
-        }
     }
 
     StepsYesNoDialog {
@@ -86,6 +77,22 @@ StepsPage {
         }
         onDialogClosed: {
             dialogOpen = false;
+        }
+    }
+
+    StepsToolBarLayout {
+        id: myTools
+        StepsToolIcon {
+            iconId: "toolbar-back"
+            onClicked: back()
+        }
+        StepsToolIcon {
+            iconId: "toolbar-settings"
+            onClicked: main.pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
+        }
+        StepsToolIcon {
+            iconId: ":/images/about.png" // "toolbar-new-message"
+            onClicked: main.pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
         }
     }
 
@@ -123,6 +130,7 @@ StepsPage {
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
         main.activityChanged.connect(onActivityChanged)
         onActivityChanged()
+        setToolBar(myTools)
     }
 
     onStatusChanged: {

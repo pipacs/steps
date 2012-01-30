@@ -3,5 +3,5 @@ import "symbian"
 
 StepsRedButton {
     font.pixelSize: 36
-    height: 78
+    height: 90
 }

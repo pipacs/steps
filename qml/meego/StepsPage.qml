@@ -21,4 +21,10 @@ Page {
             visible: showBack
         }
     }
+
+    function setToolBar(newToolBar) {
+        pageTools.visible = false
+        tools = newToolBar
+        return pageTools
+    }
 }

@@ -11,6 +11,8 @@
 #include <QDir>
 #include <QProcess>
 #include <QUuid>
+#include <QDesktopServices>
+#include <QLocale>
 
 #if defined(Q_OS_SYMBIAN)
 #   include <sysutil.h>
@@ -23,6 +25,7 @@
 
 #include "platform.h"
 #include "preferences.h"
+#include "trace.h"
 
 #if defined(Q_OS_SYMBIAN)
 #   define STEPS_BASEDIR "steps"
@@ -165,4 +168,23 @@ bool Platform::savePower() {
 #else
     return false;
 #endif
+}
+
+void Platform::openUrl(const QString &url) {
+    QDesktopServices::openUrl(QUrl(url));
+}
+
+QString Platform::text(const QString &key) {
+    QString locale = QLocale::system().name();
+    QFile resource(":/texts/" + locale + "/" + key);
+    if (!resource.open(QFile::ReadOnly)) {
+        resource.setFileName(":/texts/" + locale.left(2) + "/" + key);
+        if (!resource.open(QFile::ReadOnly)) {
+            resource.setFileName(":/texts/" + key);
+            (void)resource.open(QFile::ReadOnly);
+        }
+    }
+    QString ret = QString::fromUtf8(resource.readAll().constData());
+    resource.close();
+    return ret;
 }

@@ -36,7 +36,7 @@ StepsPage {
             contentsScale: 1
             Component.onCompleted: {
                 if (platform.osName !== "symbian") {
-                    settings.defaultFontSiz = 28
+                    settings.defaultFontSize = 28
                     settings.minimumFontSize = 26
                 }
             }

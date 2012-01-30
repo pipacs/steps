@@ -20,13 +20,11 @@ Page {
         id: pageTools
         ToolButton {
             visible: showBack
+            onClicked: back()
 
             // There is no toolbar-exit icon, so let's stick to toolbar-back for now
             // iconSource: (pageStack.depth > 1)? "toolbar-back": "toolbar-back"
             iconSource: "toolbar-back"
-
-            flat: true
-            onClicked: back()
         }
     }
 
@@ -35,5 +33,11 @@ Page {
         if (status === PageStatus.Active) {
             focus = true
         }
+    }
+
+    function setToolBar(newToolBar) {
+        pageTools.visible = false
+        tools = newToolBar
+        return pageTools
     }
 }

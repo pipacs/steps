@@ -4,6 +4,8 @@
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtNetwork/QNetworkDiskCache>
 #include <QTimer>
+#include <QTranslator>
+#include <QLocale>
 
 #include "qmlapplicationviewer.h"
 #include "counter.h"
@@ -107,6 +109,16 @@ int main(int argc, char *argv[]) {
 
     // Set up tracing
     qInstallMsgHandler(Trace::messageHandler);
+
+    // Install translator
+    QString locale = QLocale::system().name();
+    QTranslator translator;
+    qDebug() << "Locale:" << locale;
+    if (translator.load(locale, ":/translations")) {
+        app->installTranslator(&translator);
+    } else {
+        qWarning("main: Could not find translator");
+    }
 
     // Create singletons
     Preferences *prefs = Preferences::instance();

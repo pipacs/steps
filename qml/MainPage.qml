@@ -36,7 +36,7 @@ StepsPage {
         StepsLabel {
             id: dailyLabel
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Today: " + main.dailyCount
+            text: qsTr("Today: ") + main.dailyCount
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -44,7 +44,7 @@ StepsPage {
         StepsLabel {
             id: totalLabel
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Total: " + counter.count
+            text: qsTr("Total: ") + counter.count
             horizontalAlignment: Text.AlignHCenter
         }
 
