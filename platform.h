@@ -58,6 +58,10 @@ public:
     Q_INVOKABLE void openUrl(const QString &url);
 
     /// Load a text from a resource.
+    /// Tries to resolve the resource name using the locale name as follows:
+    /// - ":/texts/" + <language>_<Country> + "/" + key
+    /// - ":/texts/" + <language> + "/" + key
+    /// - ":/texts/" + key
     Q_INVOKABLE QString text(const QString &key);
 
 signals:

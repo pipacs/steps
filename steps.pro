@@ -156,7 +156,8 @@ OTHER_FILES += \
     qml/AboutPage.qml \
     qml/meego/StepsScrollDecorator.qml \
     qml/symbian/StepsScrollDecorator.qml \
-    texts/about.html
+    texts/about.html \
+    texts/hu/about.html
 
 HEADERS += \
     counter.h \

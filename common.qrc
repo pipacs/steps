@@ -15,6 +15,7 @@
         <file>images/settings.png</file>
         <file>images/splash.jpg</file>
         <file>texts/about.html</file>
+        <file>texts/hu/about.html</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

@@ -23,7 +23,7 @@ StepsPage {
                 font.pixelSize: 32
                 textFormat: Text.RichText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "<b>Steps</b><p>Version " + platform.appVersion + "<p>" + platform.text("about.html")
+                text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + qsTr("<p>") + platform.text("about.html")
                 onLinkActivated: platform.browse(link)
             }
         }
