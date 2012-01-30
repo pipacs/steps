@@ -6,7 +6,7 @@ StepsPage {
 
     Flickable {
         anchors.fill: parent
-        anchors.margins: 9
+        anchors.margins: 15
         contentWidth: Math.max(parent.width, column.width)
         contentHeight: Math.max(parent.height, column.height)
         flickableDirection: Flickable.VerticalFlick
@@ -20,7 +20,7 @@ StepsPage {
             }
             StepsLabel {
                 width: parent.width
-                font.pixelSize: 32
+                font.pixelSize: platform.osName === "harmattan"? 32: 26
                 textFormat: Text.RichText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + qsTr("<p>") + platform.text("about.html")

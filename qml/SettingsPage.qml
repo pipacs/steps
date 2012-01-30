@@ -7,7 +7,7 @@ StepsPage {
     Flickable {
         id: flickable
         anchors.fill: parent
-        anchors.margins: 30
+        anchors.margins: 15
         contentWidth: Math.max(parent.width, column.width)
         contentHeight: Math.max(parent.height, column.height)
         flickableDirection: Flickable.VerticalFlick
