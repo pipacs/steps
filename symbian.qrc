@@ -13,5 +13,8 @@
         <file alias="StepsRedButton.qml">qml/symbian/StepsRedButton.qml</file>
         <file alias="StepsButtonColumn.qml">qml/symbian/StepsButtonColumn.qml</file>
         <file alias="StepsTextField.qml">qml/symbian/StepsTextField.qml</file>
+        <file alias="StepsToolBarLayout.qml">qml/symbian/StepsToolBarLayout.qml</file>
+        <file alias="StepsToolIcon.qml">qml/symbian/StepsToolIcon.qml</file>
+        <file alias="StepsScrollDecorator.qml">qml/symbian/StepsScrollDecorator.qml</file>
     </qresource>
 </RCC>

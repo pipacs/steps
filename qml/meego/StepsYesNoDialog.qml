@@ -8,10 +8,10 @@ QueryDialog {
     signal dialogAccepted
     signal dialogRejected
 
-    acceptButtonText: "Yes"
-    rejectButtonText: "No"
+    acceptButtonText: qsTr("Yes")
+    rejectButtonText: qsTr("No")
     message: title
-    titleText: "Steps"
+    titleText: qsTr("Steps")
     icon: "/images/steps.png"
 
     onStatusChanged: {

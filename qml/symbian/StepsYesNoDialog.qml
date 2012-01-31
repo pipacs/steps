@@ -8,9 +8,9 @@ QueryDialog {
     signal dialogRejected
 
     height: 190
-    titleText: "Steps" // titlec
+    titleText: qsTr("Steps")
     message: title
-    buttonTexts: ["Yes", "No"]
+    buttonTexts: [qsTr("Yes"), qsTr("No")]
     // icon: "/images/steps.png"
 
     onStatusChanged: {
@@ -20,7 +20,6 @@ QueryDialog {
     }
 
     onButtonClicked: {
-        console.log("* StepsYesNoDialog.onButtonClicked " + index)
         if (index === 0) {
             dialogAccepted()
         } else {

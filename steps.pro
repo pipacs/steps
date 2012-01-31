@@ -1,4 +1,4 @@
-VERSION = 0.1.0
+VERSION = 0.1.1
 TARGET = Steps
 
 # Qt packages to use
@@ -149,7 +149,16 @@ OTHER_FILES += \
     images/splash.jpg \
     qml/symbian/StepsTextField.qml \
     psm-symbian/install.bat \
-    qml/steps.ts
+    qml/meego/StepsToolBarLayout.qml \
+    qml/meego/StepsToolIcon.qml \
+    qml/symbian/StepsToolIcon.qml \
+    qml/symbian/StepsToolBarLayout.qml \
+    qml/AboutPage.qml \
+    qml/meego/StepsScrollDecorator.qml \
+    qml/symbian/StepsScrollDecorator.qml \
+    texts/about.html \
+    texts/hu/about.html \
+    images/about.png
 
 HEADERS += \
     counter.h \
@@ -171,4 +180,5 @@ HEADERS += \
     trace.h
 
 RESOURCES += \
-    common.qrc
+    common.qrc \
+    translations.qrc

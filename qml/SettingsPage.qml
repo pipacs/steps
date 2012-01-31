@@ -6,16 +6,14 @@ StepsPage {
 
     Flickable {
         id: flickable
-        anchors {left: parent.left; right: parent.right; top: parent.top; bottom: splitViewInput.top}
-        anchors.leftMargin: 30
-        anchors.rightMargin: 30
-        anchors.topMargin: 41
-        contentWidth: col2.width
-        contentHeight: col2.height
+        anchors.fill: parent
+        anchors.margins: 15
+        contentWidth: Math.max(parent.width, column.width)
+        contentHeight: Math.max(parent.height, column.height)
         flickableDirection: Flickable.VerticalFlick
 
         Column {
-            id: col2
+            id: column
             anchors.top: parent.top
             spacing: 25
             width: settings.width - 60
@@ -72,7 +70,10 @@ StepsPage {
                 }
             }
 
-            StepsLabel {text: qsTr("Rename activity \"Custom 1\":")}
+            StepsLabel {
+                id: custom1Label
+                text: qsTr("Rename activity \"Custom 1\":")
+            }
 
             StepsTextField {
                 id: custom1Text
@@ -80,7 +81,10 @@ StepsPage {
                 text: main.activityNames[2]
             }
 
-            StepsLabel {text: qsTr("Rename activity \"Custom 2\":")}
+            StepsLabel {
+                id: custom2Label
+                text: qsTr("Rename activity \"Custom 2\":")
+            }
 
             StepsTextField {
                 id: custom2Text
@@ -90,37 +94,9 @@ StepsPage {
         }
     }
 
-//    Item {
-//        id: splitViewInput
-//        anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
-//        Behavior on height {PropertyAnimation {duration: 200}}
-//        states: [
-//            State {
-//                name: "Visible"; when: inputContext.visible
-//                PropertyChanges {target: splitViewInput; height: inputContext.height}
-//                PropertyChanges {
-//                    target: flickable
-//                    interactive:false
-//                }
-//            },
-//            State {
-//                name: "Hidden"; when: !inputContext.visible
-//                PropertyChanges {target: splitViewInput; height: 0} // mainPage.pageStack.toolbar}
-//                PropertyChanges {
-//                    target: flickable
-//                    interactive:true
-//                }
-//            }
-//        ]
-//        onStateChanged: {
-//            if(state=="Visible") {
-//                console.debug("input now visible, height is " + inputContext.height);
-//                // flickable.contentY = flickable.lasty;
-//            } else if(state=="Hidden") {
-//                console.debug("input now hidden");
-//            }
-//        }
-//    }
+    StepsScrollDecorator {
+        flickableItem: flickable
+    }
 
     StepsYesNoDialog {
         id: confirmLogoutDialog
@@ -160,17 +136,21 @@ StepsPage {
         loginBrowser.openUrl(url)
     }
 
-    function onInputVisibleChanged() {
-        console.log("* SettingsPage.onInputVisibleChanged " + inputContext.visible)
-    }
-
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
         gft.linkedChanged.connect(linkInfo.show)
         if (platform.osName !== "symbian") {
             showExit.height = 0
             showExit.visible = false
+        } else {
+            custom1Label.height = 0
+            custom1Label.visible = 0
+            custom1Text.height = 0
+            custom1Text.visible = 0
+            custom2Label.height = 0
+            custom2Label.visible = 0
+            custom2Text.height = 0
+            custom2Text.visible = 0
         }
-        inputContext.visibleChanged.connect(onInputVisibleChanged)
     }
 }

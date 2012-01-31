@@ -15,17 +15,14 @@ CommonDialog {
 
     onStatusChanged: {
         if (status === DialogStatus.Closed) {
-            console.log("* StepsDialog.dialogClosed")
             dialogClosed()
         }
     }
 
     onButtonClicked: {
         if (index === 0) {
-            console.log("* StepsDialog.dialogAccepted")
             dialogAccepted()
         } else {
-            console.log("* StepsDialog.dialogRejected")
             dialogRejected()
         }
     }
