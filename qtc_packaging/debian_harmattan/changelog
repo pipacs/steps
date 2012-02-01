@@ -2,6 +2,7 @@ steps (0.1.1) unstable; urgency=low
 
   * Add Hungarian translation
   * Add About page
+  * Ignore volume keys on Symbian if device is locked
 
  -- Akos Polster <akos@pipacs.com>  Sun, 29 Jan 2012 21:59:00 +0100
 

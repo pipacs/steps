@@ -31,7 +31,7 @@ contains(MEEGO_EDITION,harmattan) {
 # Symbian rules
 symbian {
     TARGET.CAPABILITY += NetworkServices WriteDeviceData ReadDeviceData
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil -lpsmclient
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil -lpsmclient -lws32 -lapgrfx -lavkon
     SOURCES += mediakeyprivate-symbian.cpp
     RESOURCES += symbian.qrc
     DATADIR = c:/data/Steps
