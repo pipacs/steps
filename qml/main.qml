@@ -113,7 +113,7 @@ StepsPageStackWindow {
         counter.step.connect(main.countChanged)
         counter.runningChanged.connect(main.runningChanged)
 
-        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion})
+        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName})
 
         // Restore step counts from settings
         setDailyCount(prefs.dailyCount)
@@ -122,6 +122,9 @@ StepsPageStackWindow {
     }
 
     Component.onDestruction: {
+        if (prefs.savePower) {
+            platform.savePower = false
+        }
         logger.log(0, {"appStopped": "com.pipacs.steps"})
     }
 }
