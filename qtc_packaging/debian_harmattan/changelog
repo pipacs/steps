@@ -1,6 +1,7 @@
 steps (0.1.1) unstable; urgency=low
 
   * Add Hungarian translation
+  * Add Chinese translation
   * Add About page
   * Ignore volume keys on Symbian if device is locked
 
