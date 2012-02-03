@@ -155,7 +155,7 @@
     <message>
         <location filename="../qml/main.qml" line="12"/>
         <source>Walking</source>
-        <translation>走路</translation>
+        <translation>行走</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="12"/>
