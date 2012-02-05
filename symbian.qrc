@@ -17,5 +17,6 @@
         <file alias="StepsToolIcon.qml">qml/symbian/StepsToolIcon.qml</file>
         <file alias="StepsScrollDecorator.qml">qml/symbian/StepsScrollDecorator.qml</file>
         <file alias="StepsToolButton.qml">qml/symbian/StepsToolButton.qml</file>
+        <file alias="StepsFlickable.qml">qml/symbian/StepsFlickable.qml</file>
     </qresource>
 </RCC>

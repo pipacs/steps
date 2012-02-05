@@ -1,5 +1,7 @@
 steps (0.1.2) unstable; urgency=low
 
+  * Make sure input fields are not covered by VKB on Symbian
+
  -- Akos Polster <akos@pipacs.com>  Sun, 5  Feb 2012 03:38:00 +0100
 
 steps (0.1.1) unstable; urgency=low

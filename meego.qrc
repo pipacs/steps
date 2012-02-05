@@ -17,5 +17,6 @@
         <file alias="StepsToolIcon.qml">qml/meego/StepsToolIcon.qml</file>
         <file alias="StepsScrollDecorator.qml">qml/meego/StepsScrollDecorator.qml</file>
         <file alias="StepsToolButton.qml">qml/meego/StepsToolButton.qml</file>
+        <file alias="StepsFlickable.qml">qml/meego/StepsFlickable.qml</file>
     </qresource>
 </RCC>

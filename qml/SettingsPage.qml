@@ -1,10 +1,10 @@
 import QtQuick 1.1
-import "meego"
+import "symbian"
 
 StepsPage {
     id: settings
 
-    Flickable {
+    StepsFlickable {
         id: flickable
         anchors.fill: parent
         anchors.margins: 15
@@ -142,15 +142,15 @@ StepsPage {
         if (platform.osName !== "symbian") {
             showExit.height = 0
             showExit.visible = false
-        } else {
-            custom1Label.height = 0
-            custom1Label.visible = 0
-            custom1Text.height = 0
-            custom1Text.visible = 0
-            custom2Label.height = 0
-            custom2Label.visible = 0
-            custom2Text.height = 0
-            custom2Text.visible = 0
+//        } else {
+//            custom1Label.height = 0
+//            custom1Label.visible = 0
+//            custom1Text.height = 0
+//            custom1Text.visible = 0
+//            custom2Label.height = 0
+//            custom2Label.visible = 0
+//            custom2Text.height = 0
+//            custom2Text.visible = 0
         }
     }
 }

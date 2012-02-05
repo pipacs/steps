@@ -162,7 +162,9 @@ OTHER_FILES += \
     qml/meego/StepsToolButton.qml \
     qml/symbian/StepsToolButton.qml \
     images/play.png \
-    images/pause.png
+    images/pause.png \
+    qml/symbian/StepsFlickable.qml \
+    qml/meego/StepsFlickable.qml
 
 HEADERS += \
     counter.h \
