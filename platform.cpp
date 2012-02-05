@@ -21,6 +21,7 @@
 #   include <psmsettings.h>
 #elif defined(MEEGO_EDITION_HARMATTAN)
 #   include <qmdevicemode.h>
+#   include <qmsysteminformation.h>
 #endif
 
 #include "platform.h"
@@ -89,6 +90,32 @@ void Platform::close() {
 
 QString Platform::osName() {
     return STEPS_OS_NAME;
+}
+
+QString Platform::osVersion() {
+#if defined(Q_OS_SYMBIAN)
+    return "3";
+#elif defined(MEEGO_EDITION_HARMATTAN)
+    QString firmwareVersion = MeeGo::QmSystemInformation().valueForKey("/device/sw-release-ver");
+    if (!firmwareVersion.startsWith("DFL61_HARMATTAN_") || firmwareVersion.length() < 20) {
+        return "unknown";
+    }
+    int majorVersion = firmwareVersion.at(16).digitValue();
+    int minorVersion = firmwareVersion.at(17).digitValue();
+    if (majorVersion >= 3) {
+        return "1.2";
+    } else if (majorVersion == 2 && minorVersion >= 2) {
+        return "1.1.1";
+    } else if (majorVersion == 2) {
+        return "1.1";
+    } else if (majorVersion == 1) {
+        return "1.0";
+    } else {
+        return "unknown";
+    }
+#else
+    return QString();
+#endif
 }
 
 QString Platform::appVersion() {

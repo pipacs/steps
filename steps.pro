@@ -158,7 +158,11 @@ OTHER_FILES += \
     qml/symbian/StepsScrollDecorator.qml \
     texts/about.html \
     texts/hu/about.html \
-    images/about.png
+    images/about.png \
+    qml/meego/StepsToolButton.qml \
+    qml/symbian/StepsToolButton.qml \
+    images/play.png \
+    images/pause.png
 
 HEADERS += \
     counter.h \

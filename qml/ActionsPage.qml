@@ -91,7 +91,7 @@ StepsPage {
             onClicked: main.pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
         }
         StepsToolIcon {
-            iconId: ":/images/about.png" // "toolbar-new-message"
+            iconId: (platform.osName === "symbian")? ":/images/about.png": "toolbar-new-message"
             onClicked: main.pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
         }
     }

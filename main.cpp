@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
     app->setApplicationVersion(Platform::instance()->appVersion());
 
     qDebug() << "Steps" << Platform::instance()->appVersion() << "starting up";
+    qDebug() << Platform::instance()->osName() << Platform::instance()->osVersion();
 
     // Set up tracing
     qInstallMsgHandler(Trace::messageHandler);
@@ -149,7 +150,9 @@ int main(int argc, char *argv[]) {
     viewer->showExpanded();
 
     // Install event filter to capture/release volume keys
-    viewer->installEventFilter(mediaKey);
+    if (!(platform->osName() == "harmattan" && platform->osVersion() == "1.0")) {
+        viewer->installEventFilter(mediaKey);
+    }
 
     // Install event filter fixing VKB handing in WebView
     viewer->installEventFilter(sipFixer);

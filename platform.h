@@ -17,6 +17,9 @@ class Platform: public QObject {
     /// Name of the operating system, like "harmattan"
     Q_PROPERTY(QString osName READ osName CONSTANT)
 
+    /// Operating system version
+    Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
+
     /// Application version
     Q_PROPERTY(QString appVersion READ appVersion CONSTANT)
 
@@ -30,8 +33,11 @@ public:
     static Platform *instance();
     static void close();
 
-    /// Platform name, like "symbian" or "harmattan".
+    /// Operating systen name.
     QString osName();
+
+    /// Operating system version
+    QString osVersion();
 
     /// Application version.
     QString appVersion();
