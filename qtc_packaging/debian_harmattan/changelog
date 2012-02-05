@@ -1,3 +1,7 @@
+steps (0.1.2) unstable; urgency=low
+
+ -- Akos Polster <akos@pipacs.com>  Sun, 5  Feb 2012 03:38:00 +0100
+
 steps (0.1.1) unstable; urgency=low
 
   * Don't use volume keys on early N9s
