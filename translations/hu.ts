@@ -55,7 +55,7 @@
     </message>
     <message>
         <location filename="../qml/MainPage.qml" line="56"/>
-        <location filename="../qml/MainPage.qml" line="108"/>
+        <location filename="../qml/MainPage.qml" line="132"/>
         <source> (Paused)</source>
         <translation> (szünet)</translation>
     </message>
@@ -63,6 +63,21 @@
         <location filename="../qml/MainPage.qml" line="67"/>
         <source>Press Volume Up to start/pause activity, Volume Down to show more options</source>
         <translation>A &quot;hangerő fel&quot; gombbal a számláló indul, a &quot;hangerő le&quot; gombbal további lehetőségek közül választhat</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainPage.qml" line="83"/>
+        <source>Pause</source>
+        <translation>Szünet</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainPage.qml" line="83"/>
+        <source>Start</source>
+        <translation>Indít</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainPage.qml" line="89"/>
+        <source>Options</source>
+        <translation>Opciók</translation>
     </message>
 </context>
 <context>

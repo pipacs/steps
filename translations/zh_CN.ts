@@ -51,7 +51,7 @@
     </message>
     <message>
         <location filename="../qml/MainPage.qml" line="56"/>
-        <location filename="../qml/MainPage.qml" line="108"/>
+        <location filename="../qml/MainPage.qml" line="132"/>
         <source> (Paused)</source>
         <translation> (暂停)</translation>
     </message>
@@ -59,6 +59,21 @@
         <location filename="../qml/MainPage.qml" line="67"/>
         <source>Press Volume Up to start/pause activity, Volume Down to show more options</source>
         <translation>按音量增加键开始/暂停活动,按音量减少键显示更多选项</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainPage.qml" line="83"/>
+        <source>Pause</source>
+        <translation>暂停</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainPage.qml" line="83"/>
+        <source>Start</source>
+        <translation>开始</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainPage.qml" line="89"/>
+        <source>Options</source>
+        <translation>选项</translation>
     </message>
 </context>
 <context>
