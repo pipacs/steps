@@ -1,5 +1,6 @@
 steps (0.1.1) unstable; urgency=low
 
+  * Don't use volume keys on early N9s
   * Add Hungarian translation
   * Add Chinese translation
   * Add About page
