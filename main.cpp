@@ -150,9 +150,7 @@ int main(int argc, char *argv[]) {
     viewer->showExpanded();
 
     // Install event filter to capture/release volume keys
-    if (!(platform->osName() == "harmattan" && platform->osVersion() == "1.0")) {
-        viewer->installEventFilter(mediaKey);
-    }
+    viewer->installEventFilter(mediaKey);
 
     // Install event filter fixing VKB handing in WebView
     viewer->installEventFilter(sipFixer);

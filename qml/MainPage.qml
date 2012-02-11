@@ -5,7 +5,7 @@ StepsPage {
     property bool counterWasRunning: false
     id: mainPage
     showBack: prefs.showExit
-    showTools: (platform.osName === "harmattan" && platform.osVersion === "1.0") || prefs.showExit
+    showTools: prefs.showExit
 
     // Upload indicator
     Image {
@@ -67,27 +67,6 @@ StepsPage {
             text: qsTr("Press Volume Up to start/pause activity, Volume Down to show more options")
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            visible: !(platform.osName === "harmattan" && platform.osVersion === "1.0")
-        }
-    }
-
-    StepsToolBarLayout {
-        visible: platform.osName === "harmattan" && platform.osVersion === "1.0"
-        id: myTools
-        StepsToolIcon {
-            iconId: "toolbar-back";
-            visible: false
-        }
-        StepsToolButton {
-            height: 70
-            text: counter.running? qsTr("Pause"): qsTr("Start")
-            iconSource: counter.running? ":/images/pause.png": ":/images/play.png"
-            onClicked: counter.running = !counter.running
-        }
-        StepsToolButton {
-            height: 70
-            text: qsTr("Options")
-            onClicked: main.pageStack.push(Qt.resolvedUrl("ActionsPage.qml"))
         }
     }
 
@@ -110,9 +89,6 @@ StepsPage {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
         counter.runningChanged.connect(onCounterRunningChanged)
-        if (platform.osName === "harmattan" && platform.osVersion === "1.0") {
-            setToolBar(myTools)
-        }
     }
 
     onActiveChanged: {
