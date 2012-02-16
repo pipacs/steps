@@ -23,6 +23,7 @@ Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivi
     reset();
 
     accelerometer = new QAccelerometer(this);
+    accelerometer->setProperty("alwaysOn", true);
     if (!accelerometer->isActive()) {
         accelerometer->start();
     }
