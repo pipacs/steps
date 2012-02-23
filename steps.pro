@@ -164,7 +164,10 @@ OTHER_FILES += \
     images/play.png \
     images/pause.png \
     qml/symbian/StepsFlickable.qml \
-    qml/meego/StepsFlickable.qml
+    qml/meego/StepsFlickable.qml \
+    translations/zh_CN.ts \
+    translations/hu.ts \
+    translations/da.ts
 
 HEADERS += \
     counter.h \
