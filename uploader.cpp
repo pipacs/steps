@@ -32,6 +32,9 @@ Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
     workerThread = new QThread(this);
     worker->moveToThread(workerThread);
     workerThread->start(QThread::LowestPriority);
+    uploadTimer = new QTimer(this);
+    uploadTimer->setSingleShot(true);
+    connect(uploadTimer, SIGNAL(timeout()), this, SLOT(upload()));
 }
 
 Uploader::~Uploader() {
@@ -45,8 +48,12 @@ bool Uploader::uploading() {
 }
 
 void Uploader::upload() {
+    if (uploading_) {
+        return;
+    }
     uploading_ = true;
     emit uploadingChanged(true);
+    uploadTimer->stop();
     QMetaObject::invokeMethod(worker, "upload");
 }
 
@@ -58,7 +65,7 @@ void Uploader::onUploadComplete(int result) {
     if (result == UploadIncomplete) {
         timeout = UPLOADER_IDLE_INCOMPLETE;
     }
-    QTimer::singleShot(timeout, this, SLOT(upload()));
+    uploadTimer->start(timeout);
 }
 
 UploaderWorker::UploaderWorker(QObject *parent): QObject(parent) {

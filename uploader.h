@@ -2,7 +2,11 @@
 #define UPLOADER_H
 
 #include <QObject>
+#include <QString>
+#include <QStringList>
 
+class QThread;
+class QTimer;
 class UploaderWorker;
 
 /// Outcome of an upload.
@@ -34,6 +38,7 @@ protected:
     UploaderWorker *worker;
     QThread *workerThread;
     bool uploading_;
+    QTimer *uploadTimer;
 
 protected slots:
     void onUploadComplete(int result);

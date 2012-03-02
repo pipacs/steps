@@ -128,6 +128,9 @@ StepsPage {
         main.activityNames = [main.activityNames[0], main.activityNames[1], custom1Text.text, custom2Text.text]
         prefs.showExit = showExit.checked
         prefs.savePower = savePower.checked
+        if (enableSharing.checked && enableSharing.enabled) {
+            uploader.upload()
+        }
     }
 
     function openBrowser(url) {
@@ -142,15 +145,6 @@ StepsPage {
         if (platform.osName !== "symbian") {
             showExit.height = 0
             showExit.visible = false
-//        } else {
-//            custom1Label.height = 0
-//            custom1Label.visible = 0
-//            custom1Text.height = 0
-//            custom1Text.visible = 0
-//            custom2Label.height = 0
-//            custom2Label.visible = 0
-//            custom2Text.height = 0
-//            custom2Text.visible = 0
         }
     }
 }
