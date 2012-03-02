@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <string.h>
-#include <QDebug>
 
 #include "ring.h"
 
@@ -14,7 +13,6 @@ Ring::Ring(int size_, qreal minRise_) {
 }
 
 Ring::~Ring() {
-    qDebug() << "Ring::~Ring";
     delete data;
 }
 

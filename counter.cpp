@@ -7,7 +7,6 @@
 
 const int Span = 2000; // Time span for detecting peaks, milliseconds
 const int Interval = 100; // Accelerometer reading interval, milliseconds
-const int BlankingInterval = 5000; // Display blanking timer interval, milliseconds
 const qreal MinimumRise = 50.0f; // Minimum diff in accelerometer readings (any direction)
 const long DefaultPeakTimeDiff = 700; // Default time difference between peaks, milliseconds
 const long MinimumPeakTimeDiff = 150; // Minimum time difference between peaks, milliseconds
@@ -16,9 +15,6 @@ const long MinimumPeakTimeDiff = 150; // Minimum time difference between peaks, 
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
 Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivity_(100) {
-#if defined(MEEGO_EDITION_HARMATTAN)
-    displayState = 0;
-#endif
     ring = new Ring(Span / Interval, MinimumRise);
     reset();
 
@@ -28,7 +24,7 @@ Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivi
         accelerometer->start();
     }
     if (!accelerometer->isActive()) {
-        qCritical() << "Accelerometer sensor didn't start!" << endl;
+        qCritical() << "Accelerometer sensor didn't start" << endl;
         return;
     }
 
@@ -36,21 +32,10 @@ Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivi
     timer->setSingleShot(false);
     timer->setInterval(Interval);
     connect(timer, SIGNAL(timeout()), this, SLOT(measure()));
-
-    blankingTimer = new QTimer(this);
-    blankingTimer->setSingleShot(false);
-    blankingTimer->setInterval(BlankingInterval);
-    connect(blankingTimer, SIGNAL(timeout()), this, SLOT(pauseBlanking()));
-    blankingTimer->start();
 }
 
 Counter::~Counter() {
-    qDebug() << "Counter::~Counter";
     accelerometer->stop();
-    // delete accelerometer;
-#if defined(MEEGO_EDITION_HARMATTAN)
-    delete displayState;
-#endif
     delete ring;
 }
 
@@ -109,15 +94,6 @@ void Counter::reset() {
     emit step(0);
 }
 
-void Counter::pauseBlanking() {
-#if defined(MEEGO_EDITION_HARMATTAN)
-    if (!displayState) {
-        displayState = new MeeGo::QmDisplayState();
-    }
-    (void)displayState->setBlankingPause();
-#endif
-}
-
 bool Counter::running() {
     return timer->isActive();
 }
@@ -164,7 +140,6 @@ void Counter::setRawCount(int value) {
 }
 
 void Counter::setSensitivity(int value) {
-    qDebug() << "Counter::setSensitivity" << value;
     sensitivity_ = value;
     ring->setMinimumRise(MinimumRise + 100 - value);
     emit sensitivityChanged(value);

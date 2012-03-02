@@ -46,7 +46,6 @@ signals:
 
 public slots:
     void measure();
-    void pauseBlanking();
     Q_INVOKABLE void reset();
     void setRunning(bool running);
     void applicationActivated(bool active);
@@ -56,11 +55,7 @@ public slots:
 
 protected:
     QTimer *timer;
-    QTimer *blankingTimer;
     QAccelerometer *accelerometer;
-#if defined(MEEGO_EDITION_HARMATTAN)
-    MeeGo::QmDisplayState *displayState;
-#endif
     Ring *ring;
     int peakCount;
     int rawStepCount; ///< Raw step count.

@@ -20,7 +20,7 @@ protected:
     int size; ///< Maximum number of items.
     int head; ///< Ring start index.
     int total; ///< Current number of items.
-    qreal minRise;
+    qreal minRise; ///< Minimum peak delta.
 };
 
 #endif // RING_H
