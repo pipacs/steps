@@ -1,6 +1,13 @@
+steps (0.1.4) unstable; urgency=low
+
+  * Trigger upload more often
+
+ -- Akos Polster <akos@pipacs.com>  Fri, 2  Mar 2012 21:48:00 +0100
+
 steps (0.1.3) unstable; urgency=low
 
-  * Enable accelerometer while the phone is locked
+  * N9: Enable accelerometer while the phone is locked
+  * N9: Allow automatic locking
 
  -- Akos Polster <akos@pipacs.com>  Sun, 12 Feb 2012 00:46:00 +0100
 
