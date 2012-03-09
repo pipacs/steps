@@ -1,10 +1,13 @@
 #include <QFile>
+#include <QDir>
+#include <QFileInfo>
 
 #include "trace.h"
 
 int Trace::indent;
 QtMsgType Trace::level = QtDebugMsg;
 QFile Trace::file;
+const qint64 TRACE_MAX_SIZE = 1024 * 1024;
 
 Trace::Trace(const QString &s): name(s) {
     messageHandler(QtDebugMsg, QString(">%1").arg(name).toAscii().constData());
@@ -44,7 +47,13 @@ void Trace::setFileName(const QString &fileName) {
     Trace::file.close();
     Trace::file.setFileName(fileName);
     if (!fileName.isEmpty()) {
-        (void)Trace::file.open(QIODevice::WriteOnly);
+        QFileInfo info(fileName);
+        if (info.exists() && (info.size() > TRACE_MAX_SIZE)) {
+            Trace::file.remove();
+        } else {
+            QDir().mkpath(info.canonicalPath());
+        }
+        (void)Trace::file.open(QIODevice::Append);
     }
 }
 

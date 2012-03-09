@@ -36,6 +36,9 @@ class Preferences: public QObject {
     /// Power saving.
     Q_PROPERTY(bool savePower READ savePower WRITE setSavePower NOTIFY valueChanged)
 
+    /// Trace to file.
+    Q_PROPERTY(bool traceToFile READ traceToFile WRITE setTraceToFile NOTIFY valueChanged)
+
 public:
     static Preferences *instance();
     static void close();
@@ -76,6 +79,9 @@ public:
 
     bool savePower() {return value("savepower").toBool();}
     void setSavePower(bool v) {setValue("savepower", v);}
+
+    bool traceToFile() {return value("tracetofile").toBool();}
+    void setTraceToFile(bool v) {setValue("tracetofile", v);}
 
 signals:
     void valueChanged(const QString &key);

@@ -197,10 +197,6 @@ bool Platform::savePower() {
 #endif
 }
 
-void Platform::openUrl(const QString &url) {
-    QDesktopServices::openUrl(QUrl(url));
-}
-
 QString Platform::text(const QString &key) {
     QString locale = QLocale::system().name();
     QFile resource(":/texts/" + locale + "/" + key);
@@ -214,4 +210,22 @@ QString Platform::text(const QString &key) {
     QString ret = QString::fromUtf8(resource.readAll().constData());
     resource.close();
     return ret;
+}
+
+QString Platform::traceFileName() const {
+#if defined Q_OS_SYMBIAN
+    return "e:/data/steps.log"
+#else
+    QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
+    return QDir(base).absoluteFilePath("steps.log");
+#endif
+}
+
+void Platform::traceToFile(bool enable) {
+    Trace::setFileName(enable? traceFileName(): "");
+}
+
+void Platform::deleteTraceFile() {
+    Trace::setFileName("");
+    QFile(traceFileName()).remove();
 }

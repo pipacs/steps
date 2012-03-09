@@ -24,7 +24,7 @@ StepsPage {
                 textFormat: Text.RichText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + qsTr("<p>") + platform.text("about.html")
-                onLinkActivated: platform.browse(link)
+                onLinkActivated: Qt.openUrlExternally(link)
             }
         }
     }
@@ -33,7 +33,31 @@ StepsPage {
         flickableItem: about
     }
 
-    onBack: {
-        main.pageStack.pop()
+    StepsBanner {
+        id: info
     }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        onPressAndHold: {
+            console.log("* AboutPage.MouseArea: onPressAndHold")
+            prefs.traceToFile = !prefs.traceToFile
+            platform.traceToFile(prefs.traceToFile)
+            if (prefs.traceToFile) {
+                var now = new Date();
+                console.log("* Steps version " + platform.appVersion + ", " + now.toString())
+            }
+            info.text = "Tracing " + (prefs.traceToFile? "enabled": "disabled")
+            info.show()
+        }
+        onDoubleClicked: {
+            platform.deleteTraceFile()
+            prefs.traceToFile = false
+            info.text = "Tracing disabled, trace file deleted"
+            info.show()
+        }
+    }
+
+    onBack: main.pageStack.pop()
 }

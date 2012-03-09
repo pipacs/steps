@@ -105,11 +105,11 @@ int main(int argc, char *argv[]) {
     app->setOrganizationName("pipacs.com");
     app->setApplicationVersion(Platform::instance()->appVersion());
 
-    qDebug() << "Steps" << Platform::instance()->appVersion() << "starting up";
-    qDebug() << Platform::instance()->osName() << Platform::instance()->osVersion();
-
     // Set up tracing
     qInstallMsgHandler(Trace::messageHandler);
+    Platform::instance()->traceToFile(Preferences::instance()->traceToFile());
+    qDebug() << "Steps" << Platform::instance()->appVersion() << "starting up";
+    qDebug() << Platform::instance()->osName() << Platform::instance()->osVersion();
 
     // Install translator
     QString locale = QLocale::system().name();
