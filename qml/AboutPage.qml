@@ -14,16 +14,16 @@ StepsPage {
 
         Column {
             id: column
-            width: aboutPage.width
+            width: aboutPage.width - 30
             Image {
                 source: "qrc:/images/steps.png"
             }
             StepsLabel {
                 width: parent.width
-                font.pixelSize: platform.osName === "harmattan"? 32: 26
+                font.pixelSize: (platform.osName === "harmattan")? 30: 26
                 textFormat: Text.RichText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + qsTr("<p>") + platform.text("about.html")
+                text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + qsTr("<p>") + qsTr("Device ID: ") + platform.deviceId + qsTr("</p>") + platform.text("about.html")
                 onLinkActivated: Qt.openUrlExternally(link)
             }
         }
