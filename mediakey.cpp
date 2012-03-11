@@ -8,7 +8,6 @@ MediaKey::MediaKey(QObject *parent): QObject(parent) {
 }
 
 MediaKey::~MediaKey() {
-    qDebug() << "MediaKey::~MediaKey";
 }
 
 bool MediaKey::eventFilter(QObject *obj, QEvent *event) {

@@ -49,7 +49,6 @@ bool SipFixer::enabled() {
 }
 
 void SipFixer::setEnabled(bool v) {
-    qDebug() << "SipFixer::setEnabled" << v;
     enabled_ = v;
     if (!enabled_) {
         QInputContext *ic = qApp->inputContext();

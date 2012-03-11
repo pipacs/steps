@@ -41,7 +41,6 @@ StepsPage {
         anchors.fill: parent
         hoverEnabled: true
         onPressAndHold: {
-            console.log("* AboutPage.MouseArea: onPressAndHold")
             prefs.traceToFile = !prefs.traceToFile
             platform.traceToFile(prefs.traceToFile)
             if (prefs.traceToFile) {

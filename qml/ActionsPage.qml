@@ -111,7 +111,6 @@ StepsPage {
     }
 
     function onActivityChanged() {
-        console.log("* ActionsPage.onActivityChanged " + main.activity)
         if (main.activity === 0)
             buttons.checkedButton = activity0
         else if (main.activity === 1)

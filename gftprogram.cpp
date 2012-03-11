@@ -43,6 +43,7 @@ void GftProgram::step() {
     }
 
     if (status == Idle) {
+        qDebug() << "Idle -> Running";
         status = Running;
     }
 
@@ -93,6 +94,7 @@ void GftProgram::step() {
     }
 
     // Execute request
+    qDebug() << "Sending request to Google";
     QUrl url(GFT_SQL_URL);
     QByteArray data;
     url.addQueryItem("access_token", gft->token());
@@ -103,7 +105,6 @@ void GftProgram::step() {
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
-    // qDebug() << "Request:" << ((method == GftGet)? "GET": "POST") << sql;
     reply = (method == GftGet)? manager->get(request): manager->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
 }
@@ -123,7 +124,7 @@ void GftProgram::stepDone() {
                     QString id = line.left(commaIndex);
                     QString name = line.mid(commaIndex + 1);
                     if (name == gftName) {
-                        qDebug() << "Found table" << name << ": id" << id;
+                        qDebug() << "Found fusion table, name:" << name << ", ID:" << id;
                         tableId = id;
                         break;
                     }
@@ -134,8 +135,10 @@ void GftProgram::stepDone() {
         case GftCreateTableIf:
             if ((lines.length() >= 2) && (lines[0] == "tableid")) {
                 tableId = lines[1];
+                qDebug() << "Created fusion table, ID:" << tableId;
             } else {
                 status = Failed;
+                qCritical() << "GftProgram::stepDone: Could not create fusion table";
             }
             break;
         default:

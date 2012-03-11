@@ -96,12 +96,12 @@ void UploaderWorker::upload() {
         return;
     }
     archive = archives[0];
+    qDebug() << "Uploading" << archive;
     Gft::instance()->upload(archive);
 }
 
 void UploaderWorker::onGftUploadFinished(int result) {
     Trace t("UploaderWorker::onGftUploadFinished");
-    qDebug() << "Result" << (int)result;
     if (result == UploadComplete) {
         if (listArchives().length() > 1) {
             qDebug() << "There are more archives to upload";
@@ -113,6 +113,7 @@ void UploaderWorker::onGftUploadFinished(int result) {
             result = UploadFailed;
         }
     }
+    qDebug() << "Result" << (int)result;
     emit uploadComplete(result);
 }
 

@@ -48,14 +48,12 @@ StepsPage {
     }
 
     function closeUrl() {
-        console.log("* LoginBrowser.closeUrl")
         gft.closeBrowser.disconnect(closeUrl)
         sipFixer.enabled = false
         pageStack.pop()
     }
 
     function openUrl(url) {
-        console.log("* LoginBrowser.openUrl")
         sipFixer.enabled = true
         gft.closeBrowser.connect(closeUrl)
         webView.url = url

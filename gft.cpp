@@ -86,7 +86,7 @@ void Gft::upload(const QString &archive_) {
     QSqlQuery query(db.db());
     query.setForwardOnly(true);
     if (!query.exec("select id, date, steps from log")) {
-        qCritical() << "Gft::upload: Could not query database:" << query.lastError().text();
+        qCritical() << "Gft::upload: Could not query archive:" << query.lastError().text();
         emit uploadFinished(UploadFailed);
         return;
     }
@@ -108,7 +108,6 @@ void Gft::upload(const QString &archive_) {
     instructions.append(GftInstruction(GftQuery, sql, idList));
 
     // Execute Gft program
-    qDebug() << " Executing GFT program";
     program->setInstructions(instructions);
     program->step();
 }
@@ -119,7 +118,7 @@ QString Gft::getTags(Database &db, qlonglong id) {
     query.prepare("select name, value from tags where logId = ?");
     query.bindValue(0, id);
     if (!query.exec()) {
-        qCritical() << "Gft::getTags: Could not query database:" << query.lastError().text();
+        qCritical() << "Gft::getTags: Could not query archive:" << query.lastError().text();
         return ret;
     }
     QSqlRecord record = query.record();
