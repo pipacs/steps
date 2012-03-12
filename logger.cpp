@@ -54,6 +54,12 @@ void Logger::log(int steps, const QVariantMap &tags) {
     }
 }
 
+void Logger::archive() {
+    if (!QMetaObject::invokeMethod(worker, "archive")) {
+        qCritical() << "Logger::archive: Invoking remote logger failed";
+    }
+}
+
 LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false), lastInsertId(0), totalSteps(0) {
 }
 

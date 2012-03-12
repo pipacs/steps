@@ -18,7 +18,12 @@ class Logger: public QObject {
 public:
     static Logger *instance();
     static void close();
+
+    /// Log step count, with optional tags.
     Q_INVOKABLE void log(int steps, const QVariantMap &tags);
+
+    /// Close and archive current log file, open new one.
+    Q_INVOKABLE void archive();
 
 protected:
     explicit Logger(QObject *parent = 0);
@@ -36,10 +41,10 @@ public:
     ~LoggerWorker();
 
 public slots:
-    /// Log the current number of steps and some optional tags.
+    /// Log step count, with optional tags.
     void log(int steps, const QVariantMap &tags);
 
-    /// Close and archive current database.
+    /// Close and archive current log file, open new one.
     void archive();
 
 protected slots:

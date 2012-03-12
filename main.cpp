@@ -129,6 +129,9 @@ int main(int argc, char *argv[]) {
     SipFixer *sipFixer = SipFixer::instance();
     NetworkAccessManagerFactory *namFactory = new NetworkAccessManagerFactory;
     Uploader *uploader = Uploader::instance();
+
+    // Archive current log, and schedule first upload
+    logger->archive();
     QTimer::singleShot(30000, uploader, SLOT(upload()));
 
     // Set up and show QML viewer
@@ -154,9 +157,6 @@ int main(int argc, char *argv[]) {
 
     // Install event filter fixing VKB handing in WebView
     viewer->installEventFilter(sipFixer);
-
-    // De-activate counter if not in the foreground
-    // mediaKey->connect(eventFilter, SIGNAL(activate(bool)), counter, SLOT(applicationActivated(bool)));
 
     // Run application
     int ret = app->exec();
