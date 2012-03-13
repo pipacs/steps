@@ -214,7 +214,7 @@ QString Platform::text(const QString &key) {
 
 QString Platform::traceFileName() const {
 #if defined(Q_OS_SYMBIAN)
-    return "e:/data/steps.log"
+    return "e:/data/steps.log";
 #else
     return QDir(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)).absoluteFilePath("steps.log");
 #endif
