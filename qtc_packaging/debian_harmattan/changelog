@@ -1,6 +1,7 @@
 steps (0.1.4) unstable; urgency=low
 
   * Trigger upload more often
+  * Trace to file
 
  -- Akos Polster <akos@pipacs.com>  Fri, 2  Mar 2012 21:48:00 +0100
 
