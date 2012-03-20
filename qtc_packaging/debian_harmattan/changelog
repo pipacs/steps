@@ -1,3 +1,9 @@
+steps (0.1.5) unstable; urgency=low
+
+  * Add Italian translation
+
+ -- Akos Polster <akos@pipacs.com>  Tue, 20 Mar 2012 23:17:00 +0100
+
 steps (0.1.4) unstable; urgency=low
 
   * Trigger upload more often
