@@ -167,7 +167,8 @@ OTHER_FILES += \
     qml/meego/StepsFlickable.qml \
     translations/zh_CN.ts \
     translations/hu.ts \
-    translations/da.ts
+    translations/da.ts \
+    translations/it.ts
 
 HEADERS += \
     counter.h \
