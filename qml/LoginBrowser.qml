@@ -35,7 +35,10 @@ StepsPage {
             preferredHeight: loginBrowser.height
             contentsScale: 1
             Component.onCompleted: {
-                if (platform.osName !== "symbian") {
+                if (platform.osName === "symbian") {
+                    settings.defaultFontSize = 26
+                    settings.minimumFontSize = 24
+                } else {
                     settings.defaultFontSize = 28
                     settings.minimumFontSize = 26
                 }
