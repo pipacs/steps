@@ -1,4 +1,4 @@
-VERSION = 0.1.4
+VERSION = 0.1.5
 TARGET = Steps
 
 # Qt packages to use
@@ -168,7 +168,8 @@ OTHER_FILES += \
     qml/meego/StepsFlickable.qml \
     translations/zh_CN.ts \
     translations/hu.ts \
-    translations/da.ts
+    translations/da.ts \
+    translations/it.ts
 
 HEADERS += \
     counter.h \
