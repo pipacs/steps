@@ -40,6 +40,12 @@ StepsPage {
                     settings.minimumFontSize = 26
                 }
             }
+            onLoadFinished: {
+                // Work around Symbian WebView bug
+                if (platform.osName === "symbian") {
+                    evaluateJavaScript("if (!document.body.style.backgroundColor) document.body.style.backgroundColor='white';");
+                }
+            }
         }
     }
 
