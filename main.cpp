@@ -8,7 +8,6 @@
 #include <QLocale>
 
 #include "qmlapplicationviewer.h"
-#include "walkdetector.h"
 #include "rundetector.h"
 #include "preferences.h"
 #include "platform.h"

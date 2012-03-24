@@ -58,7 +58,6 @@ DEPLOYMENTFOLDERS += folder_sounds
 
 SOURCES += \
     main.cpp \
-    ring.cpp \
     preferences.cpp \
     mediakey.cpp \
     platform.cpp \
@@ -72,7 +71,6 @@ SOURCES += \
     o2/simplecrypt.cpp \
     database.cpp \
     trace.cpp \
-    walkdetector.cpp \
     rundetector.cpp
 
 # Please do not modify the following two lines. Required for deployment.
@@ -173,7 +171,6 @@ OTHER_FILES += \
     qml/TweaksPage.qml
 
 HEADERS += \
-    ring.h \
     preferences.h \
     mediakey.h \
     mediakeyprivate.h \
@@ -190,7 +187,6 @@ HEADERS += \
     database.h \
     trace.h \
     detector.h \
-    walkdetector.h \
     rundetector.h
 
 RESOURCES += \
