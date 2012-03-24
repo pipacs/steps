@@ -7,9 +7,11 @@
 
 QTM_USE_NAMESPACE
 
-/// Step detector for running.
+/// Step detector.
 class RunDetector: public Detector, public QAccelerometerFilter {
     Q_OBJECT
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(int sensitivity READ sensitivity WRITE setSensitivity NOTIFY sensitivityChanged)
 
 public:
     explicit RunDetector(QObject *parent = 0);
@@ -30,8 +32,8 @@ public:
     int sensitivity_;
     QAccelerometer *accelerometer_;
     bool increasing_; ///< True if absolute accelerometer readings are increasing.
-    qreal lastReading_; /// Last absolute accelerometer reading.
-    qint64 lastPeakTime_; /// Time of the last peak (ms since Epoch).
+    qreal lastReading_; ///< Last absolute accelerometer reading.
+    qint64 lastPeakTime_; ///< Time of the last peak (ms since Epoch).
 
 private slots:
     bool filter(QAccelerometerReading* r);

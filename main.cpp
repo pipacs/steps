@@ -137,7 +137,6 @@ int main(int argc, char *argv[]) {
 
     // Set up and show QML viewer
     QmlApplicationViewer *viewer = new QmlApplicationViewer;
-    // Detector *detector = new WalkDetector(viewer);
     Detector *detector = new RunDetector(viewer);
     MediaKey *mediaKey = new MediaKey(viewer);
     viewer->engine()->setNetworkAccessManagerFactory(namFactory);
