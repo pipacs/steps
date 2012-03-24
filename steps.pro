@@ -58,7 +58,6 @@ DEPLOYMENTFOLDERS += folder_sounds
 
 SOURCES += \
     main.cpp \
-    counter.cpp \
     ring.cpp \
     preferences.cpp \
     mediakey.cpp \
@@ -73,6 +72,7 @@ SOURCES += \
     o2/simplecrypt.cpp \
     database.cpp \
     trace.cpp \
+    detector.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -168,10 +168,10 @@ OTHER_FILES += \
     translations/zh_CN.ts \
     translations/hu.ts \
     translations/da.ts \
-    translations/it.ts
+    translations/it.ts \
+    qml/TweaksPage.qml
 
 HEADERS += \
-    counter.h \
     ring.h \
     preferences.h \
     mediakey.h \
@@ -187,7 +187,8 @@ HEADERS += \
     o2/simplecrypt.h \
     gftsecret.h \
     database.h \
-    trace.h
+    trace.h \
+    detector.h
 
 RESOURCES += \
     common.qrc \

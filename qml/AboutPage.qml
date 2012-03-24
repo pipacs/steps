@@ -40,22 +40,7 @@ StepsPage {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        onPressAndHold: {
-            prefs.traceToFile = !prefs.traceToFile
-            platform.traceToFile(prefs.traceToFile)
-            if (prefs.traceToFile) {
-                var now = new Date();
-                console.log("* Steps version " + platform.appVersion + ", " + now.toString())
-            }
-            info.text = "Tracing " + (prefs.traceToFile? "enabled": "disabled")
-            info.show()
-        }
-        onDoubleClicked: {
-            platform.deleteTraceFile()
-            prefs.traceToFile = false
-            info.text = "Tracing disabled, trace file deleted"
-            info.show()
-        }
+        onPressAndHold: main.pageStack.push(Qt.resolvedUrl("TweaksPage.qml"))
     }
 
     onBack: main.pageStack.pop()

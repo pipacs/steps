@@ -8,7 +8,7 @@
 #include <QLocale>
 
 #include "qmlapplicationviewer.h"
-#include "counter.h"
+#include "detector.h"
 #include "preferences.h"
 #include "platform.h"
 #include "mediakey.h"
@@ -136,11 +136,11 @@ int main(int argc, char *argv[]) {
 
     // Set up and show QML viewer
     QmlApplicationViewer *viewer = new QmlApplicationViewer;
-    Counter *counter = new Counter(viewer);
+    Detector *detector = new Detector(viewer);
     MediaKey *mediaKey = new MediaKey(viewer);
     viewer->engine()->setNetworkAccessManagerFactory(namFactory);
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    viewer->rootContext()->setContextProperty("counter", counter);
+    viewer->rootContext()->setContextProperty("detector", detector);
     viewer->rootContext()->setContextProperty("prefs", prefs);
     viewer->rootContext()->setContextProperty("platform", platform);
     viewer->rootContext()->setContextProperty("logger", logger);

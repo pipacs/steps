@@ -19,6 +19,7 @@
         <file>images/about.png</file>
         <file>images/pause.png</file>
         <file>images/play.png</file>
+        <file>qml/TweaksPage.qml</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>

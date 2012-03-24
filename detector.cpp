@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <QDebug>
 #include <QDateTime>
-#include "counter.h"
+#include "detector.h"
 
 const int Span = 2000; // Time span for detecting peaks, milliseconds
 const int Interval = 100; // Accelerometer reading interval, milliseconds
@@ -14,7 +14,7 @@ const long MinimumPeakTimeDiff = 150; // Minimum time difference between peaks, 
 // Get time difference in milliseconds
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
-Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivity_(100) {
+Detector::Detector(QObject *parent): QObject(parent), sensitivity_(100) {
     ring = new Ring(Span / Interval, MinimumRise);
     reset();
 
@@ -34,16 +34,13 @@ Counter::Counter(QObject *parent): QObject(parent), calibration_(1.0), sensitivi
     connect(timer, SIGNAL(timeout()), this, SLOT(measure()));
 }
 
-Counter::~Counter() {
+Detector::~Detector() {
     accelerometer->stop();
     delete ring;
 }
 
-void Counter::measure() {
+void Detector::measure() {
     QAccelerometerReading *reading = accelerometer->reading();
-    qreal x;
-    qreal y;
-    qreal z;
     struct timeval peakTime;
     long peakTimeDiff;
 
@@ -51,9 +48,9 @@ void Counter::measure() {
         return;
     }
 
-    x = reading->x();
-    y = reading->y();
-    z = reading->z();
+    qreal x = reading->x();
+    qreal y = reading->y();
+    qreal z = reading->z();
     qreal measurement = x * x + y * y + z * z;
     ring->add(measurement);
 
@@ -74,31 +71,23 @@ void Counter::measure() {
     lastPeakTime.tv_usec = peakTime.tv_usec;
     ++peakCount;
 
+    // Every second peak is a step
     if (peakCount % 2) {
-        // Every second peak is a (raw) step
-        ++rawStepCount;
-        emit rawCountChanged(rawStepCount);
-        int newStepCount = (int)(rawStepCount * calibration_);
-        if (newStepCount != stepCount) {
-            stepCount = newStepCount;
-            emit step(newStepCount);
-        }
+        emit step();
     }
 }
 
-void Counter::reset() {
-    stepCount = peakCount = rawStepCount = 0;
+void Detector::reset() {
+    peakCount = 0;
     gettimeofday(&lastPeakTime, 0);
     ring->clear();
-    emit rawCountChanged(0);
-    emit step(0);
 }
 
-bool Counter::running() {
+bool Detector::running() {
     return timer->isActive();
 }
 
-void Counter::setRunning(bool run) {
+void Detector::setRunning(bool run) {
     if (run == running()) {
         return;
     }
@@ -112,34 +101,7 @@ void Counter::setRunning(bool run) {
     emit runningChanged();
 }
 
-void Counter::applicationActivated(bool active) {
-    if (!active) {
-        setRunning(false);
-    }
-}
-
-void Counter::setCalibration(qreal c) {
-    calibration_ = c;
-    int newStepCount = (int)(rawStepCount * calibration_);
-    qDebug() << "Counter::setCalibration:" << c << "," << stepCount << "-->" << newStepCount;
-    if (newStepCount != stepCount) {
-        stepCount = newStepCount;
-        emit step(newStepCount);
-    }
-    emit calibrationChanged(c);
-}
-
-void Counter::setRawCount(int value) {
-    rawStepCount = value;
-    int newStepCount = (int)(rawStepCount * calibration_);
-    if (newStepCount != stepCount) {
-        stepCount = newStepCount;
-        emit step(newStepCount);
-    }
-    emit rawCountChanged(rawStepCount);
-}
-
-void Counter::setSensitivity(int value) {
+void Detector::setSensitivity(int value) {
     sensitivity_ = value;
     ring->setMinimumRise(MinimumRise + 100 - value);
     emit sensitivityChanged(value);

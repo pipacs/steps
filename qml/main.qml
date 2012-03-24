@@ -1,11 +1,11 @@
 import QtQuick 1.1
 import QtMultimediaKit 1.1
-import "symbian"
+import "meego"
 
 StepsPageStackWindow {
     id: main
     initialPage: mainPage
-    property int prevCount: 0
+    property int totalCount: 0
     property int dailyCount: 0
     property int activityCount: 0
     property int activity: 0
@@ -21,32 +21,22 @@ StepsPageStackWindow {
         onFinished: splash.destroy();
     }
 
-    function rawCountChanged(val) {
-        prefs.rawCount = val
-    }
-
-    function countChanged(count) {
-        if (count === 0) {
-            return
-        }
-
-        var delta = count - prevCount
-        prevCount = count
-        logger.log(delta, {})
+    function onStepDetected() {
+        // Register total step count
+        logger.log(1, {})
+        totalCount += 1
+        prefs.rawCount = totalCount
 
         // Register activity step count
-        setActivityCount(activityCount + delta)
+        setActivityCount(activityCount + 1)
 
         // Register daily step count
-        setDailyCount(dailyCount + delta)
+        setDailyCount(dailyCount + 1)
     }
 
     // Set current activity step count
     function setActivityCount(c) {
         activityCount = c
-        if (activityCount < 0) {
-            activityCount = 0
-        }
         prefs.activityCount = activityCount
     }
 
@@ -61,9 +51,6 @@ StepsPageStackWindow {
         }
 
         dailyCount = c
-        if (dailyCount < 0) {
-            dailyCount = 0
-        }
         prefs.dailyCount = dailyCount
     }
 
@@ -75,17 +62,16 @@ StepsPageStackWindow {
 
     // Reset all counters
     function resetCount() {
-        counter.reset()
-        prevCount = 0
+        detector.reset()
         logger.log(0, {"reset": 0})
         resetActivityCount()
         setDailyCount(0)
     }
 
     function runningChanged() {
-        logger.log(0, {"counting": counter.running})
+        logger.log(0, {"counting": detector.running})
         if (prefs.savePower) {
-            platform.savePower = counter.running
+            platform.savePower = detector.running
         }
     }
 
@@ -104,18 +90,13 @@ StepsPageStackWindow {
     }
 
     Component.onCompleted: {
-        // counter.calibration = prefs.calibration
-        counter.rawCount = prefs.rawCount
-        main.prevCount = counter.count
-        counter.sensitivity = prefs.sensitivity
-
-        counter.rawCountChanged.connect(main.rawCountChanged)
-        counter.step.connect(main.countChanged)
-        counter.runningChanged.connect(main.runningChanged)
-
+        detector.sensitivity = prefs.sensitivity
+        detector.step.connect(main.onStepDetected)
+        detector.runningChanged.connect(main.runningChanged)
         logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName})
 
         // Restore step counts from settings
+        totalCount = prefs.rawCount
         setDailyCount(prefs.dailyCount)
         setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
