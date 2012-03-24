@@ -26,7 +26,7 @@ public:
     explicit WalkDetector(QObject *parent = 0);
     ~WalkDetector();
     bool running();
-    int sensitivity() {return sensitivity_;}
+    int sensitivity();
 
 signals:
     void step();

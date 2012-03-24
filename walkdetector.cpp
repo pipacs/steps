@@ -108,6 +108,10 @@ void WalkDetector::setSensitivity(int value) {
     emit sensitivityChanged(value);
 }
 
+int WalkDetector::sensitivity() {
+    return sensitivity_;
+}
+
 long timeDiff(const struct timeval &start_time, const struct timeval &end_time) {
     struct timeval difference;
     difference.tv_sec = end_time.tv_sec - start_time.tv_sec ;
