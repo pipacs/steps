@@ -35,7 +35,7 @@ signals:
 
 public slots:
     void measure();
-    Q_INVOKABLE void reset();
+    void reset();
     void setRunning(bool running);
     void setSensitivity(int value);
 

@@ -72,7 +72,8 @@ SOURCES += \
     o2/simplecrypt.cpp \
     database.cpp \
     trace.cpp \
-    walkdetector.cpp
+    walkdetector.cpp \
+    rundetector.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -189,7 +190,8 @@ HEADERS += \
     database.h \
     trace.h \
     detector.h \
-    walkdetector.h
+    walkdetector.h \
+    rundetector.h
 
 RESOURCES += \
     common.qrc \
