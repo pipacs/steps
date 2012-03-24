@@ -3,7 +3,8 @@
 #include <assert.h>
 #include <QDebug>
 #include <QDateTime>
-#include "detector.h"
+
+#include "walkdetector.h"
 
 const int Span = 2000; // Time span for detecting peaks, milliseconds
 const int Interval = 100; // Accelerometer reading interval, milliseconds
@@ -14,7 +15,7 @@ const long MinimumPeakTimeDiff = 150; // Minimum time difference between peaks, 
 // Get time difference in milliseconds
 long timeDiff(const struct timeval &start, const struct timeval &end);
 
-Detector::Detector(QObject *parent): QObject(parent), sensitivity_(100) {
+WalkDetector::WalkDetector(QObject *parent): Detector(parent), sensitivity_(100) {
     ring = new Ring(Span / Interval, MinimumRise);
     reset();
 
@@ -34,12 +35,12 @@ Detector::Detector(QObject *parent): QObject(parent), sensitivity_(100) {
     connect(timer, SIGNAL(timeout()), this, SLOT(measure()));
 }
 
-Detector::~Detector() {
+WalkDetector::~WalkDetector() {
     accelerometer->stop();
     delete ring;
 }
 
-void Detector::measure() {
+void WalkDetector::measure() {
     QAccelerometerReading *reading = accelerometer->reading();
     struct timeval peakTime;
     long peakTimeDiff;
@@ -77,17 +78,17 @@ void Detector::measure() {
     }
 }
 
-void Detector::reset() {
+void WalkDetector::reset() {
     peakCount = 0;
     gettimeofday(&lastPeakTime, 0);
     ring->clear();
 }
 
-bool Detector::running() {
+bool WalkDetector::running() {
     return timer->isActive();
 }
 
-void Detector::setRunning(bool run) {
+void WalkDetector::setRunning(bool run) {
     if (run == running()) {
         return;
     }
@@ -101,7 +102,7 @@ void Detector::setRunning(bool run) {
     emit runningChanged();
 }
 
-void Detector::setSensitivity(int value) {
+void WalkDetector::setSensitivity(int value) {
     sensitivity_ = value;
     ring->setMinimumRise(MinimumRise + 100 - value);
     emit sensitivityChanged(value);

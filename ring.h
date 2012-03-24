@@ -11,6 +11,7 @@ public:
     ~Ring();
     void add(qreal measurement);
     void clear();
+    void clearTo(int index);
     int findPeak();
     qreal get(int index);
     void setMinimumRise(qreal value);

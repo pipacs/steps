@@ -8,7 +8,7 @@
 #include <QLocale>
 
 #include "qmlapplicationviewer.h"
-#include "detector.h"
+#include "walkdetector.h"
 #include "preferences.h"
 #include "platform.h"
 #include "mediakey.h"
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     // Set up and show QML viewer
     QmlApplicationViewer *viewer = new QmlApplicationViewer;
-    Detector *detector = new Detector(viewer);
+    Detector *detector = new WalkDetector(viewer);
     MediaKey *mediaKey = new MediaKey(viewer);
     viewer->engine()->setNetworkAccessManagerFactory(namFactory);
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
