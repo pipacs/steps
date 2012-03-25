@@ -33,7 +33,8 @@ public:
     QAccelerometer *accelerometer_;
     bool increasing_; ///< True if absolute accelerometer readings are increasing.
     qreal lastReading_; ///< Last absolute accelerometer reading.
-    qint64 lastPeakTime_; ///< Time of the last peak (ms since Epoch).
+    qint64 lastStepTime_; ///< Time of the last step (ms since Epoch).
+    qint64 minStepTimeDiff_; ///< Minimum time between steps (ms).
 
 private slots:
     bool filter(QAccelerometerReading* r);
