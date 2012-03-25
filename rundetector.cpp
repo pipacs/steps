@@ -4,11 +4,21 @@
 
 #include "rundetector.h"
 
-const qreal MIN_READING_DIFF = 50; ///< Minimum absolute acceleration difference.
-const qint64 DEFAULT_MIN_STEP_TIME_DIFF = 199; ///< Default minimum time difference between steps (ms).
+const qreal MIN_READING_DIFF = 50; ///< Minimum acceleration difference.
+const qint64 MIN_WALKING_STEP_TIME_DIFF = 100; ///< Minimum time difference between steps while walking (ms).
+const qint64 MIN_RUNNING_STEP_TIME_DIFF = 199; ///< Minimum time difference between steps while running (ms).
 const int DATA_RATE = 20; ///< Accelerometer data rate (Hz).
+const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
 
-RunDetector::RunDetector(QObject *parent): Detector(parent), sensitivity_(100), increasing_(false), lastReading_(100000.), lastStepTime_(0), minStepTimeDiff_(DEFAULT_MIN_STEP_TIME_DIFF) {
+RunDetector::RunDetector(QObject *parent):
+    Detector(parent),
+    sensitivity_(100),
+    increasing_(false),
+    lastReading_(100000.),
+    lastStepTime_(0),
+    minStepTimeDiff_(MIN_WALKING_STEP_TIME_DIFF),
+    stepCount_(0),
+    totalReading_(0) {
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
     accelerometer_->addFilter(this);
@@ -21,8 +31,8 @@ RunDetector::~RunDetector() {
 
 void RunDetector::setSensitivity(int sensitivity) {
     sensitivity_ = sensitivity;
-    minStepTimeDiff_ = DEFAULT_MIN_STEP_TIME_DIFF - (sensitivity_ - 100);
-    qDebug() << "RunDetector::setSensitivity: minStepTimeDiff_ is" << minStepTimeDiff_;
+    // minStepTimeDiff_ = MIN_STEP_TIME_DIFF - (sensitivity_ - 100);
+    // qDebug() << "RunDetector::setSensitivity: minStepTimeDiff_ is" << minStepTimeDiff_;
     emit sensitivityChanged(sensitivity_);
 }
 
@@ -62,7 +72,8 @@ bool RunDetector::filter(QAccelerometerReading *r) {
         if (timeDiff > minStepTimeDiff_) {
             lastStepTime_ = now;
             emit step();
-        } else {
+            adapt(reading);
+       } else {
             qDebug() << "x" << timeDiff;
         }
     }
@@ -70,4 +81,19 @@ bool RunDetector::filter(QAccelerometerReading *r) {
     increasing_ = nowIncreasing;
     lastReading_ = reading;
     return true;
+}
+
+void RunDetector::adapt(qreal reading) {
+    totalReading_ += reading;
+    if ((++stepCount_ % 5) == 0) {
+        qreal averageReading = totalReading_ / 5;
+        totalReading_ = 0;
+        if (averageReading > RUNNING_READING_LIMIT) {
+            minStepTimeDiff_ = MIN_RUNNING_STEP_TIME_DIFF;
+            qDebug() << "RunDetector::adapt: Running";
+        } else {
+            minStepTimeDiff_ = MIN_WALKING_STEP_TIME_DIFF;
+            qDebug() << "RunDetector::adapt: Walking";
+        }
+    }
 }

@@ -28,16 +28,21 @@ public slots:
     void setRunning(bool running);
     void setSensitivity(int sensitivity);
 
+    /// Guess current activity (running or walking) and adapt parameters to it.
+    void adapt(qreal reading);
+
 public:
     int sensitivity_;
     QAccelerometer *accelerometer_;
-    bool increasing_; ///< True if absolute accelerometer readings are increasing.
-    qreal lastReading_; ///< Last absolute accelerometer reading.
+    bool increasing_; ///< True if accelerometer readings are increasing.
+    qreal lastReading_; ///< Last accelerometer reading.
     qint64 lastStepTime_; ///< Time of the last step (ms since Epoch).
     qint64 minStepTimeDiff_; ///< Minimum time between steps (ms).
+    unsigned stepCount_; ///< Current step count.
+    qreal totalReading_; ///< Sum of the last N accelerometer readings.
 
 private slots:
-    bool filter(QAccelerometerReading* r);
+    bool filter(QAccelerometerReading *r);
 };
 
 #endif // RUNDETECTOR_H
