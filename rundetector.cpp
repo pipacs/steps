@@ -11,12 +11,11 @@ const int DATA_RATE_RUNNING = 20; ///< Accelerometer data rate for running (Hz).
 const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
 
-RunDetector::RunDetector(QObject *parent): Detector(parent) {
+RunDetector::RunDetector(QObject *parent): Detector(parent), running_(false) {
     reset();
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
     accelerometer_->addFilter(this);
-    connect(accelerometer_, SIGNAL(activeChanged()), this, SIGNAL(runningChanged()));
 }
 
 RunDetector::~RunDetector() {
@@ -33,11 +32,11 @@ int RunDetector::sensitivity() {
 }
 
 bool RunDetector::running() {
-    return accelerometer_->isActive();
+    return running_;
 }
 
 void RunDetector::setRunning(bool v) {
-    if (v != running()) {
+    if (v != running_) {
         if (v) {
             reset();
             accelerometer_->setDataRate(DATA_RATE_WALKING);
@@ -46,6 +45,8 @@ void RunDetector::setRunning(bool v) {
             accelerometer_->stop();
         }
     }
+    running_ = v;
+    emit runningChanged();
 }
 
 bool RunDetector::filter(QAccelerometerReading *r) {
@@ -69,9 +70,6 @@ bool RunDetector::filter(QAccelerometerReading *r) {
         // If didn't peak too early, register a step, and adapt to current activity
         if (timeDiff > minStepTimeDiff_) {
             qDebug() << "+" << timeDiff;
-
-
-
             lastStepTime_ = now;
             emit step();
             adapt(reading);

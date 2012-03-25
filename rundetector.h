@@ -44,6 +44,7 @@ public:
     unsigned stepCount_; ///< Current step count.
     qreal totalReading_; ///< Sum of the last N accelerometer readings.
     enum {Walking, Running} activity_; ///< Current activity.
+    bool running_; ///< True if the detector is running.
 
 private slots:
     bool filter(QAccelerometerReading *r);
