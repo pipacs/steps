@@ -31,6 +31,9 @@ public slots:
     /// Guess current activity (running or walking) and adapt parameters to it.
     void adapt(qreal reading);
 
+    /// Reset all parameters to default.
+    void reset();
+
 public:
     int sensitivity_;
     QAccelerometer *accelerometer_;
@@ -40,6 +43,7 @@ public:
     qint64 minStepTimeDiff_; ///< Minimum time between steps (ms).
     unsigned stepCount_; ///< Current step count.
     qreal totalReading_; ///< Sum of the last N accelerometer readings.
+    enum {Walking, Running} activity_; ///< Current activity.
 
 private slots:
     bool filter(QAccelerometerReading *r);
