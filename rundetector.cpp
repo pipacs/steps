@@ -5,9 +5,9 @@
 #include "rundetector.h"
 
 const qreal MIN_READING_DIFF = 50; ///< Minimum absolute acceleration difference.
-const qint64 MIN_PEAK_TIME_DIFF = 100; ///< Minimum time difference between peeks (ms).
+const qint64 MIN_PEAK_TIME_DIFF = 120; ///< Minimum time difference between peeks (ms).
 
-RunDetector::RunDetector(QObject *parent): Detector(parent), sensitivity_(100), increasing_(true), lastReading_(0.), lastPeakTime_(0) {
+RunDetector::RunDetector(QObject *parent): Detector(parent), sensitivity_(100), increasing_(false), lastReading_(100000.), lastPeakTime_(0) {
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
     accelerometer_->addFilter(this);
