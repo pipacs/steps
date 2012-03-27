@@ -2,7 +2,7 @@
 #include <QDateTime>
 #include <QDebug>
 
-#include "rundetector.h"
+#include "detector.h"
 
 const qreal MIN_READING_DIFF = 50; ///< Minimum acceleration difference.
 const qint64 MIN_WALKING_STEP_TIME_DIFF = 301; ///< Minimum time difference between steps while walking (ms).
@@ -11,31 +11,31 @@ const int DATA_RATE_RUNNING = 20; ///< Accelerometer data rate for running (Hz).
 const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
 
-RunDetector::RunDetector(QObject *parent): QObject(parent), running_(false) {
+Detector::Detector(QObject *parent): QObject(parent), running_(false) {
     reset();
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
     accelerometer_->addFilter(this);
 }
 
-RunDetector::~RunDetector() {
+Detector::~Detector() {
     accelerometer_->stop();
 }
 
-void RunDetector::setSensitivity(int sensitivity) {
+void Detector::setSensitivity(int sensitivity) {
     sensitivity_ = sensitivity;
     emit sensitivityChanged(sensitivity_);
 }
 
-int RunDetector::sensitivity() {
+int Detector::sensitivity() {
     return sensitivity_;
 }
 
-bool RunDetector::running() {
+bool Detector::running() {
     return running_;
 }
 
-void RunDetector::setRunning(bool v) {
+void Detector::setRunning(bool v) {
     if (v != running_) {
         if (v) {
             reset();
@@ -49,7 +49,7 @@ void RunDetector::setRunning(bool v) {
     emit runningChanged();
 }
 
-bool RunDetector::filter(QAccelerometerReading *r) {
+bool Detector::filter(QAccelerometerReading *r) {
     qreal x = r->x();
     qreal y = r->y();
     qreal z = r->z();
@@ -83,7 +83,7 @@ bool RunDetector::filter(QAccelerometerReading *r) {
     return true;
 }
 
-void RunDetector::adapt(qreal reading) {
+void Detector::adapt(qreal reading) {
     totalReading_ += reading;
     if ((++stepCount_ % 5) == 0) {
         qreal averageReading = totalReading_ / 5;
@@ -92,7 +92,7 @@ void RunDetector::adapt(qreal reading) {
             if (activity_ != Running) {
                 activity_ = Running;
                 minStepTimeDiff_ = MIN_RUNNING_STEP_TIME_DIFF;
-                qDebug() << "RunDetector::adapt: Running, setting data rate to" << DATA_RATE_RUNNING;
+                qDebug() << "Detector::adapt: Running, setting data rate to" << DATA_RATE_RUNNING;
                 accelerometer_->stop();
                 accelerometer_->setDataRate(DATA_RATE_RUNNING);
                 accelerometer_->start();
@@ -101,7 +101,7 @@ void RunDetector::adapt(qreal reading) {
             if (activity_ != Walking) {
                 activity_ = Walking;
                 minStepTimeDiff_ = MIN_WALKING_STEP_TIME_DIFF;
-                qDebug() << "RunDetector::adapt: Walking, setting data rate to" << DATA_RATE_WALKING;
+                qDebug() << "Detector::adapt: Walking, setting data rate to" << DATA_RATE_WALKING;
                 accelerometer_->stop();
                 accelerometer_->setDataRate(DATA_RATE_WALKING);
                 accelerometer_->start();
@@ -111,7 +111,7 @@ void RunDetector::adapt(qreal reading) {
 }
 
 
-void RunDetector::reset() {
+void Detector::reset() {
     sensitivity_ = 100;
     increasing_ = false;
     lastReading_ = 100000.;

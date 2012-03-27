@@ -6,14 +6,14 @@
 QTM_USE_NAMESPACE
 
 /// Step detector.
-class RunDetector: public QObject, public QAccelerometerFilter {
+class Detector: public QObject, public QAccelerometerFilter {
     Q_OBJECT
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(int sensitivity READ sensitivity WRITE setSensitivity NOTIFY sensitivityChanged)
 
 public:
-    explicit RunDetector(QObject *parent = 0);
-    ~RunDetector();
+    explicit Detector(QObject *parent = 0);
+    ~Detector();
     bool running();
     int sensitivity();
 
