@@ -10,12 +10,18 @@ const qint64 MIN_RUNNING_STEP_TIME_DIFF = 199; ///< Minimum time difference betw
 const int DATA_RATE_RUNNING = 20; ///< Accelerometer data rate for running (Hz).
 const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
+const qint64 IDLE_TIME = 2000; ///< Set activity to Idle after this time (ms).
+const qint64 IDLE_CHECK_INTERVAL = 1500; ///< Interval for checking for Idle (ms).
 
 Detector::Detector(QObject *parent): QObject(parent), running_(false) {
-    reset();
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
     accelerometer_->addFilter(this);
+    reset();
+    idleTimer_ = new QTimer(this);
+    idleTimer_->setSingleShot(false);
+    idleTimer_->setInterval(IDLE_CHECK_INTERVAL);
+    connect(idleTimer_, SIGNAL(timeout()), this, SLOT(checkIdle()));
 }
 
 Detector::~Detector() {
@@ -39,10 +45,13 @@ void Detector::setRunning(bool v) {
     if (v != running_) {
         if (v) {
             reset();
+            idleTimer_->start();
             accelerometer_->setDataRate(DATA_RATE_WALKING);
             accelerometer_->start();
         } else {
             accelerometer_->stop();
+            idleTimer_->stop();
+            setActivity(Idle);
         }
     }
     running_ = v;
@@ -64,13 +73,16 @@ bool Detector::filter(QAccelerometerReading *r) {
     // Detect peak
     bool nowIncreasing = readingDiff > 0;
     if (increasing_ && !nowIncreasing) {
-        qint64 now = QDateTime::currentDateTime().toMSecsSinceEpoch();
+        qint64 now = QDateTime::currentMSecsSinceEpoch();
         qint64 timeDiff =  now - lastStepTime_;
 
         // If didn't peak too early, register a step, and adapt to current activity
         if (timeDiff > minStepTimeDiff_) {
             qDebug() << "+" << timeDiff;
             lastStepTime_ = now;
+            if (activity_ == Idle) {
+                setActivity(Walking);
+            }
             emit step();
             adapt(reading);
         } else {
@@ -90,7 +102,7 @@ void Detector::adapt(qreal reading) {
         totalReading_ = 0;
         if (averageReading > RUNNING_READING_LIMIT) {
             if (activity_ != Running) {
-                activity_ = Running;
+                setActivity(Running);
                 minStepTimeDiff_ = MIN_RUNNING_STEP_TIME_DIFF;
                 qDebug() << "Detector::adapt: Running, setting data rate to" << DATA_RATE_RUNNING;
                 accelerometer_->stop();
@@ -99,7 +111,7 @@ void Detector::adapt(qreal reading) {
             }
         } else {
             if (activity_ != Walking) {
-                activity_ = Walking;
+                setActivity(Walking);
                 minStepTimeDiff_ = MIN_WALKING_STEP_TIME_DIFF;
                 qDebug() << "Detector::adapt: Walking, setting data rate to" << DATA_RATE_WALKING;
                 accelerometer_->stop();
@@ -110,7 +122,6 @@ void Detector::adapt(qreal reading) {
     }
 }
 
-
 void Detector::reset() {
     sensitivity_ = 100;
     increasing_ = false;
@@ -119,5 +130,22 @@ void Detector::reset() {
     minStepTimeDiff_ = MIN_WALKING_STEP_TIME_DIFF;
     stepCount_ = 0;
     totalReading_ = 0;
-    activity_ = Walking;
+    setActivity(Idle);
+}
+
+Detector::Activity Detector::activity() {
+    return activity_;
+}
+
+void Detector::setActivity(Activity v) {
+    if (activity_ != v) {
+        activity_ = v;
+        emit activityChanged();
+    }
+}
+
+void Detector::checkIdle() {
+    if (QDateTime::currentMSecsSinceEpoch() - lastStepTime_ > IDLE_TIME) {
+        setActivity(Idle);
+    }
 }

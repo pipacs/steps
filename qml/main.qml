@@ -84,6 +84,10 @@ StepsPageStackWindow {
         }
     }
 
+    function onDetectedActivityChanged() {
+        logger.log(0, {"detectedActivity": detector.activity})
+    }
+
     onActivityNamesChanged: {
         prefs.setValue("activity2Name", activityNames[2])
         prefs.setValue("activity3Name", activityNames[3])
@@ -93,6 +97,7 @@ StepsPageStackWindow {
         detector.sensitivity = prefs.sensitivity
         detector.step.connect(main.onStepDetected)
         detector.runningChanged.connect(main.runningChanged)
+        detector.activityChanged.connect(main.onDetectedActivityChanged)
         logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName})
 
         // Restore step counts from settings

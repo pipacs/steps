@@ -2,6 +2,7 @@
 #define RUNDETECTOR_H
 
 #include <QAccelerometer>
+#include <QTimer>
 
 QTM_USE_NAMESPACE
 
@@ -10,27 +11,42 @@ class Detector: public QObject, public QAccelerometerFilter {
     Q_OBJECT
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(int sensitivity READ sensitivity WRITE setSensitivity NOTIFY sensitivityChanged)
+    Q_ENUMS(Activity)
+    Q_PROPERTY(Activity activity READ activity NOTIFY activityChanged)
 
 public:
+    enum Activity {
+        Idle,
+        Unknown,
+        Walking,
+        Running
+    };
+
     explicit Detector(QObject *parent = 0);
     ~Detector();
     bool running();
     int sensitivity();
+    Activity activity();
 
 signals:
     void step();
     void runningChanged();
     void sensitivityChanged(int value);
+    void activityChanged();
 
 public slots:
     void setRunning(bool running);
     void setSensitivity(int sensitivity);
+    void setActivity(Activity activity);
 
     /// Guess current activity (running or walking) and adapt parameters to it.
     void adapt(qreal reading);
 
     /// Reset all parameters to default.
     void reset();
+
+    /// Check for Idle activity.
+    void checkIdle();
 
 public:
     int sensitivity_;
@@ -41,8 +57,9 @@ public:
     qint64 minStepTimeDiff_; ///< Minimum time between steps (ms).
     unsigned stepCount_; ///< Current step count.
     qreal totalReading_; ///< Sum of the last N accelerometer readings.
-    enum {Walking, Running} activity_; ///< Current activity.
+    Activity activity_; ///< Current activity.
     bool running_; ///< True if the detector is running.
+    QTimer *idleTimer_; ///< Detects Idle activity.
 
 private slots:
     bool filter(QAccelerometerReading *r);
