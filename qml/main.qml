@@ -9,7 +9,7 @@ StepsPageStackWindow {
     property int dailyCount: 0
     property int activityCount: 0
     property int activity: 0
-    property variant activityNames: [qsTr("Walking"), qsTr("Running"), prefs.value("activity2Name", qsTr("Custom 1")), prefs.value("activity3Name", qsTr("Custom 2"))]
+    property variant activityNames: [qsTr("Walking") + "/" + qsTr("Running"), "", prefs.value("activity2Name", qsTr("Custom 1")), prefs.value("activity3Name", qsTr("Custom 2"))]
 
     MainPage {
         id: mainPage
