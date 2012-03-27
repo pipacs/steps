@@ -186,7 +186,6 @@ HEADERS += \
     gftsecret.h \
     database.h \
     trace.h \
-    detector.h \
     rundetector.h
 
 RESOURCES += \

@@ -3,12 +3,10 @@
 
 #include <QAccelerometer>
 
-#include "detector.h"
-
 QTM_USE_NAMESPACE
 
 /// Step detector.
-class RunDetector: public Detector, public QAccelerometerFilter {
+class RunDetector: public QObject, public QAccelerometerFilter {
     Q_OBJECT
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(int sensitivity READ sensitivity WRITE setSensitivity NOTIFY sensitivityChanged)

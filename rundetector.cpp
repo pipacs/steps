@@ -11,7 +11,7 @@ const int DATA_RATE_RUNNING = 20; ///< Accelerometer data rate for running (Hz).
 const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
 
-RunDetector::RunDetector(QObject *parent): Detector(parent), running_(false) {
+RunDetector::RunDetector(QObject *parent): QObject(parent), running_(false) {
     reset();
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
