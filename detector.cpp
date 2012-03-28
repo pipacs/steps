@@ -53,9 +53,9 @@ void Detector::setRunning(bool v) {
             idleTimer_->stop();
             setActivity(Idle);
         }
+        running_ = v;
+        emit runningChanged();
     }
-    running_ = v;
-    emit runningChanged();
 }
 
 bool Detector::filter(QAccelerometerReading *r) {
