@@ -77,6 +77,7 @@ protected:
     bool diskFull;          ///< Was the disk full when we last checked.
     qlonglong lastInsertId; ///< Record ID of the last insert.
     int totalSteps;         ///< Total number of steps inserted in the last insert.
+    QDateTime lastLogTime;  ///< Time of last logging.
 };
 
 #endif // LOGGER_H

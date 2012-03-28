@@ -4,6 +4,9 @@ steps (0.1.5) unstable; urgency=low
   * Work around Symbian WebView redraw bug
   * Create new page for tweaks
   * Improve detecting steps while running
+  * Add Danish translation
+  * Detect and log current activity
+  * Log more thoroughly
 
  -- Akos Polster <akos@pipacs.com>  Tue, 20 Mar 2012 23:17:00 +0100
 

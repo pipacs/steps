@@ -11,11 +11,8 @@
 #include "database.h"
 #include "trace.h"
 
-/// Minimum time difference for logging unchanged information (seconds).
-const int MinTimeDiff = 60 * 60;
-
-/// Minimum time difference to force logging a new record (otherwise the last record gets updated).
-const int MinInsertTimeDiff = 60;
+/// Minimum time difference to force logging a new record (otherwise the last record gets updated; ms)
+const qint64 MinInsertTimeDiff = 5 * 60 * 1000;
 
 Logger *instance_;
 
@@ -60,7 +57,7 @@ void Logger::archive() {
     }
 }
 
-LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false), lastInsertId(0), totalSteps(0) {
+LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false), lastInsertId(0), totalSteps(0), lastLogTime(QDate(1965, 06, 29)) {
 }
 
 LoggerWorker::~LoggerWorker() {
@@ -107,7 +104,8 @@ void LoggerWorker::saveLog(int steps, const QVariantMap &tags) {
 
     // Insert new record or update the last one
     QDateTime now = QDateTime::currentDateTime();
-    if (!lastInsertId || tags.count()) {
+    qint64 elapsed = now.toMSecsSinceEpoch() - lastLogTime.toMSecsSinceEpoch();
+    if (!lastInsertId || tags.count() || (elapsed > MinInsertTimeDiff)) {
         insertLog(now, steps, tags);
     } else {
         updateLog(now, steps);
@@ -117,6 +115,8 @@ void LoggerWorker::saveLog(int steps, const QVariantMap &tags) {
     if (tags.count()) {
         lastInsertId = 0;
     }
+
+    lastLogTime = now;
 }
 
 void LoggerWorker::updateLog(const QDateTime &now, int steps) {
