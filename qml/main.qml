@@ -21,6 +21,16 @@ StepsPageStackWindow {
         onFinished: splash.destroy();
     }
 
+    Beep {
+        id: walkingSound
+        source: platform.soundUrl("walking")
+    }
+
+    Beep {
+        id: runningSound
+        source: platform.soundUrl("running")
+    }
+
     function onStepDetected() {
         // Register total step count
         logger.log(1, {})
@@ -86,6 +96,11 @@ StepsPageStackWindow {
 
     function onDetectedActivityChanged() {
         logger.log(0, {"detectedActivity": detector.activity})
+        if (detector.activity === 2) {
+            walkingSound.beep()
+        } else if (detector.activity === 3) {
+            runningSound.beep()
+        }
     }
 
     onActivityNamesChanged: {

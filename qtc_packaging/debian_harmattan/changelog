@@ -7,6 +7,7 @@ steps (0.1.5) unstable; urgency=low
   * Add Danish translation
   * Detect and log current activity
   * Log more thoroughly
+  * Play sound effect if running/walking detected
 
  -- Akos Polster <akos@pipacs.com>  Tue, 20 Mar 2012 23:17:00 +0100
 
