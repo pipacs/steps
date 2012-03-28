@@ -3,5 +3,6 @@
         <file>translations/hu.qm</file>
         <file>translations/zh_CN.qm</file>
         <file>translations/it.qm</file>
+        <file>translations/da.qm</file>
     </qresource>
 </RCC>
