@@ -53,7 +53,7 @@ StepsPageStackWindow {
         // Register daily step count
         setDailyCount(dailyCount + 1)
 
-        stepSound.beep()
+        //stepSound.beep()
     }
 
     // Set current activity step count

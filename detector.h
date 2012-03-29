@@ -40,13 +40,10 @@ public slots:
     void setActivity(Activity activity);
 
     /// Guess current activity (running or walking) and adapt parameters to it.
-    void adapt(qreal reading);
+    void adapt(qreal reading, qint64 timeStamp);
 
     /// Reset all parameters to default.
     void reset();
-
-    /// Check for Idle activity.
-    void checkIdle();
 
 public:
     int sensitivity_;
@@ -55,11 +52,10 @@ public:
     qreal lastReading_; ///< Last accelerometer reading.
     qint64 lastStepTime_; ///< Time of the last step (ms since Epoch).
     qint64 minStepTimeDiff_; ///< Minimum time between steps (ms).
-    unsigned stepCount_; ///< Current step count.
+    unsigned readingCount_; ///< Reading count.
     qreal totalReading_; ///< Sum of the last N accelerometer readings.
     Activity activity_; ///< Current activity.
     bool running_; ///< True if the detector is running.
-    QTimer *idleTimer_; ///< Detects Idle activity.
 
 private slots:
     bool filter(QAccelerometerReading *r);
