@@ -31,6 +31,16 @@ StepsPageStackWindow {
         source: platform.soundUrl("running")
     }
 
+    Beep {
+        id: idleSound
+        source: platform.soundUrl("idle")
+    }
+
+    Beep {
+        id: stepSound
+        source: platform.soundUrl("beep")
+    }
+
     function onStepDetected() {
         // Register total step count
         logger.log(1, {})
@@ -42,6 +52,8 @@ StepsPageStackWindow {
 
         // Register daily step count
         setDailyCount(dailyCount + 1)
+
+        stepSound.beep()
     }
 
     // Set current activity step count
@@ -100,6 +112,8 @@ StepsPageStackWindow {
             walkingSound.beep()
         } else if (detector.activity === 3) {
             runningSound.beep()
+        } else {
+            idleSound.beep()
         }
     }
 
