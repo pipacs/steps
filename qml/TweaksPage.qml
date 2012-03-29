@@ -50,6 +50,24 @@ StepsPage {
                 }
             }
 
+            Gap {}
+
+            StepsLabel {
+                text: qsTr("Minimum time between steps (ms):")
+            }
+
+            StepsSlider {
+                id: runningDiff
+                width: flickable.width - 15
+                stepSize: 50
+                valueIndicatorVisible: true
+                minimumValue: 50
+                maximumValue: 350
+                value: detector.runningStepTimeDiff
+            }
+
+            Gap {}
+
             StepsLabel {
                 text: qsTr("Step detector:")
             }
@@ -82,5 +100,7 @@ StepsPage {
 
     onBack: {
         main.pageStack.pop()
+        detector.runningStepTimeDiff = runningDiff.value
+        prefs.runningStepTimeDiff = runningDiff.value
     }
 }

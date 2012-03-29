@@ -168,7 +168,8 @@ OTHER_FILES += \
     translations/hu.ts \
     translations/da.ts \
     translations/it.ts \
-    qml/TweaksPage.qml
+    qml/TweaksPage.qml \
+    qml/Gap.qml
 
 HEADERS += \
     preferences.h \

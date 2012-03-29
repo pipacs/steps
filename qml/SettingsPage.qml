@@ -36,6 +36,8 @@ StepsPage {
                 checked: prefs.showExit
             }
 
+            Gap {}
+
             StepsLabel {text: qsTr("Save to Google Docs:")}
 
             StepsCheckBox {
@@ -57,6 +59,8 @@ StepsPage {
                     }
                 }
             }
+
+            Gap {}
 
             StepsLabel {
                 id: custom1Label

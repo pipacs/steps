@@ -5,13 +5,13 @@
 
 const qreal MIN_READING_DIFF = 50; ///< Minimum acceleration difference.
 const qint64 MIN_WALKING_STEP_TIME_DIFF = 301; ///< Minimum time difference between steps while walking (ms).
-const qint64 MIN_RUNNING_STEP_TIME_DIFF = 149; ///< Minimum time difference between steps while running (ms).
+const qint64 MIN_RUNNING_STEP_TIME_DIFF = 200; ///< Minimum time difference between steps while running (ms).
 const int DATA_RATE_RUNNING = 20; ///< Accelerometer data rate for running (Hz).
 const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
 const qint64 IDLE_TIME = 2000; ///< Set activity to Idle after this time (ms).
 
-Detector::Detector(QObject *parent): QObject(parent), running_(false) {
+Detector::Detector(QObject *parent): QObject(parent), running_(false), runningStepTimeDiff_(MIN_RUNNING_STEP_TIME_DIFF) {
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->setProperty("alwaysOn", true);
     accelerometer_->addFilter(this);
@@ -108,7 +108,7 @@ void Detector::adapt(qreal reading, qint64 timeStamp) {
     if (averageReading > RUNNING_READING_LIMIT) {
         isRunning = true;
         if (activity_ != Running) {
-            minStepTimeDiff_ = MIN_RUNNING_STEP_TIME_DIFF;
+            minStepTimeDiff_ = runningStepTimeDiff_;
             qDebug() << "Detector::adapt: Running, setting data rate to" << DATA_RATE_RUNNING;
             accelerometer_->stop();
             accelerometer_->setDataRate(DATA_RATE_RUNNING);
@@ -146,5 +146,17 @@ void Detector::setActivity(Activity v) {
     if (activity_ != v) {
         activity_ = v;
         emit activityChanged();
+    }
+}
+
+int Detector::runningStepTimeDiff() {
+    return runningStepTimeDiff_;
+}
+
+void Detector::setRunningStepTimeDiff(int diff) {
+    qDebug() << "Detector::setRunningStepTimeDiff" << diff;
+    if (diff != runningStepTimeDiff_) {
+        runningStepTimeDiff_ = diff;
+        emit runningStepTimeDiffChanged();
     }
 }

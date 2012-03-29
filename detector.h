@@ -13,6 +13,7 @@ class Detector: public QObject, public QAccelerometerFilter {
     Q_PROPERTY(int sensitivity READ sensitivity WRITE setSensitivity NOTIFY sensitivityChanged)
     Q_ENUMS(Activity)
     Q_PROPERTY(Activity activity READ activity NOTIFY activityChanged)
+    Q_PROPERTY(int runningStepTimeDiff READ runningStepTimeDiff WRITE setRunningStepTimeDiff NOTIFY runningStepTimeDiffChanged)
 
 public:
     enum Activity {
@@ -27,17 +28,20 @@ public:
     bool running();
     int sensitivity();
     Activity activity();
+    int runningStepTimeDiff();
 
 signals:
     void step();
     void runningChanged();
     void sensitivityChanged(int value);
     void activityChanged();
+    void runningStepTimeDiffChanged();
 
 public slots:
     void setRunning(bool running);
     void setSensitivity(int sensitivity);
     void setActivity(Activity activity);
+    void setRunningStepTimeDiff(int diff);
 
     /// Guess current activity (running or walking) and adapt parameters to it.
     void adapt(qreal reading, qint64 timeStamp);
@@ -56,6 +60,7 @@ public:
     qreal totalReading_; ///< Sum of the last N accelerometer readings.
     Activity activity_; ///< Current activity.
     bool running_; ///< True if the detector is running.
+    int runningStepTimeDiff_; ///< Minimum time difference between steps, while running (ms).
 
 private slots:
     bool filter(QAccelerometerReading *r);
