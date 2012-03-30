@@ -5,7 +5,7 @@
 
 const qreal MIN_READING_DIFF = 50; ///< Minimum acceleration difference.
 const qint64 MIN_WALKING_STEP_TIME_DIFF = 301; ///< Minimum time difference between steps while walking (ms).
-const qint64 MIN_RUNNING_STEP_TIME_DIFF = 200; ///< Minimum time difference between steps while running (ms).
+const qint64 MIN_RUNNING_STEP_TIME_DIFF = 150; ///< Minimum time difference between steps while running (ms).
 const int DATA_RATE_RUNNING = 20; ///< Accelerometer data rate for running (Hz).
 const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.

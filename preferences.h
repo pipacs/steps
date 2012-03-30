@@ -86,7 +86,7 @@ public:
     bool traceToFile() {return value("tracetofile").toBool();}
     void setTraceToFile(bool v) {setValue("tracetofile", v);}
 
-    int runningStepTimeDiff() {return value("runningsteptimediff", 200).toInt();}
+    int runningStepTimeDiff() {return value("runningsteptimediff", 150).toInt();}
     void setRunningStepTimeDiff(int v) {setValue("runningsteptimediff", v);}
 
 signals:
