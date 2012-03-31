@@ -36,17 +36,7 @@ StepsPage {
                 checked: prefs.showExit
             }
 
-            StepsLabel {text: qsTr("Sensitivity:")}
-
-            StepsSlider {
-                id: sensitivitySlider
-                width: parent.width - 15
-                stepSize: 10
-                valueIndicatorVisible: true
-                minimumValue: 10
-                maximumValue: 190
-                value: counter.sensitivity
-            }
+            Gap {}
 
             StepsLabel {text: qsTr("Save to Google Docs:")}
 
@@ -69,6 +59,8 @@ StepsPage {
                     }
                 }
             }
+
+            Gap {}
 
             StepsLabel {
                 id: custom1Label
@@ -122,8 +114,6 @@ StepsPage {
     onBack: {
         main.pageStack.pop()
         prefs.muted = !audioFeedback.checked
-        counter.setSensitivity(sensitivitySlider.value)
-        prefs.sensitivity = counter.sensitivity
         gft.enabled = enableSharing.checked
         main.activityNames = [main.activityNames[0], main.activityNames[1], custom1Text.text, custom2Text.text]
         prefs.showExit = showExit.checked

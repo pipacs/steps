@@ -23,12 +23,6 @@ StepsPage {
                 onClicked: setActivity(0)
             }
             BigButton {
-                id: activity1
-                anchors.left: parent.left; anchors.right: parent.right
-                text: main.activityNames[1]
-                onClicked: setActivity(1)
-            }
-            BigButton {
                 id: activity2
                 anchors.left: parent.left; anchors.right: parent.right
                 text: main.activityNames[2]

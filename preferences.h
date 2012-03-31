@@ -39,6 +39,9 @@ class Preferences: public QObject {
     /// Trace to file.
     Q_PROPERTY(bool traceToFile READ traceToFile WRITE setTraceToFile NOTIFY valueChanged)
 
+    /// Minimum time difference between steps, while running (ms).
+    Q_PROPERTY(int runningStepTimeDiff READ runningStepTimeDiff WRITE setRunningStepTimeDiff NOTIFY valueChanged)
+
 public:
     static Preferences *instance();
     static void close();
@@ -82,6 +85,9 @@ public:
 
     bool traceToFile() {return value("tracetofile").toBool();}
     void setTraceToFile(bool v) {setValue("tracetofile", v);}
+
+    int runningStepTimeDiff() {return value("runningsteptimediff", 150).toInt();}
+    void setRunningStepTimeDiff(int v) {setValue("runningsteptimediff", v);}
 
 signals:
     void valueChanged(const QString &key);

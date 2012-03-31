@@ -2,7 +2,7 @@ import QtQuick 1.1
 import "meego"
 
 StepsPage {
-    property bool counterWasRunning: false
+    property bool detectorWasRunning: false
     id: mainPage
     showBack: prefs.showExit
     showTools: prefs.showExit
@@ -44,7 +44,7 @@ StepsPage {
         StepsLabel {
             id: totalLabel
             anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("Total: ") + counter.count
+            text: qsTr("Total: ") + main.totalCount
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -53,7 +53,7 @@ StepsPage {
             id: pausedLabel
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: main.activityNames[main.activity] + (counter.running? "": qsTr(" (Paused)"))
+            text: main.activityNames[main.activity] + (detector.running? "": qsTr(" (Paused)"))
             font.pixelSize: 45
             color: "#ff9999"
             horizontalAlignment: Text.AlignHCenter
@@ -81,22 +81,22 @@ StepsPage {
     }
 
     function onCounterRunningChanged() {
-        var sound = counter.running? startSound: stopSound
+        var sound = detector.running? startSound: stopSound
         sound.beep()
     }
 
     Component.onCompleted: {
         mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
         mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
-        counter.runningChanged.connect(onCounterRunningChanged)
+        detector.runningChanged.connect(onCounterRunningChanged)
     }
 
     onActiveChanged: {
         if (active) {
-            counter.running = counterWasRunning
+            detector.running = detectorWasRunning
         } else {
-            counterWasRunning = counter.running
-            counter.running = false
+            detectorWasRunning = detector.running
+            detector.running = false
         }
     }
 
@@ -105,12 +105,12 @@ StepsPage {
     }
 
     function onActivityChanged() {
-        pausedLabel.text = main.activityNames[main.activity] + (counter.running? "": qsTr(" (Paused)"))
+        pausedLabel.text = main.activityNames[main.activity] + (detector.running? "": qsTr(" (Paused)"))
     }
 
     function onVolumeUpPressed() {
         if (active) {
-            counter.running = !counter.running
+            detector.running = !detector.running
         }
     }
 

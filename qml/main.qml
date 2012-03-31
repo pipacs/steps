@@ -1,15 +1,15 @@
 import QtQuick 1.1
 import QtMultimediaKit 1.1
-import "symbian"
+import "meego"
 
 StepsPageStackWindow {
     id: main
     initialPage: mainPage
-    property int prevCount: 0
+    property int totalCount: 0
     property int dailyCount: 0
     property int activityCount: 0
     property int activity: 0
-    property variant activityNames: [qsTr("Walking"), qsTr("Running"), prefs.value("activity2Name", qsTr("Custom 1")), prefs.value("activity3Name", qsTr("Custom 2"))]
+    property variant activityNames: [qsTr("Walking") + "/" + qsTr("Running"), "", prefs.value("activity2Name", qsTr("Custom 1")), prefs.value("activity3Name", qsTr("Custom 2"))]
 
     MainPage {
         id: mainPage
@@ -21,32 +21,44 @@ StepsPageStackWindow {
         onFinished: splash.destroy();
     }
 
-    function rawCountChanged(val) {
-        prefs.rawCount = val
+    Beep {
+        id: walkingSound
+        source: platform.soundUrl("walking")
     }
 
-    function countChanged(count) {
-        if (count === 0) {
-            return
-        }
+    Beep {
+        id: runningSound
+        source: platform.soundUrl("running")
+    }
 
-        var delta = count - prevCount
-        prevCount = count
-        logger.log(delta, {})
+    Beep {
+        id: idleSound
+        source: platform.soundUrl("idle")
+    }
+
+    Beep {
+        id: stepSound
+        source: platform.soundUrl("beep")
+    }
+
+    function onStepDetected() {
+        // Register total step count
+        logger.log(1, {})
+        totalCount += 1
+        prefs.rawCount = totalCount
 
         // Register activity step count
-        setActivityCount(activityCount + delta)
+        setActivityCount(activityCount + 1)
 
         // Register daily step count
-        setDailyCount(dailyCount + delta)
+        setDailyCount(dailyCount + 1)
+
+        //stepSound.beep()
     }
 
     // Set current activity step count
     function setActivityCount(c) {
         activityCount = c
-        if (activityCount < 0) {
-            activityCount = 0
-        }
         prefs.activityCount = activityCount
     }
 
@@ -61,9 +73,6 @@ StepsPageStackWindow {
         }
 
         dailyCount = c
-        if (dailyCount < 0) {
-            dailyCount = 0
-        }
         prefs.dailyCount = dailyCount
     }
 
@@ -75,17 +84,16 @@ StepsPageStackWindow {
 
     // Reset all counters
     function resetCount() {
-        counter.reset()
-        prevCount = 0
+        detector.reset()
         logger.log(0, {"reset": 0})
         resetActivityCount()
         setDailyCount(0)
     }
 
     function runningChanged() {
-        logger.log(0, {"counting": counter.running})
+        logger.log(0, {"counting": detector.running})
         if (prefs.savePower) {
-            platform.savePower = counter.running
+            platform.savePower = detector.running
         }
     }
 
@@ -98,24 +106,32 @@ StepsPageStackWindow {
         }
     }
 
+    function onDetectedActivityChanged() {
+        logger.log(0, {"detectedActivity": detector.activity})
+        if (detector.activity === 2) {
+            walkingSound.beep()
+        } else if (detector.activity === 3) {
+            runningSound.beep()
+        } else {
+            idleSound.beep()
+        }
+    }
+
     onActivityNamesChanged: {
         prefs.setValue("activity2Name", activityNames[2])
         prefs.setValue("activity3Name", activityNames[3])
     }
 
     Component.onCompleted: {
-        // counter.calibration = prefs.calibration
-        counter.rawCount = prefs.rawCount
-        main.prevCount = counter.count
-        counter.sensitivity = prefs.sensitivity
-
-        counter.rawCountChanged.connect(main.rawCountChanged)
-        counter.step.connect(main.countChanged)
-        counter.runningChanged.connect(main.runningChanged)
-
-        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName})
+        detector.sensitivity = prefs.sensitivity
+        detector.runningStepTimeDiff = prefs.runningStepTimeDiff
+        detector.step.connect(main.onStepDetected)
+        detector.runningChanged.connect(main.runningChanged)
+        detector.activityChanged.connect(main.onDetectedActivityChanged)
+        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName, "activity": prefs.activity, "counting": false})
 
         // Restore step counts from settings
+        totalCount = prefs.rawCount
         setDailyCount(prefs.dailyCount)
         setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
@@ -125,6 +141,6 @@ StepsPageStackWindow {
         if (prefs.savePower) {
             platform.savePower = false
         }
-        logger.log(0, {"appStopped": "com.pipacs.steps"})
+        logger.log(0, {"counting": false, "appStopped": "com.pipacs.steps"})
     }
 }
