@@ -123,8 +123,8 @@ StepsPageStackWindow {
     }
 
     Component.onCompleted: {
-        detector.sensitivity = prefs.sensitivity
         detector.runningStepTimeDiff = prefs.runningStepTimeDiff
+        detector.minReadingDiff = prefs.minReadingDiff
         detector.step.connect(main.onStepDetected)
         detector.runningChanged.connect(main.runningChanged)
         detector.activityChanged.connect(main.onDetectedActivityChanged)

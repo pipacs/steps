@@ -42,6 +42,9 @@ class Preferences: public QObject {
     /// Minimum time difference between steps, while running (ms).
     Q_PROPERTY(int runningStepTimeDiff READ runningStepTimeDiff WRITE setRunningStepTimeDiff NOTIFY valueChanged)
 
+    /// Minimum difference between accelerometer readings to consider a step.
+    Q_PROPERTY(int minReadingDiff READ minReadingDiff WRITE setMinReadingDiff NOTIFY valueChanged)
+
 public:
     static Preferences *instance();
     static void close();
@@ -86,8 +89,11 @@ public:
     bool traceToFile() {return value("tracetofile").toBool();}
     void setTraceToFile(bool v) {setValue("tracetofile", v);}
 
-    int runningStepTimeDiff() {return value("runningsteptimediff", 150).toInt();}
+    int runningStepTimeDiff() {return value("runningsteptimediff").toInt();}
     void setRunningStepTimeDiff(int v) {setValue("runningsteptimediff", v);}
+
+    int minReadingDiff() {return value("minreadingdiff").toInt();}
+    void setMinReadingDiff(int v) {setValue("minreadingdiff", v);}
 
 signals:
     void valueChanged(const QString &key);

@@ -69,22 +69,17 @@ StepsPage {
             Gap {}
 
             StepsLabel {
-                text: qsTr("Step detector:")
+                text: qsTr("Minimum reading delta:")
             }
 
-            StepsButtonColumn {
-                StepsButton {
-                    id: brutal
-                    text: qsTr("Brutal")
-                }
-                StepsButton {
-                    id: finessa
-                    text: qsTr("Finessa")
-                }
-                StepsButton {
-                    id: runningDane
-                    text: qsTr("Running Dane")
-                }
+            StepsSlider {
+                id: readingDiff
+                width: flickable.width - 15
+                stepSize: 10
+                valueIndicatorVisible: true
+                minimumValue: 10
+                maximumValue: 60
+                value: detector.minReadingDiff
             }
         }
     }
@@ -102,5 +97,7 @@ StepsPage {
         main.pageStack.pop()
         detector.runningStepTimeDiff = runningDiff.value
         prefs.runningStepTimeDiff = runningDiff.value
+        detector.minReadingDiff = readingDiff.value
+        prefs.minReadingDiff = readingDiff.value
     }
 }
