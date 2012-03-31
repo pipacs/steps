@@ -41,17 +41,18 @@ StepsPageStackWindow {
         source: platform.soundUrl("beep")
     }
 
-    function onStepDetected() {
-        // Register total step count
-        logger.log(1, {})
-        totalCount += 1
+    function onStepDetected(count) {
+        console.log("* main.onStepDetected: " + count)
+        // Register step count
+        logger.log(count, {})
+        totalCount += count
         prefs.rawCount = totalCount
 
         // Register activity step count
-        setActivityCount(activityCount + 1)
+        setActivityCount(activityCount + count)
 
         // Register daily step count
-        setDailyCount(dailyCount + 1)
+        setDailyCount(dailyCount + count)
 
         //stepSound.beep()
     }

@@ -8,6 +8,7 @@ steps (0.1.5) unstable; urgency=low
   * Detect and log current activity
   * Log more thoroughly
   * Play sound effect if running/walking detected
+  * Reduce step detection overhead for Symbian
 
  -- Akos Polster <akos@pipacs.com>  Tue, 20 Mar 2012 23:17:00 +0100
 

@@ -4,12 +4,12 @@
 #include "detector.h"
 
 #if defined(Q_OS_SYMBIAN)
-const qreal MIN_READING_DIFF = 20; ///< Minimum acceleration difference.
+const qreal MIN_READING_DIFF = 30; ///< Minimum acceleration difference.
 #else
 const qreal MIN_READING_DIFF = 50; ///< Minimum acceleration difference.
 #endif
 
-const qint64 MIN_WALKING_STEP_TIME_DIFF = 301; ///< Minimum time difference between steps while walking (ms).
+const qint64 MIN_WALKING_STEP_TIME_DIFF = 250; ///< Minimum time difference between steps while walking (ms).
 const qint64 MIN_RUNNING_STEP_TIME_DIFF = 150; ///< Minimum time difference between steps while running (ms).
 
 #if defined(Q_OS_SYMBIAN)
@@ -26,123 +26,60 @@ const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
 const qint64 IDLE_TIME = 2000; ///< Set activity to Idle after this time (ms).
+const int REPORTER_INTERVAL = 300; ///< How often steps are reported.
 
-Detector::Detector(QObject *parent): QObject(parent), activity_(Idle), minReadingDiff_(MIN_READING_DIFF), running_(false), runningStepTimeDiff_(MIN_WALKING_STEP_TIME_DIFF) {
-    worker_ = new DetectorWorker();
-    workerThread_ = new QThread(this);
-    worker_->moveToThread(workerThread_);
-
-    connect(worker_, SIGNAL(activityChanged(int)), this, SLOT(onActivityChanged(int)));
-    connect(worker_, SIGNAL(minReadingDiffChanged(int)), this, SLOT(onMinReadingDiffChanged(int)));
-    connect(worker_, SIGNAL(runningChanged(bool)), this, SLOT(onRunningChanged(bool)));
-    connect(worker_, SIGNAL(runningStepTimeDiffChanged(int)), this, SLOT(onRunningStepTimeDiffChanged(int)));
-    connect(worker_, SIGNAL(step()), this, SIGNAL(step()));
-
-    workerThread_->start(QThread::LowestPriority);
-}
-
-Detector::~Detector() {
-    workerThread_->quit();
-    workerThread_->wait();
-    delete worker_;
-}
-
-void Detector::onActivityChanged(int value) {
-    activity_ = value;
-    emit activityChanged(value);
-}
-
-void Detector::onMinReadingDiffChanged(int value) {
-    minReadingDiff_ = value;
-    emit minReadingDiffChanged(value);
-}
-
-void Detector::onRunningChanged(bool value) {
-    running_ = value;
-    emit runningChanged(value);
-}
-
-void Detector::onRunningStepTimeDiffChanged(int value) {
-    runningStepTimeDiff_ = value;
-    emit runningStepTimeDiffChanged(value);
-}
-
-void Detector::setRunning(bool value) {
-    qDebug() << "Detector::setRunning" << value;
-    running_ = value;
-    if (!QMetaObject::invokeMethod(
-            worker_,
-            "setRunning",
-            Q_ARG(bool, value))) {
-        qCritical() << "Detector::setRunning: Invoking remote detector failed";
-    }
-}
-
-void Detector::setMinReadingDiff(int value) {
-    minReadingDiff_ = value;
-    if (!QMetaObject::invokeMethod(
-            worker_,
-            "setMinReadingDiff",
-            Q_ARG(int, value))) {
-        qCritical() << "Detector::setsetMinReadingDiff: Invoking remote detector failed";
-    }
-}
-
-void Detector::setRunningStepTimeDiff(int value) {
-    runningStepTimeDiff_ = value;
-    if (!QMetaObject::invokeMethod(
-            worker_,
-            "setRunningStepTimeDiff",
-            Q_ARG(int, value))) {
-        qCritical() << "Detector::setRunningStepTimeDiff: Invoking remote detector failed";
-    }
-}
-
-DetectorWorker::DetectorWorker(QObject *parent): QObject(parent), running_(false), runningStepTimeDiff_(MIN_RUNNING_STEP_TIME_DIFF), minReadingDiff_(MIN_READING_DIFF) {
+Detector::Detector(QObject *parent): QObject(parent), running_(false), runningStepTimeDiff_(MIN_RUNNING_STEP_TIME_DIFF), minReadingDiff_(MIN_READING_DIFF) {
     reset();
+    reporter_ = new QTimer(this);
+    reporter_->setSingleShot(false);
+    reporter_->setInterval(REPORTER_INTERVAL);
+    connect(reporter_, SIGNAL(timeout()), this, SLOT(report()));
 }
 
-void DetectorWorker::init() {
+void Detector::report() {
+    if (stepCount_) {
+        emit step(stepCount_);
+        stepCount_ = 0;
+    }
+}
+
+void Detector::init() {
     if (accelerometer_) {
         return;
     }
     accelerometer_ = new QAccelerometer(this);
     accelerometer_->connectToBackend();
     accelerometer_->setProperty("alwaysOn", true);
-#if defined(Q_OS_SYMBIAN)
-    accelerometer_->setProperty("maximumReadingCount", 10);
-    // accelerometer_->setProperty("processAllReadings", true);
-#endif
+    // accelerometer_->setProperty("maximumReadingCount", 10);
+    accelerometer_->setProperty("processAllReadings", true);
+
     qDebug() << "Detector::Detector: Available rates:";
     foreach (qrange range, accelerometer_->availableDataRates()) {
-        qDebug() << range.first << "-" << range.second;
+        qDebug() << "" << range.first << "-" << range.second;
     }
-    qDebug() << "Detector::Detector: Sensor ID" << accelerometer_->identifier();
+    qDebug() << "Detector::Detector: Sensor ID:" << accelerometer_->identifier();
     connect(accelerometer_, SIGNAL(readingChanged()), this, SLOT(detect()));
 }
 
-void DetectorWorker::setRunning(bool v) {
-    qDebug() << "DetectorWorker::setRunning" << v;
+void Detector::setRunning(bool v) {
     if (v != running_) {
         init();
         if (v) {
-            qDebug() << " reset";
             reset();
-            qDebug() << " setDataRate";
             accelerometer_->setDataRate(DATA_RATE_WALKING);
-            qDebug() << " start";
             accelerometer_->start();
+            reporter_->start();
         } else {
+            reporter_->stop();
             accelerometer_->stop();
-            setActivity(Detector::Idle);
+            setActivity(Idle);
         }
         running_ = v;
-        qDebug() << " emit runningChanged";
         emit runningChanged(v);
     }
 }
 
-void DetectorWorker::detect() {
+void Detector::detect() {
     QAccelerometerReading *r = accelerometer_->reading();
     qreal x = r->x();
     qreal y = r->y();
@@ -153,11 +90,11 @@ void DetectorWorker::detect() {
     // Get the time of the reading, work around system clock going backwards
     qint64 now = (qint64)r->timestamp() / 1000;
     if (now < lastStepTime_) {
-        qDebug() << "Detector::detect: Clock going backwards";
+        qDebug() << "Detector::detect: Clock going backwards: Reading's time is" << now;
         lastStepTime_ = now;
     }
 
-    // Maintain average, guess current activity
+    // Guess current activity
     adapt(reading, now);
 
     // Filter out small changes
@@ -172,14 +109,10 @@ void DetectorWorker::detect() {
         qint64 timeDiff = now - lastStepTime_;
         if (timeDiff > minStepTimeDiff_) {
             ++stepCount_;
-            qDebug() << "+" << timeDiff << stepCount_;
             lastStepTime_ = now;
-            if (activity_ == Detector::Idle) {
-                setActivity(Detector::Walking);
+            if (activity_ ==Idle) {
+                setActivity(Walking);
             }
-            emit step();
-        } else {
-            qDebug() << "- t" << timeDiff << "<" << minStepTimeDiff_;
         }
     }
 
@@ -187,7 +120,7 @@ void DetectorWorker::detect() {
     lastReading_ = reading;
 }
 
-void DetectorWorker::adapt(qreal reading, qint64 timeStamp) {
+void Detector::adapt(qreal reading, qint64 timeStamp) {
     totalReading_ += reading;
     if (++readingCount_ % 40) {
         return;
@@ -201,7 +134,7 @@ void DetectorWorker::adapt(qreal reading, qint64 timeStamp) {
 
     if (averageReading > RUNNING_READING_LIMIT) {
         isRunning = true;
-        if (activity_ != Detector::Running) {
+        if (activity_ != Running) {
             minStepTimeDiff_ = runningStepTimeDiff_;
             qDebug() << "Detector::adapt: Running, setting data rate to" << DATA_RATE_RUNNING;
             accelerometer_->stop();
@@ -209,7 +142,7 @@ void DetectorWorker::adapt(qreal reading, qint64 timeStamp) {
             accelerometer_->start();
         }
     } else {
-        if (activity_ == Detector::Running) {
+        if (activity_ == Running) {
             minStepTimeDiff_ = MIN_WALKING_STEP_TIME_DIFF;
             qDebug() << "Detector::adapt: Walking or Idle, setting data rate to" << DATA_RATE_WALKING;
             accelerometer_->stop();
@@ -218,10 +151,10 @@ void DetectorWorker::adapt(qreal reading, qint64 timeStamp) {
         }
     }
 
-    setActivity(isStepping? (isRunning? Detector::Running: Detector::Walking): Detector::Idle);
+    setActivity(isStepping? (isRunning? Running: Walking): Idle);
 }
 
-void DetectorWorker::reset() {
+void Detector::reset() {
     increasing_ = false;
     lastReading_ = 100000.;
     lastStepTime_ = 0;
@@ -229,17 +162,17 @@ void DetectorWorker::reset() {
     readingCount_ = 0;
     totalReading_ = 0;
     stepCount_ = 0;
-    setActivity(Detector::Idle);
+    setActivity(Idle);
 }
 
-void DetectorWorker::setActivity(Detector::Activity v) {
+void Detector::setActivity(Activity v) {
     if (activity_ != v) {
         activity_ = v;
         emit activityChanged((int)v);
     }
 }
 
-void DetectorWorker::setRunningStepTimeDiff(int diff) {
+void Detector::setRunningStepTimeDiff(int diff) {
     if (diff <= 0) {
         diff = MIN_RUNNING_STEP_TIME_DIFF;
     }
@@ -249,7 +182,7 @@ void DetectorWorker::setRunningStepTimeDiff(int diff) {
     }
 }
 
-void DetectorWorker::setMinReadingDiff(int diff) {
+void Detector::setMinReadingDiff(int diff) {
     if (diff <= 0) {
         diff = MIN_READING_DIFF;
     }
