@@ -49,8 +49,6 @@ symbian {
     TARGET.UID3 += 0x20061801
     # Use official UID for wrapper package
     # DEPLOYMENT.installer_header = 0x2002CCCF
-
-    TARGET.EPOCHEAPSIZE = 0x40000 0x4000000
 }
 
 # Add "sounds" folder to the application
