@@ -33,13 +33,7 @@ O2::O2(const QString &clientId, const QString &clientSecret, const QString &scop
     crypt_ = new SimpleCrypt(*((quint64 *)(void *)hash.data()));
     manager_ = new QNetworkAccessManager(this);
     replyServer_ = new O2ReplyServer(this);
-    refreshTimer_ = new QTimer(this);
-    refreshTimer_->setSingleShot(true);
-    connect(refreshTimer_, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
-    if (refreshToken().length()) {
-        scheduleRefresh();
-    }
 }
 
 O2::~O2() {
@@ -129,7 +123,6 @@ void O2::onTokenReplyFinished() {
         setToken(value.property("access_token").toString());
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
-        scheduleRefresh();
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
@@ -193,32 +186,157 @@ void O2::setRefreshToken(const QString &v) {
     QSettings().setValue(key, crypt_->encryptToString(v));
 }
 
-void O2::scheduleRefresh() {
-    int secsToGo = expires() - QDateTime::currentMSecsSinceEpoch() / 1000 - 60;
-    if (secsToGo < 0) {
-        secsToGo = 0;
-    }
-    qDebug() << "O2::scheduleRefresh: Refreshing in" << secsToGo << "seconds";
-    refreshTimer_->stop();
-    refreshTimer_->start(secsToGo * 1000);
-}
-
 void O2::refresh() {
-    qDebug() << ">O2::refresh";
-    if (!refreshToken().length()) {
-        qDebug() << "No refresh token";
-        qDebug() << "<O2::refresh";
+    if (refreshReply_) {
+        qWarning() << "O2::refresh: Earlier refresh still pending";
+        return;
     }
-    QNetworkRequest tokenRequest(refreshTokenUrl_);
-    tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    if (!refreshToken().length()) {
+        qWarning() << "O2::refresh: No refresh token";
+        return;
+    }
+    QNetworkRequest refreshRequest(refreshTokenUrl_);
+    refreshRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QMap<QString, QString> parameters;
     parameters.insert("client_id", clientId_);
     parameters.insert("client_secret", clientSecret_);
     parameters.insert("refresh_token", refreshToken());
     parameters.insert("grant_type", "refresh_token");
     QByteArray data = buildRequestBody(parameters);
-    tokenReply_ = manager_->post(tokenRequest, data);
-    connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
-    connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
-    qDebug() << "<O2::refresh";
+    refreshReply_ = manager_->post(refreshRequest, data);
+    connect(refreshReply_, SIGNAL(finished()), this, SLOT(onRefreshFinished()));
+    connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRefreshFailed(QNetworkReply::NetworkError)));
+}
+
+void O2::onRefreshFinished() {
+    qDebug() << "O2::onRefreshFinished";
+    if (refreshReply_->error() == QNetworkReply::NoError) {
+        QByteArray reply = refreshReply_->readAll();
+        QScriptValue value;
+        QScriptEngine engine;
+        value = engine.evaluate("(" + QString(reply) + ")");
+        setToken(value.property("access_token").toString());
+        setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
+        setRefreshToken(value.property("refresh_token").toString());
+        emit linkingSucceeded();
+        emit tokenChanged();
+        emit linkedChanged();
+
+        // Retry or fail the pending request
+        if (authReq_) {
+            if (0 == authReq_->retries) {
+                qDebug() << "O2::onRefreshFinished: Token has been refreshed, retrying pending request with new token";
+
+                // Update the access token
+                QUrl url = authReq_->url;
+                url.addQueryItem("access_token", token());
+                authReq_->request.setUrl(url);
+
+                // Retry request
+                authReq_->retries++;
+                authReq_->reply->deleteLater();
+                switch (authReq_->type) {
+                case Post:
+                    authReq_->reply = authReq_->manager.post(authReq_->request, authReq_->data);
+                    break;
+                case Get:
+                default:
+                    authReq_->reply = authReq_->manager.get(authReq_->request);
+                }
+            } else {
+                // No more tries
+                emit finished(authReq_->id, authReq_->reply);
+                authReq_->reply->deleteLater();
+                delete authReq_;
+                authReq_ = 0;
+            }
+        } else {
+            qWarning() << "O2::onRefreshFinished: No pending request";
+        }
+    }
+    refreshReply_->deleteLater();
+}
+
+void O2::onRefreshFailed(QNetworkReply::NetworkError error) {
+    qDebug() << "O2::onRefreshFailed:" << error << tokenReply_->errorString();
+    setToken(QString());
+    setRefreshToken(QString());
+    emit tokenChanged();
+    emit linkingFailed();
+    emit linkedChanged();
+
+    // Fail the pending request
+    if (authReq_) {
+        emit finished(authReq_->id, authReq_->reply);
+        authReq_->reply->deleteLater();
+        delete authReq_;
+        authReq_ = 0;
+   } else {
+        qWarning() << "O2::onRefreshFailed: No pending request";
+    }
+}
+
+O2::AuthReq::AuthReq(const QString &token, QNetworkAccessManager &m, const QNetworkRequest &r, RequestType t, const QByteArray &d):
+    manager(m), request(r), type(t), data(d) {
+    static int lastId;
+
+    id = lastId++;
+    retries = 0;
+    reply = 0;
+    url = request.url();
+    url.addQueryItem("access_token", token);
+    request.setUrl(url);
+}
+
+int O2::post(QNetworkAccessManager &manager, const QNetworkRequest &req, const QByteArray &data) {
+    if (authReq_) {
+        qDebug() << "O2::post: Earlier request still pending";
+        return -1;
+    }
+    authReq_ = new AuthReq(token(), manager, req, Post, data);
+    authReq_->reply = manager.post(req, data);
+    connect(authReq_->reply, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+    connect(authReq_->reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestFailed(QNetworkReply::NetworkError)));
+    return authReq_->id;
+}
+
+int O2::get(QNetworkAccessManager &manager, const QNetworkRequest &req) {
+    if (authReq_) {
+        qDebug() << "O2::get: Earlier request still pending";
+        return -1;
+    }
+    authReq_ = new AuthReq(token(), manager, req, Get, QByteArray());
+    authReq_->reply = manager.get(req);
+    connect(authReq_->reply, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+    connect(authReq_->reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestFailed(QNetworkReply::NetworkError)));
+    return authReq_->id;
+}
+
+void O2::onRequestFinished() {
+    if (!authReq_) {
+        qWarning() << "O2::onRequestFinished: No pending request";
+        return;
+    }
+    if (authReq_->reply->error() == QNetworkReply::NoError) {
+        int httpStatus = authReq_->reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        qDebug() << "O2::onRequestFinished: Success, HTTP status" << httpStatus;
+        emit finished(authReq_->id, authReq_->reply);
+        authReq_->reply->deleteLater();
+        delete authReq_;
+        authReq_ = 0;
+    }
+}
+
+void O2::onRequestFailed(QNetworkReply::NetworkError error) {
+    if (!authReq_) {
+        qWarning() << "O2::onRequestFailed: No pending request";
+        return;
+    }
+    int httpStatus = authReq_->reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    qDebug() << "O2::onRequestFailed: Error" << (int)error << "HTTP status" << httpStatus;
+    // FIXME: If status == 401, then refresh the authentication token
+    emit finished(authReq_->id, authReq_->reply);
+    authReq_->reply->deleteLater();
+    delete authReq_;
+    authReq_ = 0;
 }

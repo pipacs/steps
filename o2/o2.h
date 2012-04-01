@@ -18,6 +18,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 #include <QUrl>
 #include <QMap>
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
 #include <QNetworkReply>
 
 class O2ReplyServer;
@@ -31,6 +32,11 @@ class O2: public QObject {
     Q_PROPERTY(QString token READ token NOTIFY tokenChanged)
 
 public:
+    /// Request type.
+    enum RequestType {
+        Get, Post
+    };
+
     /// Constructor.
     /// @param  clientId        Client ID.
     /// @param  clientSecret    Client secret.
@@ -66,6 +72,14 @@ public slots:
     /// De-authenticate.
     Q_INVOKABLE void unlink();
 
+    /// Make an authenticated GET request.
+    /// @return Request ID or -1 if there are too many requests in the queue.
+    int get(QNetworkAccessManager &manager, const QNetworkRequest &req);
+
+    /// Make an authenticated POST request.
+    /// @return Request ID or -1 if there are too many requests in the queue.
+    int post(QNetworkAccessManager &manager, const QNetworkRequest &req, const QByteArray &data);
+
 signals:
     /// Emitted when client needs to open a web browser window, with the given URL.
     void openBrowser(const QUrl &url);
@@ -85,25 +99,39 @@ signals:
     /// Emitted when the request token changed.
     void tokenChanged();
 
+    /// Emitted when an authenticated request finished.
+    /// @param  id      Request ID, as returned by request().
+    /// @param  reply   Reply. Do not delete the reply object in the slot connected to this signal. Use deleteLater().
+    void finished(int id, QNetworkReply *reply);
+
 protected slots:
     /// Handle verification response.
     void onVerificationReceived(QMap<QString, QString>);
 
-    /// Handle completion of requesing a token.
+    /// Handle completion of a token request.
     void onTokenReplyFinished();
 
-    /// Handle error while requesting a token.
+    /// Handle failure of a token request.
     void onTokenReplyError(QNetworkReply::NetworkError error);
 
     /// Refresh token.
     void refresh();
 
+    /// Handle completion of an authenticated request.
+    void onRequestFinished();
+
+    /// Handle failure of an authenticated request.
+    void onRequestFailed(QNetworkReply::NetworkError error);
+
+    /// Handle completion of a refresh request.
+    void onRefreshFinished();
+
+    /// Handle failure of a refresh request;
+    void onRefreshFailed(QNetworkReply::NetworkError error);
+
 protected:
     /// Build HTTP request body.
     QByteArray buildRequestBody(const QMap<QString, QString> &parameters);
-
-    /// Schedule next token refresh.
-    void scheduleRefresh();
 
     /// Set authentication code.
     void setCode(const QString &v);
@@ -130,7 +158,20 @@ protected:
     QString code_;
     QNetworkReply *tokenReply_;
     SimpleCrypt *crypt_;
-    QTimer *refreshTimer_;
+    QNetworkReply *refreshReply_;
+
+    /// Pending authenticated request.
+    struct AuthReq {
+        explicit AuthReq(const QString &token, QNetworkAccessManager &manager, const QNetworkRequest &request, RequestType type, const QByteArray &data);
+        QNetworkAccessManager &manager;
+        QNetworkRequest request;
+        QNetworkReply *reply;
+        RequestType type;
+        int retries;
+        int id;
+        const QByteArray &data;
+        QUrl url;
+    } *authReq_;
 };
 
 #endif // O2_H
