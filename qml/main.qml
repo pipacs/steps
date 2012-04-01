@@ -42,7 +42,6 @@ StepsPageStackWindow {
     }
 
     function onStepDetected(count) {
-        console.log("* main.onStepDetected: " + count)
         // Register step count
         logger.log(count, {})
         totalCount += count
