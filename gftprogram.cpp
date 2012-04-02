@@ -12,7 +12,9 @@ enum GftMethod {GftGet, GftPost};
 
 GftProgram::GftProgram(QObject *parent): QObject(parent) , requestId(-1) {
     qRegisterMetaType<GftIdList>();
-    // FIXME: connect(Gft::instance(), SIGNAL(finished(int,QNetworkReply*)), this, SLOT(stepDone(int,QNetworkReply*)));
+    manager = new QNetworkAccessManager(this);
+    requestor = new O2Requestor(manager, Gft::instance(), this);
+    connect(requestor, SIGNAL(finished(int,QNetworkReply::NetworkError,QByteArray)), this, SLOT(stepDone(int,QNetworkReply::NetworkError,QByteArray)));
 }
 
 GftProgram::~GftProgram() {
@@ -100,16 +102,16 @@ void GftProgram::step() {
     }
     QNetworkRequest request(url);
     if (method == GftGet) {
-        // FIXME: requestId = gft->get(request);
+        requestId = requestor->get(request);
     } else {
         QByteArray data;
         data.append("sql=");
         data.append(QUrl::toPercentEncoding(sql.toUtf8()));
-        // FIXME: requestId = gft->post(request, data);
+        requestId = requestor->post(request, data);
     }
 }
 
-void GftProgram::stepDone(int id, QNetworkReply *reply) {
+void GftProgram::stepDone(int id, QNetworkReply::NetworkError error, const QByteArray &data) {
     Trace t("GftProgram::stepDone");
 
     if (id != requestId) {
@@ -117,8 +119,7 @@ void GftProgram::stepDone(int id, QNetworkReply *reply) {
         return;
     }
 
-    if (reply->error() == QNetworkReply::NoError) {
-        QByteArray data = reply->readAll();
+    if (error == QNetworkReply::NoError) {
         QStringList lines = QString(data).split("\n");
         switch (instructions[ic].op) {
         case GftFindTable: {
@@ -150,11 +151,10 @@ void GftProgram::stepDone(int id, QNetworkReply *reply) {
             emit stepCompleted(instructions[ic].idList);
         }
     } else {
-        qCritical() << "GftProgram::stepDone:" << reply->error() << ":" << reply->errorString();
+        qCritical() << "GftProgram::stepDone: Error" << error;
         status = Failed;
     }
 
-    reply->deleteLater();
     ic++;
     QTimer::singleShot(0, this, SLOT(step()));
 }

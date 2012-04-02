@@ -5,6 +5,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
+#include <QUrl>
+#include <QByteArray>
 
 class O2;
 
@@ -33,18 +35,30 @@ protected slots:
     /// Handle refresh completion.
     void onRefreshFinished(QNetworkReply::NetworkError error);
 
+    /// Handle request finished.
+    void onRequestFinished();
+
+    /// Handle request error.
+    void onRequestError(QNetworkReply::NetworkError error);
+
 protected:
-    void setup(const QNetworkRequest *request, QNetworkAccessManager::Operation operation);
-    void finish();
+    int setup(const QNetworkRequest &request, QNetworkAccessManager::Operation operation);
+    void finish(QNetworkReply::NetworkError error);
+    void retry();
+
+    enum Status {
+        Idle, Requesting, ReRequesting
+    };
 
     QNetworkAccessManager *manager_;
     O2 *authenticator_;
     QNetworkRequest request_;
     QByteArray data_;
     QNetworkReply *reply_;
-    int retries_;
+    Status status_;
     int id_;
     QNetworkAccessManager::Operation operation_;
+    QUrl url_;
 };
 
 #endif // O2REQUESTOR_H

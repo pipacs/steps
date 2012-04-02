@@ -10,6 +10,8 @@
 #include <QMetaType>
 #include <QNetworkAccessManager>
 
+#include "o2/o2requestor.h"
+
 /// POST URL for SQL queries.
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
 
@@ -53,7 +55,7 @@ public slots:
     void step();
 
     /// Process finished request.
-    void stepDone(int requestId, QNetworkReply *reply);
+    void stepDone(int id, QNetworkReply::NetworkError error, const QByteArray &data);
 
 signals:
     /// Emitted when an instruction step is completed.
@@ -70,6 +72,8 @@ public:
     Status status;
     QString tableId;
     int requestId;
+    QNetworkAccessManager *manager;
+    O2Requestor *requestor;
 };
 
 #endif // GFTPROGRAM_H
