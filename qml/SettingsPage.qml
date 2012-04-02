@@ -106,11 +106,6 @@ StepsPage {
         id: loginBrowser
     }
 
-    StepsBanner {
-        id: linkInfo
-        text: gft.linked? qsTr("Logged in to Google Docs"): qsTr("Logged out from Google Docs")
-    }
-
     onBack: {
         main.pageStack.pop()
         prefs.muted = !audioFeedback.checked
@@ -130,7 +125,6 @@ StepsPage {
     }
 
     function onLinkedChanged() {
-        linkInfo.show()
         enableSharing.enabled = gft.linked
     }
 

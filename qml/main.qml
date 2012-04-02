@@ -46,6 +46,11 @@ StepsPageStackWindow {
         source: platform.soundUrl("beep")
     }
 
+    StepsBanner {
+        id: linkInfo
+        text: gft.linked? qsTr("Logged in to Google Docs"): qsTr("Logged out from Google Docs")
+    }
+
     function onStepDetected(count) {
         // Register step count
         logger.log(count, {})
@@ -140,6 +145,8 @@ StepsPageStackWindow {
         setDailyCount(prefs.dailyCount)
         setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
+
+        gft.linkedChanged.connect(linkInfo.show)
     }
 
     Component.onDestruction: {
