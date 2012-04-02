@@ -105,10 +105,8 @@ StepsPage {
     }
 
     function onActivityChanged() {
-        if (main.activity === 0)
+        if (main.activity === 0 || main.activity === 1)
             buttons.checkedButton = activity0
-        else if (main.activity === 1)
-            buttons.checkedButton = activity1
         else if (main.activity === 2)
             buttons.checkedButton = activity2
         else

@@ -129,9 +129,14 @@ StepsPage {
         loginBrowser.openUrl(url)
     }
 
+    function onLinkedChanged() {
+        linkInfo.show()
+        enableSharing.enabled = gft.linked
+    }
+
     Component.onCompleted: {
         gft.openBrowser.connect(openBrowser);
-        gft.linkedChanged.connect(linkInfo.show)
+        gft.linkedChanged.connect(onLinkedChanged)
         if (platform.osName !== "symbian") {
             showExit.height = 0
             showExit.visible = false
