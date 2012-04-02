@@ -8,12 +8,11 @@
 #include <QByteArray>
 #include <QList>
 #include <QMetaType>
+#include <QNetworkAccessManager>
 
 /// POST URL for SQL queries.
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
-// #define GFT_SQL_URL "https://www.google.com/fusiontables/api/query"
 
-class QNetworkAccessManager;
 class QNetworkReply;
 
 /// List of record IDs.
@@ -54,7 +53,7 @@ public slots:
     void step();
 
     /// Process finished request.
-    void stepDone();
+    void stepDone(int requestId, QNetworkReply *reply);
 
 signals:
     /// Emitted when an instruction step is completed.
@@ -70,8 +69,7 @@ public:
     int ic;
     Status status;
     QString tableId;
-    QNetworkAccessManager *manager;
-    QNetworkReply *reply;
+    int requestId;
 };
 
 #endif // GFTPROGRAM_H

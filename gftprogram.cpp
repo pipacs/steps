@@ -10,13 +10,12 @@
 
 enum GftMethod {GftGet, GftPost};
 
-GftProgram::GftProgram(QObject *parent): QObject(parent) {
+GftProgram::GftProgram(QObject *parent): QObject(parent) , requestId(-1) {
     qRegisterMetaType<GftIdList>();
-    manager = new QNetworkAccessManager;
+    // FIXME: connect(Gft::instance(), SIGNAL(finished(int,QNetworkReply*)), this, SLOT(stepDone(int,QNetworkReply*)));
 }
 
 GftProgram::~GftProgram() {
-    delete manager;
 }
 
 void GftProgram::setInstructions(const QList<GftInstruction> instructions_) {
@@ -96,21 +95,27 @@ void GftProgram::step() {
     // Execute request
     qDebug() << "Sending request to Google";
     QUrl url(GFT_SQL_URL);
-    QByteArray data;
-    url.addQueryItem("access_token", gft->token());
     if (method == GftGet) {
         url.addQueryItem("sql", sql);
-    } else {
-        data.append("sql=");
-        data.append(QUrl::toPercentEncoding(sql.toUtf8()));
     }
     QNetworkRequest request(url);
-    reply = (method == GftGet)? manager->get(request): manager->post(request, data);
-    connect(reply, SIGNAL(finished()), this, SLOT(stepDone()));
+    if (method == GftGet) {
+        // FIXME: requestId = gft->get(request);
+    } else {
+        QByteArray data;
+        data.append("sql=");
+        data.append(QUrl::toPercentEncoding(sql.toUtf8()));
+        // FIXME: requestId = gft->post(request, data);
+    }
 }
 
-void GftProgram::stepDone() {
+void GftProgram::stepDone(int id, QNetworkReply *reply) {
     Trace t("GftProgram::stepDone");
+
+    if (id != requestId) {
+        qWarning() << "GftProgram::stepDone: Unknown request ID" << id;
+        return;
+    }
 
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();

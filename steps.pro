@@ -72,7 +72,8 @@ SOURCES += \
     o2/simplecrypt.cpp \
     database.cpp \
     trace.cpp \
-    detector.cpp
+    detector.cpp \
+    o2/o2requestor.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -188,7 +189,8 @@ HEADERS += \
     gftsecret.h \
     database.h \
     trace.h \
-    detector.h
+    detector.h \
+    o2/o2requestor.h
 
 RESOURCES += \
     common.qrc \

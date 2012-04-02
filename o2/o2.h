@@ -72,13 +72,8 @@ public slots:
     /// De-authenticate.
     Q_INVOKABLE void unlink();
 
-    /// Make an authenticated GET request.
-    /// @return Request ID or -1 if there are too many requests in the queue.
-    int get(QNetworkAccessManager &manager, const QNetworkRequest &req);
-
-    /// Make an authenticated POST request.
-    /// @return Request ID or -1 if there are too many requests in the queue.
-    int post(QNetworkAccessManager &manager, const QNetworkRequest &req, const QByteArray &data);
+    /// Refresh token.
+    void refresh();
 
 signals:
     /// Emitted when client needs to open a web browser window, with the given URL.
@@ -99,10 +94,8 @@ signals:
     /// Emitted when the request token changed.
     void tokenChanged();
 
-    /// Emitted when an authenticated request finished.
-    /// @param  id      Request ID, as returned by request().
-    /// @param  reply   Reply. Do not delete the reply object in the slot connected to this signal. Use deleteLater().
-    void finished(int id, QNetworkReply *reply);
+    /// Emitted when a token refresh has been completed or failed.
+    void refreshFinished(QNetworkReply::NetworkError error);
 
 protected slots:
     /// Handle verification response.
@@ -114,20 +107,11 @@ protected slots:
     /// Handle failure of a token request.
     void onTokenReplyError(QNetworkReply::NetworkError error);
 
-    /// Refresh token.
-    void refresh();
-
-    /// Handle completion of an authenticated request.
-    void onRequestFinished();
-
-    /// Handle failure of an authenticated request.
-    void onRequestFailed(QNetworkReply::NetworkError error);
-
     /// Handle completion of a refresh request.
     void onRefreshFinished();
 
-    /// Handle failure of a refresh request;
-    void onRefreshFailed(QNetworkReply::NetworkError error);
+    /// Handle failure of a refresh request.
+    void onRefreshError(QNetworkReply::NetworkError error);
 
 protected:
     /// Build HTTP request body.
@@ -159,19 +143,6 @@ protected:
     QNetworkReply *tokenReply_;
     SimpleCrypt *crypt_;
     QNetworkReply *refreshReply_;
-
-    /// Pending authenticated request.
-    struct AuthReq {
-        explicit AuthReq(const QString &token, QNetworkAccessManager &manager, const QNetworkRequest &request, RequestType type, const QByteArray &data);
-        QNetworkAccessManager &manager;
-        QNetworkRequest request;
-        QNetworkReply *reply;
-        RequestType type;
-        int retries;
-        int id;
-        const QByteArray &data;
-        QUrl url;
-    } *authReq_;
 };
 
 #endif // O2_H
