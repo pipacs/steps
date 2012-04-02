@@ -18,7 +18,7 @@ int O2Requestor::get(const QNetworkRequest &req) {
     }
     reply_ = manager_->get(request_);
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
-    connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished));
+    connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
     return id_;
 }
 
@@ -29,7 +29,7 @@ int O2Requestor::post(const QNetworkRequest &req, const QByteArray &data) {
     data_ = data;
     reply_ = manager_->post(request_, data_);
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
-    connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished));
+    connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
     return id_;
 }
 
@@ -64,7 +64,7 @@ void O2Requestor::onRequestError(QNetworkReply::NetworkError error) {
     }
     if (status_ == Requesting) {
         int httpStatus = reply_->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        qDebug() << "O2Requestor::onRequestError: HTTP status" << httpStatus << "," << reply_->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        qDebug() << "O2Requestor::onRequestError: HTTP status" << httpStatus << reply_->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
         if (httpStatus == 401) {
             // Call O2::refresh. Note the O2 instance might live in a different thread
             qDebug() << "O2Requestor::onRequestError: Refreshing token";
@@ -128,5 +128,5 @@ void O2Requestor::retry() {
         reply_ = manager_->post(request_, data_);
     }
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
-    connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished));
+    connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }

@@ -126,6 +126,7 @@ void O2::onTokenReplyFinished() {
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
+        qDebug() << "O2::onTokenReplyFinished: Token expires in" << value.property("expires_in").toInteger() << "seconds";
     }
     tokenReply_->deleteLater();
 }
@@ -190,7 +191,7 @@ void O2::refresh() {
 
     if (!refreshToken().length()) {
         qWarning() << "O2::refresh: No refresh token";
-        emit refreshFinished(QNetworkReply::AuthenticationRequiredError);
+        onRefreshError(QNetworkReply::AuthenticationRequiredError);
         return;
     }
 
@@ -221,12 +222,13 @@ void O2::onRefreshFinished() {
         emit tokenChanged();
         emit linkedChanged();
         emit refreshFinished(QNetworkReply::NoError);
+        qDebug() << "O2::refreshToken: New token expires in" << expires() << "seconds";
     }
     refreshReply_->deleteLater();
 }
 
 void O2::onRefreshError(QNetworkReply::NetworkError error) {
-    qDebug() << "O2::onRefreshFailed:" << error << tokenReply_->errorString();
+    qDebug() << "O2::onRefreshFailed:" << error;
     setToken(QString());
     setRefreshToken(QString());
     emit tokenChanged();
