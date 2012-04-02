@@ -123,10 +123,10 @@ void O2::onTokenReplyFinished() {
         setToken(value.property("access_token").toString());
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
+        qDebug() << "O2::onTokenReplyFinished: Token expires in" << value.property("expires_in").toInteger() << "seconds";
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
-        qDebug() << "O2::onTokenReplyFinished: Token expires in" << value.property("expires_in").toInteger() << "seconds";
     }
     tokenReply_->deleteLater();
 }

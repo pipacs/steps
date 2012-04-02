@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QTimer>
 
 #include "o2requestor.h"
 #include "o2.h"
@@ -40,7 +41,7 @@ void O2Requestor::onRefreshFinished(QNetworkReply::NetworkError error) {
         return;
     }
     if (QNetworkReply::NoError == error) {
-        retry();
+        QTimer::singleShot(0, this, SLOT(retry()));
     } else {
         finish(error);
     }
