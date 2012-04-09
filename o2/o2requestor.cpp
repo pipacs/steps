@@ -7,6 +7,7 @@
 O2Requestor::O2Requestor(QNetworkAccessManager *manager, O2 *authenticator, QObject *parent): QObject(parent), reply_(NULL), status_(Idle) {
     manager_ = manager;
     authenticator_ = authenticator;
+    qRegisterMetaType<QNetworkReply::NetworkError>("QNetworkReply::NetworkError");
     connect(authenticator, SIGNAL(refreshFinished(QNetworkReply::NetworkError)), this, SLOT(onRefreshFinished(QNetworkReply::NetworkError)));
 }
 

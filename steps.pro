@@ -73,7 +73,8 @@ SOURCES += \
     database.cpp \
     trace.cpp \
     detector.cpp \
-    o2/o2requestor.cpp
+    o2/o2requestor.cpp \
+    o2/o2timedreply.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -190,7 +191,8 @@ HEADERS += \
     database.h \
     trace.h \
     detector.h \
-    o2/o2requestor.h
+    o2/o2requestor.h \
+    o2/o2timedreply.h
 
 RESOURCES += \
     common.qrc \
