@@ -19,6 +19,7 @@ int O2Requestor::get(const QNetworkRequest &req) {
         return -1;
     }
     reply_ = manager_->get(request_);
+    timedReplies_.addReply(reply_);
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
     connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
     return id_;
@@ -30,6 +31,7 @@ int O2Requestor::post(const QNetworkRequest &req, const QByteArray &data) {
     }
     data_ = data;
     reply_ = manager_->post(request_, data_);
+    timedReplies_.addReply(reply_);
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
     connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
     return id_;
@@ -109,6 +111,7 @@ void O2Requestor::finish(QNetworkReply::NetworkError error) {
         data = reply_->readAll();
     }
     status_ = Idle;
+    timedReplies_.removeReply(reply_);
     reply_->deleteLater();
     emit finished(id_, error, data);
 }
@@ -119,6 +122,7 @@ void O2Requestor::retry() {
         qWarning() << "O2Requestor::retry: No pending request";
         return;
     }
+    timedReplies_.removeReply(reply_);
     reply_->deleteLater();
     QUrl url = url_;
     url_.addQueryItem("access_token", authenticator_->token());

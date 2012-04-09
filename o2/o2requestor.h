@@ -8,6 +8,8 @@
 #include <QUrl>
 #include <QByteArray>
 
+#include "o2timedreply.h"
+
 class O2;
 
 /// Makes authenticated requests.
@@ -61,6 +63,7 @@ protected:
     int id_;
     QNetworkAccessManager::Operation operation_;
     QUrl url_;
+    O2TimedReplyList timedReplies_;
 };
 
 #endif // O2REQUESTOR_H

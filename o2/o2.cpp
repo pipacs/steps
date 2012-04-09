@@ -100,6 +100,7 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
     parameters.insert("grant_type", "authorization_code");
     QByteArray data = buildRequestBody(parameters);
     tokenReply_ = manager_->post(tokenRequest, data);
+    timedReplies_.addReply(tokenReply_);
     connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
     connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
 }
@@ -124,6 +125,7 @@ void O2::onTokenReplyFinished() {
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
         qDebug() << "O2::onTokenReplyFinished: Token expires in" << value.property("expires_in").toInteger() << "seconds";
+        timedReplies_.removeReply(tokenReply_);
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
@@ -135,6 +137,7 @@ void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
     qDebug() << "O2::onTokenReplyError" << error << tokenReply_->errorString();
     setToken(QString());
     setRefreshToken(QString());
+    timedReplies_.removeReply(tokenReply_);
     emit tokenChanged();
     emit linkingFailed();
     emit linkedChanged();
@@ -204,6 +207,7 @@ void O2::refresh() {
     parameters.insert("grant_type", "refresh_token");
     QByteArray data = buildRequestBody(parameters);
     refreshReply_ = manager_->post(refreshRequest, data);
+    timedReplies_.addReply(refreshReply_);
     connect(refreshReply_, SIGNAL(finished()), this, SLOT(onRefreshFinished()));
     connect(refreshReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRefreshError(QNetworkReply::NetworkError)));
 }
@@ -218,6 +222,7 @@ void O2::onRefreshFinished() {
         setToken(value.property("access_token").toString());
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
+        timedReplies_.removeReply(refreshReply_);
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
@@ -231,6 +236,7 @@ void O2::onRefreshError(QNetworkReply::NetworkError error) {
     qDebug() << "O2::onRefreshFailed:" << error;
     setToken(QString());
     setRefreshToken(QString());
+    timedReplies_.removeReply(refreshReply_);
     emit tokenChanged();
     emit linkingFailed();
     emit linkedChanged();
