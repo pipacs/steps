@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import "meego"
+import "symbian"
 
 StepsPage {
     id: actionsPage
@@ -74,6 +74,10 @@ StepsPage {
         }
     }
 
+    SettingsPage {
+        id: settingsPage
+    }
+
     StepsToolBarLayout {
         id: myTools
         StepsToolIcon {
@@ -82,7 +86,7 @@ StepsPage {
         }
         StepsToolIcon {
             iconId: "toolbar-settings"
-            onClicked: main.pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
+            onClicked: main.pageStack.push(settingsPage)
         }
         StepsToolIcon {
             iconId: (platform.osName === "symbian")? ":/images/about.png": "toolbar-new-message"

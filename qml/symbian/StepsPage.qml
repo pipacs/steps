@@ -11,13 +11,11 @@ Page {
 
     orientationLock: lockOrientation? PageOrientation.LockPortrait: PageOrientation.Automatic
     active: status === PageStatus.Active
-
-    // FIXME: This is causing problems on Symbian:
-    // tools: showTools? pageTools: null
-    tools: pageTools
+    tools: showTools? pageTools: null
 
     ToolBarLayout {
         id: pageTools
+
         ToolButton {
             visible: showBack
             onClicked: back()
