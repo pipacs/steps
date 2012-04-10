@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 #include <QList>
 #include <QPair>
 
-#include "o2timedreply.h"
+#include "o2reply.h"
 
 class O2ReplyServer;
 class SimpleCrypt;
@@ -143,10 +143,8 @@ protected:
     QNetworkAccessManager *manager_;
     O2ReplyServer *replyServer_;
     QString code_;
-    QNetworkReply *tokenReply_;
     SimpleCrypt *crypt_;
-    QNetworkReply *refreshReply_;
-    O2TimedReplyList timedReplies_;
+    O2ReplyList timedReplies_;
 };
 
 #endif // O2_H

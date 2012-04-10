@@ -8,7 +8,7 @@
 #include <QUrl>
 #include <QByteArray>
 
-#include "o2timedreply.h"
+#include "o2reply.h"
 
 class O2;
 
@@ -63,7 +63,7 @@ protected:
     int id_;
     QNetworkAccessManager::Operation operation_;
     QUrl url_;
-    O2TimedReplyList timedReplies_;
+    O2ReplyList timedReplies_;
 };
 
 #endif // O2REQUESTOR_H

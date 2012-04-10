@@ -19,7 +19,7 @@ int O2Requestor::get(const QNetworkRequest &req) {
         return -1;
     }
     reply_ = manager_->get(request_);
-    timedReplies_.addReply(reply_);
+    timedReplies_.add(reply_);
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
     connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
     return id_;
@@ -31,7 +31,7 @@ int O2Requestor::post(const QNetworkRequest &req, const QByteArray &data) {
     }
     data_ = data;
     reply_ = manager_->post(request_, data_);
-    timedReplies_.addReply(reply_);
+    timedReplies_.add(reply_);
     connect(reply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRequestError(QNetworkReply::NetworkError)));
     connect(reply_, SIGNAL(finished()), this, SLOT(onRequestFinished()));
     return id_;
@@ -51,11 +51,18 @@ void O2Requestor::onRefreshFinished(QNetworkReply::NetworkError error) {
 }
 
 void O2Requestor::onRequestFinished() {
+    QNetworkReply *senderReply = qobject_cast<QNetworkReply *>(sender());
+    QNetworkReply::NetworkError error = senderReply->error();
+    qDebug() << "O2Requestor::onRequestFinished: Error" << (int)error;
     if (status_ == Idle) {
         qDebug() << "O2Requestor::onRequestFinished: No pending request";
         return;
     }
-    if (reply_->error() == QNetworkReply::NoError) {
+    if (reply_ != senderReply) {
+        qDebug() << "O2Requestor::onRequestFinished: Not a pending request";
+        return;
+    }
+    if (error == QNetworkReply::NoError) {
         finish(QNetworkReply::NoError);
     }
 }
@@ -64,6 +71,10 @@ void O2Requestor::onRequestError(QNetworkReply::NetworkError error) {
     qDebug() << "O2Requestor::onRequestError: Error" << (int)error;
     if (status_ == Idle) {
         qWarning() << "O2Requestor::onRequestError: No pending request";
+        return;
+    }
+    if (reply_ != qobject_cast<QNetworkReply *>(sender())) {
+        qDebug() << "O2Requestor::onRequestFinished: Not a pending request";
         return;
     }
     if (status_ == Requesting) {
@@ -101,7 +112,7 @@ int O2Requestor::setup(const QNetworkRequest &req, QNetworkAccessManager::Operat
 }
 
 void O2Requestor::finish(QNetworkReply::NetworkError error) {
-    qDebug() << "O2Requestor::finish";
+    qDebug() << "O2Requestor::finish: Error" << (int)error;
     QByteArray data;
     if (status_ == Idle) {
         qWarning() << "O2Requestor::finish: No pending request";
@@ -111,7 +122,7 @@ void O2Requestor::finish(QNetworkReply::NetworkError error) {
         data = reply_->readAll();
     }
     status_ = Idle;
-    timedReplies_.removeReply(reply_);
+    timedReplies_.remove(reply_);
     reply_->deleteLater();
     emit finished(id_, error, data);
 }
@@ -122,7 +133,7 @@ void O2Requestor::retry() {
         qWarning() << "O2Requestor::retry: No pending request";
         return;
     }
-    timedReplies_.removeReply(reply_);
+    timedReplies_.remove(reply_);
     reply_->deleteLater();
     QUrl url = url_;
     url_.addQueryItem("access_token", authenticator_->token());

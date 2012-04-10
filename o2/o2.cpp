@@ -99,10 +99,10 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
     parameters.insert("redirect_uri", redirectUri_);
     parameters.insert("grant_type", "authorization_code");
     QByteArray data = buildRequestBody(parameters);
-    tokenReply_ = manager_->post(tokenRequest, data);
-    timedReplies_.addReply(tokenReply_);
-    connect(tokenReply_, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
-    connect(tokenReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
+    QNetworkReply *tokenReply = manager_->post(tokenRequest, data);
+    timedReplies_.add(tokenReply);
+    connect(tokenReply, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
+    connect(tokenReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
 }
 
 QString O2::code() {
@@ -116,28 +116,30 @@ void O2::setCode(const QString &c) {
 }
 
 void O2::onTokenReplyFinished() {
-    if (tokenReply_->error() == QNetworkReply::NoError) {
-        QByteArray reply = tokenReply_->readAll();
+    QNetworkReply *tokenReply = qobject_cast<QNetworkReply *>(sender());
+    if (tokenReply->error() == QNetworkReply::NoError) {
+        QByteArray replyData = tokenReply->readAll();
         QScriptValue value;
         QScriptEngine engine;
-        value = engine.evaluate("(" + QString(reply) + ")");
+        value = engine.evaluate("(" + QString(replyData) + ")");
         setToken(value.property("access_token").toString());
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
         qDebug() << "O2::onTokenReplyFinished: Token expires in" << value.property("expires_in").toInteger() << "seconds";
-        timedReplies_.removeReply(tokenReply_);
+        timedReplies_.remove(tokenReply);
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
     }
-    tokenReply_->deleteLater();
+    tokenReply->deleteLater();
 }
 
 void O2::onTokenReplyError(QNetworkReply::NetworkError error) {
-    qDebug() << "O2::onTokenReplyError" << error << tokenReply_->errorString();
+    QNetworkReply *tokenReply = qobject_cast<QNetworkReply *>(sender());
+    qDebug() << "O2::onTokenReplyError" << error << tokenReply->errorString();
     setToken(QString());
     setRefreshToken(QString());
-    timedReplies_.removeReply(tokenReply_);
+    timedReplies_.remove(tokenReply);
     emit tokenChanged();
     emit linkingFailed();
     emit linkedChanged();
@@ -206,37 +208,39 @@ void O2::refresh() {
     parameters.insert("refresh_token", refreshToken());
     parameters.insert("grant_type", "refresh_token");
     QByteArray data = buildRequestBody(parameters);
-    refreshReply_ = manager_->post(refreshRequest, data);
-    timedReplies_.addReply(refreshReply_);
-    connect(refreshReply_, SIGNAL(finished()), this, SLOT(onRefreshFinished()));
-    connect(refreshReply_, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRefreshError(QNetworkReply::NetworkError)));
+    QNetworkReply *refreshReply = manager_->post(refreshRequest, data);
+    timedReplies_.add(refreshReply);
+    connect(refreshReply, SIGNAL(finished()), this, SLOT(onRefreshFinished()));
+    connect(refreshReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRefreshError(QNetworkReply::NetworkError)));
 }
 
 void O2::onRefreshFinished() {
-    qDebug() << "O2::onRefreshFinished";
-    if (refreshReply_->error() == QNetworkReply::NoError) {
-        QByteArray reply = refreshReply_->readAll();
+    QNetworkReply *refreshReply = qobject_cast<QNetworkReply *>(sender());
+    qDebug() << "O2::onRefreshFinished: Error" << (int)refreshReply->error() << refreshReply->errorString();
+    if (refreshReply->error() == QNetworkReply::NoError) {
+        QByteArray reply = refreshReply->readAll();
         QScriptValue value;
         QScriptEngine engine;
         value = engine.evaluate("(" + QString(reply) + ")");
         setToken(value.property("access_token").toString());
         setExpires(QDateTime::currentMSecsSinceEpoch() / 1000 + value.property("expires_in").toInteger());
         setRefreshToken(value.property("refresh_token").toString());
-        timedReplies_.removeReply(refreshReply_);
+        timedReplies_.remove(refreshReply);
         emit linkingSucceeded();
         emit tokenChanged();
         emit linkedChanged();
         emit refreshFinished(QNetworkReply::NoError);
         qDebug() << "O2::refreshToken: New token expires in" << expires() << "seconds";
     }
-    refreshReply_->deleteLater();
+    refreshReply->deleteLater();
 }
 
 void O2::onRefreshError(QNetworkReply::NetworkError error) {
+    QNetworkReply *refreshReply = qobject_cast<QNetworkReply *>(sender());
     qDebug() << "O2::onRefreshFailed:" << error;
     setToken(QString());
     setRefreshToken(QString());
-    timedReplies_.removeReply(refreshReply_);
+    timedReplies_.remove(refreshReply);
     emit tokenChanged();
     emit linkingFailed();
     emit linkedChanged();

@@ -1,5 +1,7 @@
 steps (0.1.6) unstable; urgency=low
 
+  * Make network access more robust
+
  -- Akos Polster <akos@pipacs.com>  Mon, 9  Apr 2012 19:01:00 +0100
 
 steps (0.1.5) unstable; urgency=low
