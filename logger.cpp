@@ -190,11 +190,12 @@ void LoggerWorker::archive() {
 void LoggerWorker::onAddSchema() {
     // Set database schema
     QSqlQuery query(db()->db());
-    if (!query.exec("create table log (id integer primary key, date varchar, steps integer)")) {
+    if (!query.exec("create table log (id integer primary key, date varchar, steps integer);")) {
         qCritical() << "LoggerWorker::onAddSchema: Failed to create log table:" << query.lastError().text();
         return;
     }
-    if (!query.exec("create table tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id))")) {
+    query.clear();
+    if (!query.exec("create table tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id));")) {
         qCritical() << "LoggerWorker::onAddSchema: Failed to create tags table:" << query.lastError().text();
         return;
     }

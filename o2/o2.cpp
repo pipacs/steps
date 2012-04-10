@@ -33,6 +33,7 @@ O2::O2(const QString &clientId, const QString &clientSecret, const QString &scop
     crypt_ = new SimpleCrypt(*((quint64 *)(void *)hash.data()));
     manager_ = new QNetworkAccessManager(this);
     replyServer_ = new O2ReplyServer(this);
+    qRegisterMetaType<QNetworkReply::NetworkError>("QNetworkReply::NetworkError");
     connect(replyServer_, SIGNAL(verificationReceived(QMap<QString,QString>)), this, SLOT(onVerificationReceived(QMap<QString,QString>)));
 }
 
@@ -101,8 +102,8 @@ void O2::onVerificationReceived(const QMap<QString, QString> response) {
     QByteArray data = buildRequestBody(parameters);
     QNetworkReply *tokenReply = manager_->post(tokenRequest, data);
     timedReplies_.add(tokenReply);
-    connect(tokenReply, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()));
-    connect(tokenReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)));
+    connect(tokenReply, SIGNAL(finished()), this, SLOT(onTokenReplyFinished()), Qt::QueuedConnection);
+    connect(tokenReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onTokenReplyError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
 }
 
 QString O2::code() {
@@ -210,8 +211,8 @@ void O2::refresh() {
     QByteArray data = buildRequestBody(parameters);
     QNetworkReply *refreshReply = manager_->post(refreshRequest, data);
     timedReplies_.add(refreshReply);
-    connect(refreshReply, SIGNAL(finished()), this, SLOT(onRefreshFinished()));
-    connect(refreshReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRefreshError(QNetworkReply::NetworkError)));
+    connect(refreshReply, SIGNAL(finished()), this, SLOT(onRefreshFinished()), Qt::QueuedConnection);
+    connect(refreshReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRefreshError(QNetworkReply::NetworkError)), Qt::QueuedConnection);
 }
 
 void O2::onRefreshFinished() {
@@ -237,7 +238,7 @@ void O2::onRefreshFinished() {
 
 void O2::onRefreshError(QNetworkReply::NetworkError error) {
     QNetworkReply *refreshReply = qobject_cast<QNetworkReply *>(sender());
-    qDebug() << "O2::onRefreshFailed:" << error;
+    qDebug() << "O2::onRefreshFailed: Error" << error << ", resetting tokens";
     setToken(QString());
     setRefreshToken(QString());
     timedReplies_.remove(refreshReply);
