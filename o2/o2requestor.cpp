@@ -44,7 +44,7 @@ void O2Requestor::onRefreshFinished(QNetworkReply::NetworkError error) {
         return;
     }
     if (QNetworkReply::NoError == error) {
-        QTimer::singleShot(10, this, SLOT(retry()));
+        QTimer::singleShot(100, this, SLOT(retry()));
     } else {
         QTimer::singleShot(10, this, SLOT(finish()));
     }
@@ -77,9 +77,9 @@ void O2Requestor::onRequestError(QNetworkReply::NetworkError error) {
         qDebug() << "O2Requestor::onRequestFinished: Not a pending request";
         return;
     }
+    int httpStatus = reply_->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    qDebug() << "O2Requestor::onRequestError: HTTP status" << httpStatus << reply_->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
     if (status_ == Requesting) {
-        int httpStatus = reply_->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        qDebug() << "O2Requestor::onRequestError: HTTP status" << httpStatus << reply_->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
         if (httpStatus == 401) {
             // Call O2::refresh. Note the O2 instance might live in a different thread
             qDebug() << "O2Requestor::onRequestError: Refreshing token";
@@ -141,7 +141,7 @@ void O2Requestor::retry() {
     reply_->disconnect(this);
     reply_->deleteLater();
     QUrl url = url_;
-    url_.addQueryItem("access_token", authenticator_->token());
+    url.addQueryItem("access_token", authenticator_->token());
     request_.setUrl(url);
     status_ = ReRequesting;
     if (operation_ == QNetworkAccessManager::GetOperation) {
