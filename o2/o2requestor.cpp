@@ -44,9 +44,9 @@ void O2Requestor::onRefreshFinished(QNetworkReply::NetworkError error) {
         return;
     }
     if (QNetworkReply::NoError == error) {
-        QTimer::singleShot(0, this, SLOT(retry()));
+        QTimer::singleShot(10, this, SLOT(retry()));
     } else {
-        finish(error);
+        QTimer::singleShot(10, this, SLOT(finish()));
     }
 }
 
@@ -63,7 +63,7 @@ void O2Requestor::onRequestFinished() {
         return;
     }
     if (error == QNetworkReply::NoError) {
-        finish(QNetworkReply::NoError);
+        QTimer::singleShot(10, this, SLOT(finish()));
     }
 }
 
@@ -91,7 +91,7 @@ void O2Requestor::onRequestError(QNetworkReply::NetworkError error) {
     } else {
         qDebug() << "O2Requestor::onRequestError: Reply" << (unsigned)(void *)reply_ << ", status" << (int)status_;
     }
-    finish(error);
+    QTimer::singleShot(10, this, SLOT(finish()));
 }
 
 int O2Requestor::setup(const QNetworkRequest &req, QNetworkAccessManager::Operation operation) {
@@ -113,13 +113,14 @@ int O2Requestor::setup(const QNetworkRequest &req, QNetworkAccessManager::Operat
     return id_;
 }
 
-void O2Requestor::finish(QNetworkReply::NetworkError error) {
-    qDebug() << "O2Requestor::finish: Error" << (int)error;
+void O2Requestor::finish() {
     QByteArray data;
     if (status_ == Idle) {
         qWarning() << "O2Requestor::finish: No pending request";
         return;
     }
+    QNetworkReply::NetworkError error = reply_->error();
+    qDebug() << "O2Requestor::finish: Error" << (int)error;
     if (QNetworkReply::NoError == error) {
         data = reply_->readAll();
     }

@@ -46,9 +46,11 @@ protected slots:
     /// Re-try request (after successful token refresh).
     void retry();
 
+    /// Finish the request, emit finished() signal.
+    void finish();
+
 protected:
     int setup(const QNetworkRequest &request, QNetworkAccessManager::Operation operation);
-    void finish(QNetworkReply::NetworkError error);
 
     enum Status {
         Idle, Requesting, ReRequesting
