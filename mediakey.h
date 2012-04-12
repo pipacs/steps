@@ -10,6 +10,8 @@
 #   include <remconcoreapitargetobserver.h>
 #   include <remconcoreapitarget.h>
 #   include <remconinterfaceselector.h>
+#else
+#   error Unsupported platform
 #endif
 
 class MediaKeyPrivate;

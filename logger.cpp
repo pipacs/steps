@@ -67,7 +67,7 @@ LoggerWorker::~LoggerWorker() {
 Database *LoggerWorker::db() {
     if (!database) {
         database = new Database(Platform::instance()->dbPath());
-        connect(database, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
+        connect(database, SIGNAL(addSchema()), this, SLOT(onAddSchema()), Qt::QueuedConnection);
     }
     return database;
 }
@@ -157,16 +157,18 @@ void LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap 
             tagQuery.bindValue(2, lastInsertId);
             if (!tagQuery.exec()) {
                 success = false;
+                qCritical() << "LoggerWorker::insertLog: Inserting tag" << key << value << "failed:" << db()->error();
                 break;
             }
         }
+    } else {
+        qCritical() << "LoggerWorker::insertLog: Inserting log failed:" << db()->error();
     }
 
     if (success) {
         db()->commit();
         totalSteps = steps;
     } else {
-        qCritical() << "LoggerWorker::insertLog: Failed to log:" << db()->error();
         db()->rollback();
         lastInsertId = 0;
     }

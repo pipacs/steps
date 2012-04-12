@@ -156,9 +156,9 @@ bool Platform::dbFull() {
             ret = fields.at(3).toInt() < STEPS_MIN_FREE;
         }
     }
-#elif defined(Q_OS_SYMBAN)
+#elif defined(Q_OS_SYMBIAN)
     TInt drive = base[0].toLower().unicode() - QChar('a').unicode() + EDriveA;
-    ret = SysUtil::DiskSpaceBelowCriticalLevelL(&iFsSession, STEPS_MIN_FREE * 1024, drive);
+    ret = SysUtil::DiskSpaceBelowCriticalLevelL(0, STEPS_MIN_FREE * 1024, drive);
 #endif
     if (ret) {
         qCritical() << "Platform::dbFull: Disk full";

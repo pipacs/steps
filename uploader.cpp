@@ -28,9 +28,9 @@ void Uploader::close() {
 
 Uploader::Uploader(QObject *parent): QObject(parent), uploading_(false) {
     worker = new UploaderWorker();
-    connect(worker, SIGNAL(uploadComplete(int)), this, SLOT(onUploadComplete(int)));
     workerThread = new QThread(this);
     worker->moveToThread(workerThread);
+    connect(worker, SIGNAL(uploadComplete(int)), this, SLOT(onUploadComplete(int)));
     workerThread->start(QThread::LowestPriority);
     uploadTimer = new QTimer(this);
     uploadTimer->setSingleShot(true);
