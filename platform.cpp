@@ -182,6 +182,7 @@ void Platform::setSavePower(bool v) {
     }
 #elif defined(Q_OS_SYMBIAN)
     psmClient->ChangePowerSaveMode(v? EPsmsrvModePowerSave: EPsmsrvModeNormal);
+    emit savePowerChanged();
 #endif
 }
 

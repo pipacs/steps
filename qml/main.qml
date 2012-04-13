@@ -1,6 +1,6 @@
 import QtQuick 1.1
 import QtMultimediaKit 1.1
-import "meego"
+import "symbian"
 
 StepsPageStackWindow {
     id: main
@@ -150,9 +150,7 @@ StepsPageStackWindow {
     }
 
     Component.onDestruction: {
-        if (prefs.savePower) {
-            platform.savePower = false
-        }
+        detector.running = false
         logger.log(0, {"counting": false, "appStopped": "com.pipacs.steps"})
     }
 }
