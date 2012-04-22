@@ -45,8 +45,8 @@ symbian {
     DEPLOYMENT += my_deployment
 
     # Use official UID for Steps
-    # TARGET.UID3 += 0x20034d0f
-    TARGET.UID3 += 0x20061801
+    TARGET.UID3 += 0x20034d0f
+    # TARGET.UID3 += 0x20061801
     # Use official UID for wrapper package
     # DEPLOYMENT.installer_header = 0x2002CCCF
 }

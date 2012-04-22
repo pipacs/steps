@@ -1,6 +1,6 @@
 steps (0.1.7) unstable; urgency=low
 
-  *
+  * Fix Symbian UID
 
  -- Akos Polster <akos@pipacs.com>  Fri, 13 Apr 2012 19:20:00 +0100
 
