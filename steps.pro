@@ -12,15 +12,14 @@ QT += script
 
 # Meego Harmattan rules
 contains(MEEGO_EDITION,harmattan) {
-    CONFIG += link_pkgconfig
-    CONFIG += qmsystem2
+    CONFIG += link_pkgconfig qmsystem2
     PKGCONFIG += libresourceqt1
     RESOURCES += meego.qrc
-    SOURCES += mediakeyprivate-meego.cpp
+    SOURCES += mediakey.cpp
+    HEADERS += mediakey.h
     DATADIR = share
     DEFINES += STEPS_DATADIR=\\\"/opt/Steps/share\\\"
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
-    QML_IMPORT_PATH = qml/meego
 
     # Add a splash image for the Meego launcher
     folder_splash.source = splash
@@ -31,13 +30,11 @@ contains(MEEGO_EDITION,harmattan) {
 # Symbian rules
 symbian {
     TARGET.CAPABILITY += NetworkServices ReadDeviceData WriteDeviceData
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi -lremconinterfacebase -lsysutil -lpsmclient -lws32 -lapgrfx -lavkon
-    SOURCES += mediakeyprivate-symbian.cpp
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lsysutil -lpsmclient -lws32 -lapgrfx -lavkon
     RESOURCES += symbian.qrc
     DATADIR = c:/data/Steps
     DEFINES += STEPS_DATADIR='"c:/data/Steps"'
     DEFINES += STEPS_VERSION='"$$VERSION"'
-    QML_IMPORT_PATH = qml/symbian
 
     # For Nokia Store
     vendorinfo += "%{\"pipacs\"}" ":\"pipacs\""
@@ -46,7 +43,6 @@ symbian {
 
     # Use official UID for Steps
     TARGET.UID3 += 0x20034d0f
-    # TARGET.UID3 += 0x20061801
     # Use official UID for wrapper package
     # DEPLOYMENT.installer_header = 0x2002CCCF
 }
@@ -60,7 +56,6 @@ DEPLOYMENTFOLDERS += folder_sounds
 SOURCES += \
     main.cpp \
     preferences.cpp \
-    mediakey.cpp \
     platform.cpp \
     logger.cpp \
     sipfixer.cpp \
@@ -176,8 +171,6 @@ OTHER_FILES += \
 
 HEADERS += \
     preferences.h \
-    mediakey.h \
-    mediakeyprivate.h \
     platform.h \
     logger.h \
     sipfixer.h \

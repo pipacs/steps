@@ -11,12 +11,15 @@
 #include "detector.h"
 #include "preferences.h"
 #include "platform.h"
-#include "mediakey.h"
 #include "logger.h"
 #include "gft.h"
 #include "sipfixer.h"
 #include "uploader.h"
 #include "trace.h"
+
+#if defined(MEEGO_EDITION_HARMATTAN)
+#include "mediakey.h"
+#endif
 
 class PersistentCookieJar: public QNetworkCookieJar {
 public:
@@ -137,14 +140,12 @@ int main(int argc, char *argv[]) {
     // Set up and show QML viewer
     QmlApplicationViewer *viewer = new QmlApplicationViewer;
     Detector *detector = new Detector(viewer);
-    MediaKey *mediaKey = new MediaKey(viewer);
     viewer->engine()->setNetworkAccessManagerFactory(namFactory);
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     viewer->rootContext()->setContextProperty("detector", detector);
     viewer->rootContext()->setContextProperty("prefs", prefs);
     viewer->rootContext()->setContextProperty("platform", platform);
     viewer->rootContext()->setContextProperty("logger", logger);
-    viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
     viewer->rootContext()->setContextProperty("gft", gft);
     viewer->rootContext()->setContextProperty("sipFixer", sipFixer);
     viewer->rootContext()->setContextProperty("uploader", uploader);
@@ -152,8 +153,12 @@ int main(int argc, char *argv[]) {
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer->showExpanded();
 
+#if defined(MEEGO_EDITION_HARMATTAN)
     // Install event filter to capture/release volume keys
+    MediaKey *mediaKey = new MediaKey(viewer);
+    viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
     viewer->installEventFilter(mediaKey);
+#endif
 
     // Install event filter fixing VKB handing in WebView
     viewer->installEventFilter(sipFixer);

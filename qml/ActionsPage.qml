@@ -79,7 +79,7 @@ StepsPage {
     }
 
     StepsToolBarLayout {
-        id: myTools
+        id: actionsTools
         StepsToolIcon {
             iconId: "toolbar-back"
             onClicked: back()
@@ -122,10 +122,12 @@ StepsPage {
     }
 
     Component.onCompleted: {
-        mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        if (platform.osName === "meego") {
+            mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        }
         main.activityChanged.connect(onActivityChanged)
         onActivityChanged()
-        setToolBar(myTools)
+        setToolBar(actionsTools)
     }
 
     onStatusChanged: {

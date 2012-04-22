@@ -20,6 +20,10 @@ StepsPageStackWindow {
         id: mainPage
     }
 
+    ActionsPage {
+        id: actionsPage
+    }
+
     Splash {
         id: splash
         Component.onCompleted: splash.activate();

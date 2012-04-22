@@ -4,8 +4,8 @@ import "meego"
 StepsPage {
     property bool detectorWasRunning: false
     id: mainPage
-    showBack: prefs.showExit
-    showTools: prefs.showExit
+    showBack: platform.os === "symbian"
+    showTools: platform.os === "symbian"
 
     // Upload indicator
     Image {
@@ -62,6 +62,7 @@ StepsPage {
 
         // Help text
         StepsLabel {
+            visible: platform.osName === "meego"
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
             text: qsTr("Press Volume Up to start/pause activity, Volume Down to show more options")
@@ -80,14 +81,35 @@ StepsPage {
         source: platform.soundUrl("stop")
     }
 
+    StepsToolBarLayout {
+        id: myTools
+        StepsToolIcon {
+            iconId: "toolbar-back"
+            onClicked: Qt.quit()
+        }
+        StepsToolIcon {
+            id: play
+            iconId: detector.running? "toolbar-mediacontrol-stop": "toolbar-mediacontrol-play"
+            onClicked: detector.running = !detector.running
+        }
+        StepsToolIcon {
+            iconId: "toolbar-list"
+            onClicked: main.pageStack.push(actionsPage)
+        }
+    }
+
     function onCounterRunningChanged() {
         var sound = detector.running? startSound: stopSound
         sound.beep()
     }
 
     Component.onCompleted: {
-        mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
-        mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        if (platform.osName === "meego") {
+            mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
+            mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
+        } else {
+            setToolBar(myTools)
+        }
         detector.runningChanged.connect(onCounterRunningChanged)
     }
 
@@ -98,10 +120,6 @@ StepsPage {
             detectorWasRunning = detector.running
             detector.running = false
         }
-    }
-
-    onBack: {
-        Qt.quit()
     }
 
     function onActivityChanged() {
@@ -116,7 +134,7 @@ StepsPage {
 
     function onVolumeDownPressed() {
         if (active) {
-            main.pageStack.push(Qt.resolvedUrl("ActionsPage.qml"))
+            main.pageStack.push(actionsPage)
         }
     }
 }
