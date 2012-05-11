@@ -1,0 +1,5 @@
+Link targets with SiteCatalyst tags
+
+967x277	http://store.ovi.com/content/234237
+111x111	http://store.ovi.com/content/234237
+74x74	http://store.ovi.com/content/234237
