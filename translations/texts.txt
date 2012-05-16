@@ -1,0 +1,32 @@
+<b>Steps</b><p>Version
+Device ID:
+Reset step count
+Reset current activity step count?
+Change activity to 
+Today:
+Total:
+(Paused)
+Press Volume Up to start/pause activity, Volume Down to show more options
+Conserve power
+Sound effects
+Show Exit icon
+Save to Google Docs:
+Enable saving
+Logout from Google
+Login to Google
+Rename activity "Custom 1":
+Rename activity "Custom 2":
+Are you sure to log out?
+Tracing:
+Trace to file
+Delete trace file
+Minimum time between steps (ms):
+Minimum reading delta:
+Logged in to Google Docs
+Logged out from Google Docs
+Walking
+Running
+Custom 1
+Custom 2
+Yes
+No
