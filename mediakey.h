@@ -19,6 +19,10 @@ public:
 
 signals:
     void activate();
+    void volumeUpPressed();
+    void volumeDownPressed();
+
+public:
     bool eventFilter(QObject *obj, QEvent *event);
     bool active;
     ResourcePolicy::ResourceSet *resourceSet;

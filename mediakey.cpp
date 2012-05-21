@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QKeyEvent>
 
 #include "mediakey.h"
 
@@ -32,10 +33,10 @@ bool MediaKey::eventFilter(QObject *obj, QEvent *event) {
     } else if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         if (keyEvent->key() == Qt::Key_VolumeUp) {
-            emit d_ptr->volumeUpPressed();
+            emit volumeUpPressed();
             return true;
         } else if (keyEvent->key() == Qt::Key_VolumeDown) {
-            emit d_ptr->volumeDownPressed();
+            emit volumeDownPressed();
             return true;
         }
     }

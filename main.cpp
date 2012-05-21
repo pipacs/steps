@@ -17,7 +17,7 @@
 #include "uploader.h"
 #include "trace.h"
 
-#if defined(MEEGO_EDITION_HARMATTAN)
+#if 0
 #include "mediakey.h"
 #endif
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer->showExpanded();
 
-#if defined(MEEGO_EDITION_HARMATTAN)
+#if 0
     // Install event filter to capture/release volume keys
     MediaKey *mediaKey = new MediaKey(viewer);
     viewer->rootContext()->setContextProperty("mediaKey", mediaKey);

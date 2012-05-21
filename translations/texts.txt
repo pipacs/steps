@@ -1,4 +1,5 @@
-<b>Steps</b><p>Version
+Steps
+Version
 Device ID:
 Reset step count
 Reset current activity step count?
@@ -17,11 +18,6 @@ Login to Google
 Rename activity "Custom 1":
 Rename activity "Custom 2":
 Are you sure to log out?
-Tracing:
-Trace to file
-Delete trace file
-Minimum time between steps (ms):
-Minimum reading delta:
 Logged in to Google Docs
 Logged out from Google Docs
 Walking
