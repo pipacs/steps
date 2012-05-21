@@ -25,7 +25,7 @@ const int DATA_RATE_WALKING = 10; ///< Accelerometer data rate for walking (Hz).
 #endif
 
 const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are usually caused by running.
-const qint64 IDLE_TIME = 2000; ///< Set activity to Idle after this time (ms).
+const qint64 IDLE_TIME = 5000; ///< Set activity to Idle after this time (ms).
 const int REPORTER_INTERVAL = 300; ///< How often steps are reported.
 
 Detector::Detector(QObject *parent): QObject(parent), running_(false), runningStepTimeDiff_(MIN_RUNNING_STEP_TIME_DIFF), minReadingDiff_(MIN_READING_DIFF), accelerometer_(0) {
