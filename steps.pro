@@ -1,5 +1,5 @@
 VERSION = 0.1.7
-TARGET = Steps
+TARGET = Steps_2006072d
 
 # Qt packages to use
 CONFIG += mobility
@@ -41,10 +41,8 @@ symbian {
     my_deployment.pkg_prerules += vendorinfo
     DEPLOYMENT += my_deployment
 
-    # Use official UID for Steps
-    TARGET.UID3 += 0x20034d0f
-    # Use official UID for wrapper package
-    # DEPLOYMENT.installer_header = 0x2002CCCF
+    # Corrected UID assigned by Nokia Support:
+    TARGET.UID3 += 0x2006072d
 }
 
 # Add "sounds" folder to the application
