@@ -1,5 +1,5 @@
 VERSION = 0.1.7
-TARGET = Steps_2006072d
+TARGET = Steps
 
 # Qt packages to use
 CONFIG += mobility
@@ -15,8 +15,8 @@ contains(MEEGO_EDITION,harmattan) {
     CONFIG += link_pkgconfig qmsystem2
     PKGCONFIG += libresourceqt1
     RESOURCES += meego.qrc
-    SOURCES += mediakey.cpp
-    HEADERS += mediakey.h
+    SOURCES +=
+    HEADERS +=
     DATADIR = share
     DEFINES += STEPS_DATADIR=\\\"/opt/Steps/share\\\"
     DEFINES += STEPS_VERSION=\\\"$$VERSION\\\"
@@ -29,7 +29,9 @@ contains(MEEGO_EDITION,harmattan) {
 
 # Symbian rules
 symbian {
+    TARGET = Steps_2006072d
     TARGET.CAPABILITY += NetworkServices ReadDeviceData WriteDeviceData
+    DEPLOYMENT.display_name = Steps
     LIBS += -L\\epoc32\\release\\armv5\\lib -lsysutil -lpsmclient -lws32 -lapgrfx -lavkon
     RESOURCES += symbian.qrc
     DATADIR = c:/data/Steps

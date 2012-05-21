@@ -3,6 +3,7 @@ steps (0.1.8) unstable; urgency=low
   * Add French translation
   * Don't use volume keys
   * Use corrected UID
+  * Separate out O2
 
  -- Akos Polster <akos@pipacs.com>  Sun, 22 Apr 2012 19:20:00 +0100
 
