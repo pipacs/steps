@@ -1,0 +1,2 @@
+O2 has moved to it's own Github project: https://github.com/pipacs/o2 .
+Sorry for the inconvenience.

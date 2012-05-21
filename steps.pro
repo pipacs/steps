@@ -60,14 +60,14 @@ SOURCES += \
     uploader.cpp \
     gftprogram.cpp \
     gft.cpp \
-    o2/o2.cpp \
-    o2/o2replyserver.cpp \
-    o2/simplecrypt.cpp \
     database.cpp \
     trace.cpp \
     detector.cpp \
-    o2/o2requestor.cpp \
-    o2/o2reply.cpp
+    otwo/o2.cpp \
+    otwo/o2replyserver.cpp \
+    otwo/simplecrypt.cpp \
+    otwo/o2requestor.cpp \
+    otwo/o2reply.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -176,15 +176,15 @@ HEADERS += \
     uploader.h \
     gftprogram.h \
     gft.h \
-    o2/o2.h \
-    o2/o2replyserver.h \
-    o2/simplecrypt.h \
     gftsecret.h \
     database.h \
     trace.h \
     detector.h \
-    o2/o2requestor.h \
-    o2/o2reply.h
+    otwo/o2.h \
+    otwo/o2replyserver.h \
+    otwo/simplecrypt.h \
+    otwo/o2requestor.h \
+    otwo/o2reply.h
 
 RESOURCES += \
     common.qrc \
