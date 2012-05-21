@@ -12,12 +12,7 @@
 #include "trace.h"
 #include "platform.h"
 
-static const char *GFT_OAUTH_SCOPE = "https://www.googleapis.com/auth/fusiontables";
-static const char *GFT_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
-static const char *GFT_OAUTH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
-static const char *GFT_OAUTH_REFRESH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
 const int GFT_RECORDS_PER_UPLOAD = 150;
-
 static Gft *instance_;
 
 Gft *Gft::instance() {
@@ -32,7 +27,9 @@ void Gft::close() {
     instance_ = 0;
 }
 
-Gft::Gft(QObject *parent): O2(GFT_OAUTH_CLIENT_ID, GFT_OAUTH_CLIENT_SECRET, GFT_OAUTH_SCOPE, QUrl(GFT_OAUTH_ENDPOINT), QUrl(GFT_OAUTH_TOKEN_URL), QUrl(GFT_OAUTH_REFRESH_TOKEN_URL), parent), program(0) {
+Gft::Gft(QObject *parent): O2Gft(parent), program(0) {
+    setClientId(GFT_OAUTH_CLIENT_ID);
+    setClientSecret(GFT_OAUTH_CLIENT_SECRET);
 }
 
 Gft::~Gft() {

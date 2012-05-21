@@ -63,11 +63,13 @@ SOURCES += \
     database.cpp \
     trace.cpp \
     detector.cpp \
-    otwo/o2.cpp \
-    otwo/o2replyserver.cpp \
-    otwo/simplecrypt.cpp \
-    otwo/o2requestor.cpp \
-    otwo/o2reply.cpp
+    ../o2/o2.cpp \
+    ../o2/o2replyserver.cpp \
+    ../o2/simplecrypt.cpp \
+    ../o2/o2requestor.cpp \
+    ../o2/o2reply.cpp \
+    ../o2/o2facebook.cpp \
+    ../o2/o2gft.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -180,11 +182,13 @@ HEADERS += \
     database.h \
     trace.h \
     detector.h \
-    otwo/o2.h \
-    otwo/o2replyserver.h \
-    otwo/simplecrypt.h \
-    otwo/o2requestor.h \
-    otwo/o2reply.h
+    ../o2/o2.h \
+    ../o2/o2replyserver.h \
+    ../o2/simplecrypt.h \
+    ../o2/o2requestor.h \
+    ../o2/o2reply.h \
+    ../o2/o2facebook.h \
+    ../o2/o2gft.h
 
 RESOURCES += \
     common.qrc \

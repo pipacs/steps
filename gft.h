@@ -6,13 +6,13 @@
 #include <QSettings>
 #include <QSqlDatabase>
 
-#include "o2/o2.h"
+#include "otwo/o2gft.h"
 #include "database.h"
 #include "uploader.h"
 #include "gftprogram.h"
 
 /// Google Fusion Tables account connector and uploader.
-class Gft: public O2 {
+class Gft: public O2Gft {
     Q_OBJECT
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 

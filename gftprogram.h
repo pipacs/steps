@@ -10,7 +10,7 @@
 #include <QMetaType>
 #include <QNetworkAccessManager>
 
-#include "o2/o2requestor.h"
+#include "otwo/o2requestor.h"
 
 /// POST URL for SQL queries.
 #define GFT_SQL_URL "https://fusiontables.googleusercontent.com/fusiontables/api/query"
