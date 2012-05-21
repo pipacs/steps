@@ -19,7 +19,7 @@
     <message>
         <location filename="../qml/ActionsPage.qml" line="46"/>
         <source>Reset step count</source>
-        <translation>Mise à zéro du compteur de pas</translation>
+        <translation>Zéro du compteur</translation>
     </message>
     <message>
         <location filename="../qml/ActionsPage.qml" line="58"/>
