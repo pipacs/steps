@@ -114,15 +114,12 @@ StepsPage {
 
     StepsBanner {
         id: info
-        text: qc.linked? qsTr("Logged in to Quantis"): qsTr("Logged out from Quantis:")
     }
 
     StepsYesNoDialog {
         id: confirmLogoutDialog
         titleText: qsTr("Are you sure to log out?")
-        onDialogAccepted: {
-            qc.unlink()
-        }
+        onDialogAccepted: qc.unlink()
     }
 
     StepsSpinner {
@@ -135,20 +132,28 @@ StepsPage {
     }
 
     function openBrowser(url) {
-        console.log("* TweaksPage.openBrowser " + url)
+        console.log("* TweaksPage.openBrowser")
         spinner.running = false
         main.pageStack.push(loginBrowser)
         loginBrowser.openUrl(url)
     }
 
     function onLinkedChanged() {
+        console.log("* TweaksPage.onLinkedChanged")
         enableSharing.enabled = qc.linked
     }
 
     function onLinkingFailed() {
-        console.log("* onLinkingFailed")
+        console.log("* TweaksPage.onLinkingFailed")
         spinner.running = false
         info.text = qsTr("Failed to log in to Quantis")
+        info.show()
+    }
+
+    function onLinkingSucceeded() {
+        console.log("* TweaksPage.onLinkingSucceeded")
+        spinner.running = false
+        info.text = qc.linked? qsTr("Logged in to Quantis"): qsTr("Logged out from Quantis")
         info.show()
     }
 
@@ -158,11 +163,13 @@ StepsPage {
         prefs.runningStepTimeDiff = runningDiff.value
         detector.minReadingDiff = readingDiff.value
         prefs.minReadingDiff = readingDiff.value
+        qc.enabled = enableSharing.checked
     }
 
     Component.onCompleted: {
         qc.openBrowser.connect(openBrowser);
         qc.linkedChanged.connect(onLinkedChanged)
         qc.linkingFailed.connect(onLinkingFailed)
+        qc.linkingSucceeded.connect(onLinkingSucceeded)
     }
 }

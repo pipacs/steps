@@ -57,12 +57,14 @@ StepsPage {
     }
 
     function closeUrl() {
+        console.log("* QcLoginBrowser.closeUrl")
         qc.closeBrowser.disconnect(closeUrl)
         sipFixer.enabled = false
         pageStack.pop()
     }
 
     function openUrl(url) {
+        console.log("* QcLoginBrowser.openUrl")
         sipFixer.enabled = true
         qc.closeBrowser.connect(closeUrl)
         webView.url = url
