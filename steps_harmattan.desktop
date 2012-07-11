@@ -6,7 +6,7 @@ Terminal=false
 Name=Steps
 Name[fr]=Pas
 Exec=/usr/bin/invoker --type=e --single-instance --splash=/opt/Steps/share/splash/splash-n9.jpg /opt/Steps/bin/Steps
-Icon=/usr/share/icons/hicolor/80x80/apps/Steps80.png
+Icon=/usr/share/icons/hicolor/80x80/apps/steps80.png
 X-Window-Icon=
 X-HildonDesk-ShowInToolbar=true
 X-Osso-Type=application/x-executable
