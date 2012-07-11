@@ -1,6 +1,6 @@
 import QtQuick 1.1
 import QtWebKit 1.0
-import "symbian"
+import "meego"
 
 StepsPage {
     id: loginBrowser

@@ -127,6 +127,7 @@ StepsPage {
 
     StepsSpinner {
         id: spinner
+        anchors.centerIn: tweaks
     }
 
     QcLoginBrowser {
@@ -134,6 +135,7 @@ StepsPage {
     }
 
     function openBrowser(url) {
+        console.log("* TweaksPage.openBrowser " + url)
         spinner.running = false
         main.pageStack.push(loginBrowser)
         loginBrowser.openUrl(url)
@@ -145,6 +147,9 @@ StepsPage {
 
     function onLinkingFailed() {
         console.log("* onLinkingFailed")
+        spinner.running = false
+        info.text = qsTr("Failed to log in to Quantis")
+        info.show()
     }
 
     onBack: {
@@ -158,5 +163,6 @@ StepsPage {
     Component.onCompleted: {
         qc.openBrowser.connect(openBrowser);
         qc.linkedChanged.connect(onLinkedChanged)
-        qc.linkingFailed.connect(onLinkingFailed)    }
+        qc.linkingFailed.connect(onLinkingFailed)
+    }
 }

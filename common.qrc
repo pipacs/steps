@@ -21,6 +21,7 @@
         <file>images/play.png</file>
         <file>qml/TweaksPage.qml</file>
         <file>qml/Gap.qml</file>
+        <file>qml/QcLoginBrowser.qml</file>
     </qresource>
     <qresource prefix="/qml/symbian">
         <file alias="Dummy.qml">qml/Dummy.qml</file>
