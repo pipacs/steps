@@ -18,6 +18,30 @@ StepsPage {
             spacing: 25
             width: tweaks.width - 60
 
+            StepsLabel {text: qsTr("Save to Quantis:")}
+
+            StepsCheckBox {
+                text: qsTr("Enable saving")
+                id: enableSharing
+                checked: qc.enabled
+                enabled: qc.linked
+            }
+
+            StepsButton {
+                text: qc.linked? qsTr("Logout from Quantis"): qsTr("Login to Quantis")
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: {
+                    if (qc.linked) {
+                        confirmLogoutDialog.open()
+                    } else {
+                        spinner.running = true
+                        qc.link()
+                    }
+                }
+            }
+
+            Gap {}
+
             StepsLabel {
                 text: qsTr("Tracing:")
             }
@@ -90,7 +114,37 @@ StepsPage {
 
     StepsBanner {
         id: info
-        text: gft.linked? qsTr("Logged in to Google Docs"): qsTr("Logged out from Google Docs")
+        text: qc.linked? qsTr("Logged in to Quantis"): qsTr("Logged out from Quantis:")
+    }
+
+    StepsYesNoDialog {
+        id: confirmLogoutDialog
+        titleText: qsTr("Are you sure to log out?")
+        onDialogAccepted: {
+            qc.unlink()
+        }
+    }
+
+    StepsSpinner {
+        id: spinner
+    }
+
+    QcLoginBrowser {
+        id: loginBrowser
+    }
+
+    function openBrowser(url) {
+        spinner.running = false
+        main.pageStack.push(loginBrowser)
+        loginBrowser.openUrl(url)
+    }
+
+    function onLinkedChanged() {
+        enableSharing.enabled = qc.linked
+    }
+
+    function onLinkingFailed() {
+        console.log("* onLinkingFailed")
     }
 
     onBack: {
@@ -100,4 +154,9 @@ StepsPage {
         detector.minReadingDiff = readingDiff.value
         prefs.minReadingDiff = readingDiff.value
     }
+
+    Component.onCompleted: {
+        qc.openBrowser.connect(openBrowser);
+        qc.linkedChanged.connect(onLinkedChanged)
+        qc.linkingFailed.connect(onLinkingFailed)    }
 }

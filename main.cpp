@@ -16,10 +16,7 @@
 #include "sipfixer.h"
 #include "uploader.h"
 #include "trace.h"
-
-#if 0
-#include "mediakey.h"
-#endif
+#include "qc.h"
 
 class PersistentCookieJar: public QNetworkCookieJar {
 public:
@@ -132,6 +129,7 @@ int main(int argc, char *argv[]) {
     SipFixer *sipFixer = SipFixer::instance();
     NetworkAccessManagerFactory *namFactory = new NetworkAccessManagerFactory;
     Uploader *uploader = Uploader::instance();
+    Qc *qc = Qc::instance();
 
     // Archive current log, and schedule first upload
     logger->archive();
@@ -149,16 +147,10 @@ int main(int argc, char *argv[]) {
     viewer->rootContext()->setContextProperty("gft", gft);
     viewer->rootContext()->setContextProperty("sipFixer", sipFixer);
     viewer->rootContext()->setContextProperty("uploader", uploader);
+    viewer->rootContext()->setContextProperty("qc", qc);
     viewer->setSource(QUrl("qrc:/qml/main.qml"));
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer->showExpanded();
-
-#if 0
-    // Install event filter to capture/release volume keys
-    MediaKey *mediaKey = new MediaKey(viewer);
-    viewer->rootContext()->setContextProperty("mediaKey", mediaKey);
-    viewer->installEventFilter(mediaKey);
-#endif
 
     // Install event filter fixing VKB handing in WebView
     viewer->installEventFilter(sipFixer);
@@ -175,5 +167,6 @@ int main(int argc, char *argv[]) {
     Logger::close();
     Platform::close();
     Preferences::close();
+    Qc::close();
     return ret;
 }
