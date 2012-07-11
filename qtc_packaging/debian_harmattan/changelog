@@ -1,3 +1,9 @@
+steps (0.1.9) unstable; urgency=low
+
+  * QC tweaks
+
+ -- Akos Polster <akos@pipacs.com>  Sun, 11 Jul 2012 12:02:00 +0200
+
 steps (0.1.8) unstable; urgency=low
 
   * Add French translation

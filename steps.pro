@@ -1,4 +1,4 @@
-VERSION = 0.1.7
+VERSION = 0.1.9
 TARGET = Steps
 
 # Qt packages to use
@@ -71,7 +71,9 @@ SOURCES += \
     ../o2/o2requestor.cpp \
     ../o2/o2reply.cpp \
     ../o2/o2facebook.cpp \
-    ../o2/o2gft.cpp
+    ../o2/o2gft.cpp \
+    qc.cpp \
+    ../o2/o1.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -170,7 +172,9 @@ OTHER_FILES += \
     translations/it.ts \
     qml/TweaksPage.qml \
     qml/Gap.qml \
-    translations/fr.ts
+    translations/fr.ts \
+    qml/QcLoginBrowser.qml \
+    steps_harmattan.desktop
 
 HEADERS += \
     preferences.h \
@@ -190,7 +194,9 @@ HEADERS += \
     ../o2/o2requestor.h \
     ../o2/o2reply.h \
     ../o2/o2facebook.h \
-    ../o2/o2gft.h
+    ../o2/o2gft.h \
+    qc.h \
+    ../o2/o1.h
 
 RESOURCES += \
     common.qrc \
