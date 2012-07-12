@@ -31,8 +31,9 @@ signals:
     void enabledChanged();
 
     /// Emitted when an upload batch has finished.
-    /// @param  result  Status of the finished upload.
-    void uploadFinished(int result);
+    /// @param  archive Database archive name.
+    /// @param  result  Status of the finished upload, @see UploadResult.
+    void uploadFinished(const QString &archive, int result);
 
 public slots:
     /// Enable/disable uploads.

@@ -63,14 +63,30 @@ void Gft::upload(const QString &archive_) {
     // Do nothing if database is empty
     {
         qlonglong total = -1;
-        QSqlQuery query("select count(*) from log", db.db());
+        QSqlQuery query("select count(*) from log where ingft = 0", db.db());
         query.next();
         total = query.value(0).toLongLong();
         if (total == 0) {
             qDebug() << "Database empty";
-            emit uploadFinished(UploadComplete);
+            emit uploadFinished(archive, UploadComplete);
             return;
         }
+    }
+
+    // Mark all records as uploaded if GFT is not enabled, then succeed
+    if (!enabled()) {
+        qDebug() << "GFT not enabled";
+        QSqlQuery query("update log set ingft = 1", db.db());
+        query.exec();
+        emit uploadFinished(archive, UploadComplete);
+        return;
+    }
+
+    // Fail if not logged in
+    if (!linked()) {
+        qDebug() << "Not logged in";
+        emit uploadFinished(archive, UploadFailed);
+        return;
     }
 
     // Create Gft program's instructions
@@ -82,9 +98,9 @@ void Gft::upload(const QString &archive_) {
 
     QSqlQuery query(db.db());
     query.setForwardOnly(true);
-    if (!query.exec("select id, date, steps from log")) {
+    if (!query.exec("select id, date, steps from log where ingft = 0")) {
         qCritical() << "Gft::upload: Could not query archive:" << query.lastError().text();
-        emit uploadFinished(UploadFailed);
+        emit uploadFinished(archive, UploadFailed);
         return;
     }
     int numRecords = 0;
@@ -151,15 +167,15 @@ void Gft::onStepCompleted(GftIdList recordIdList) {
 }
 
 void Gft::onProgramCompleted(bool failed) {
-    Trace t("Gft::onProgramCompleted");
+    Trace _("Gft::onProgramCompleted");
     int result = UploadFailed;
 
-    // Delete uploaded records from local archive
+    // Mark uploaded records in the local archive
     Database db(archive);
     db.transaction();
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query(db.db());
-        query.prepare("delete from log where id = ?");
+        query.prepare("update log set ingft = 1 where id = ?");
         query.bindValue(0, id);
         query.exec();
     }
@@ -172,7 +188,7 @@ void Gft::onProgramCompleted(bool failed) {
     } else {
         // Are there any records left in the archive?
         qlonglong total = -1;
-        QSqlQuery query("select count(*) from log", db.db());
+        QSqlQuery query("select count(*) from log where ingft = 0", db.db());
         query.next();
         total = query.value(0).toLongLong();
         qDebug() << total << "records left";
@@ -185,5 +201,5 @@ void Gft::onProgramCompleted(bool failed) {
             result = UploadIncomplete;
         }
     }
-    emit uploadFinished(result);
+    emit uploadFinished(archive, result);
 }

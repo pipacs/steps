@@ -9,6 +9,7 @@
 #include "gft.h"
 #include "platform.h"
 #include "trace.h"
+#include "qc.h"
 
 static Uploader *instance_;
 const int UPLOADER_IDLE = 1000 * 60 * 30; ///< Idle time between complete/failed uploads (ms).
@@ -69,48 +70,33 @@ void Uploader::onUploadComplete(int result) {
 }
 
 UploaderWorker::UploaderWorker(QObject *parent): QObject(parent) {
-    Gft *gft = Gft::instance();
-    connect(gft, SIGNAL(uploadFinished(int)), this, SLOT(onGftUploadFinished(int)));
+    connect(Gft::instance(), SIGNAL(uploadFinished(QString, int)), this, SLOT(onUploadFinished(QString, int)));
+    connect(Qc::instance(), SIGNAL(uploadFinished(QString, int)), this, SLOT(onUploadFinished(QString, int)));
 }
 
 UploaderWorker::~UploaderWorker() {
 }
 
 void UploaderWorker::upload() {
-    Trace t("UploaderWorker::upload");
-    Gft *gft = Gft::instance();
+    Trace _("UploaderWorker::upload");
     QStringList archives = listArchives();
-    bool skip = false;
     if (!archives.count()) {
         qDebug() << "No archives";
-        skip = true;
-    } else if (!gft->enabled()) {
-        qDebug() << "Uploading not enabled";
-        skip = true;
-    } else if (!gft->linked()) {
-        qDebug() << "Not logged in";
-        skip = true;
-    }
-    if (skip) {
         emit uploadComplete(UploadComplete);
         return;
     }
-    archive = archives[0];
-    qDebug() << "Uploading" << archive;
+    QString archive = archives[0];
     Gft::instance()->upload(archive);
+    Qc::instance()->upload(archive);
 }
 
-void UploaderWorker::onGftUploadFinished(int result) {
-    Trace t("UploaderWorker::onGftUploadFinished");
+void UploaderWorker::onUploadFinished(const QString &archive, int result) {
+    Trace _("UploaderWorker::onGftUploadFinished");
     if (result == UploadComplete) {
+        deleteArchiveIfUploaded(archive);
         if (listArchives().length() > 1) {
             qDebug() << "There are more archives to upload";
             result = UploadIncomplete;
-        }
-        QFile file(archive);
-        if (!file.remove()) {
-            qCritical() << "UploadWorker::onGftUploadFinished: Failed to delete" << archive;
-            result = UploadFailed;
         }
     }
     qDebug() << "Result" << (int)result;
@@ -125,4 +111,24 @@ QStringList UploaderWorker::listArchives() {
         ret.append(dbDir + "/" + dbFile);
     }
     return ret;
+}
+
+void UploaderWorker::deleteArchiveIfUploaded(const QString &archive) {
+    Trace _("UploaderWorker::deleteArchiveIfUploaded");
+    Database db(archive);
+
+    QSqlQuery query("select count(*) from log", db.db());
+    query.next();
+    qlonglong total = query.value(0).toLongLong();
+
+    query.clear();
+    query.exec("select count(*) from log where inqc = 1 and ingft = 1");
+    query.next();
+    qlonglong totalUploaded = query.value(0).toLongLong();
+
+    db.close();
+    if (total == totalUploaded) {
+        qDebug() << "All records uploaded, deleting" << archive;
+        QFile(archive).remove();
+    }
 }

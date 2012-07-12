@@ -55,14 +55,16 @@ public:
     explicit UploaderWorker(QObject *parent = 0);
     virtual ~UploaderWorker();
     QStringList listArchives();
+    void deleteArchiveIfUploaded(const QString &archive);
 
 public slots:
     /// Upload some data.
     void upload();
 
-    /// An upload batch to Google Fusion Tables has finished.
-    /// @param  complete    True if all records in the archive have been uploaded.
-    void onGftUploadFinished(int result);
+    /// An upload batch has finished.
+    /// @param  archive     Name of the uploaded archive file.
+    /// @param  complete    @see UploadResult.
+    void onUploadFinished(const QString &archive, int result);
 
 public:
     QString archive;
