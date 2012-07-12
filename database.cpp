@@ -11,7 +11,9 @@ Database::Database(const QString &name, QObject *parent): QObject(parent), name_
 }
 
 Database::~Database() {
-    db_.close();
+    if (db_.isOpen()) {
+        db_.close();
+    }
     if (db_.isValid()) {
         QSqlDatabase::removeDatabase(db_.connectionName());
     }

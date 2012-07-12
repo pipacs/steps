@@ -131,6 +131,9 @@ int main(int argc, char *argv[]) {
     Uploader *uploader = Uploader::instance();
     Qc *qc = Qc::instance();
 
+    // Upgrade old databases
+    logger->upgrade();
+
     // Archive current log, and schedule first upload
     logger->archive();
     QTimer::singleShot(30000, uploader, SLOT(upload()));

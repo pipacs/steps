@@ -57,6 +57,12 @@ void Logger::archive() {
     }
 }
 
+void Logger::upgrade() {
+    if (!QMetaObject::invokeMethod(worker, "upgrade")) {
+        qCritical() << "Logger::upgrade: Invoking remote logger failed";
+    }
+}
+
 LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false), lastInsertId(0), totalSteps(0), lastLogTime(QDate(1965, 06, 29)) {
 }
 
@@ -67,7 +73,7 @@ LoggerWorker::~LoggerWorker() {
 Database *LoggerWorker::db() {
     if (!database) {
         database = new Database(Platform::instance()->dbPath());
-        connect(database, SIGNAL(addSchema()), this, SLOT(onAddSchema()), Qt::QueuedConnection);
+        connect(database, SIGNAL(addSchema()), this, SLOT(onAddSchema()));
     }
     return database;
 }
@@ -142,7 +148,7 @@ void LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap 
     }
 
     QSqlQuery query(db()->db());
-    query.prepare("insert into log (date, steps) values (?, ?)");
+    query.prepare("insert into log (date, steps, inqc, ingft) values (?, ?, 0, 0)");
     query.bindValue(0, now.toString(Qt::ISODate));
     query.bindValue(1, steps);
     bool success = query.exec();
@@ -190,9 +196,12 @@ void LoggerWorker::archive() {
 }
 
 void LoggerWorker::onAddSchema() {
+    Trace _("LoggerWorker::onAddSchema");
+
     // Set database schema
     QSqlQuery query(db()->db());
-    if (!query.exec("create table log (id integer primary key, date varchar, steps integer);")) {
+    // if (!query.exec("create table log (id integer primary key, date varchar, steps integer);")) {
+    if (!query.exec("create table log (id integer primary key, date varchar, steps integer, inqc integer, ingft integer);")) {
         qCritical() << "LoggerWorker::onAddSchema: Failed to create log table:" << query.lastError().text();
         return;
     }
@@ -217,10 +226,114 @@ void LoggerWorker::onAddSchema() {
 QString LoggerWorker::getArchiveName() {
     QString dir = QFileInfo(Platform::instance()->dbPath()).absolutePath();
     QString base = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
-    QString archiveName = dir + "/" + base + ".adb";
+    QString archiveName = dir + "/" + base + ".adc";
     if (QFileInfo(archiveName).exists()) {
         qCritical() << "LoggerWorker::getArchiveName: Archive" << archiveName << "exists already";
         return QString();
     }
     return archiveName;
+}
+
+void LoggerWorker::upgrade() {
+    Trace _("LoggerWorker::upgrade");
+    QString dirName = QFileInfo(Platform::instance()->dbPath()).absolutePath();
+
+    // Upgrade current log
+    if (QFileInfo(dirName + "/current.db").exists()) {
+        upgradeDbToDc(dirName + "/current.db");
+    }
+
+    // Upgrade archives
+    QDir dir(dirName);
+    foreach (QString srcName, dir.entryList(QStringList("*.adb"), QDir::Files | QDir::Readable)) {
+        upgradeDbToDc(dirName + "/" + srcName);
+    }
+}
+
+void LoggerWorker::upgradeDbToDc(const QString &srcName) {
+    Trace _("LoggerWorker::upgradeDbToDc");
+
+    QFileInfo info(srcName);
+    QString dirName = info.absolutePath();
+    QString baseName = info.baseName();
+    QString suffix = info.suffix();
+    QString dstName = dirName + "/" + baseName + ((suffix == "db")? ".dc": ".adc");
+    qDebug() << srcName << "->" << dstName;
+    Database srcDb(srcName);
+    Database dstDb(dstName);
+
+    QSqlQuery dstQuery(dstDb.db());
+    QSqlQuery srcQuery(srcDb.db());
+    QSqlQuery srcTagsQuery(srcDb.db());
+    QSqlQuery dstTagsQuery(dstDb.db());
+
+    // Initialize upgraded database
+
+    if (!dstQuery.exec("create table log (id integer primary key, date varchar, steps integer, inqc integer, ingft integer);")) {
+        qCritical() << "LoggerWorker::upgradeDbToDc: Failed to create log table:" << dstQuery.lastError().text();
+        return;
+    }
+    dstQuery.clear();
+    if (!dstQuery.exec("create table tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id));")) {
+        qCritical() << "LoggerWorker::upgradeDbToDc: Failed to create tags table:" << dstQuery.lastError().text();
+        return;
+    }
+
+    // Read log records
+
+    if (!srcQuery.exec("select id, date, steps from log")) {
+        qCritical() << "LoggerWorker::upgradeDbToDc: Could not query source:" << srcQuery.lastError().text();
+        return;
+    }
+
+    while (srcQuery.next()) {
+        qlonglong id = srcQuery.value(0).toLongLong();
+        QString date = srcQuery.value(1).toString();
+        int steps = srcQuery.value(2).toInt();
+
+        // Read tags
+
+        QMap<QString, QString> tags;
+        srcTagsQuery.clear();
+        srcTagsQuery.prepare("select name, value from tags where logId = ?");
+        srcTagsQuery.bindValue(0, id);
+        if (!srcTagsQuery.exec()) {
+            qCritical() << "LoggerWorker::upgradeDbToDc: Could not query tags:" << srcTagsQuery.lastError().text();
+            continue;
+        }
+        while (srcTagsQuery.next()) {
+            QString name = srcTagsQuery.value(0).toString();
+            QString value = srcTagsQuery.value(1).toString();
+            tags.insert(name, value);
+        }
+
+        // Save upgraded log record
+
+        dstQuery.clear();
+        dstQuery.prepare("insert into log (date, steps, inqc, ingft) values (?, ?, 0, 0)");
+        dstQuery.bindValue(0, date);
+        dstQuery.bindValue(1, steps);
+        if (!dstQuery.exec()) {
+            qCritical() << "LoggerWorker::upgradeDbToDc: Upgrading record" << id << "failed:" << dstTagsQuery.lastError().text();
+            continue;
+        }
+
+        // Save tags
+
+        lastInsertId = dstQuery.lastInsertId().toLongLong();
+        foreach (QString key, tags.keys()) {
+            QString value = tags.value(key);
+            dstTagsQuery.clear();
+            dstTagsQuery.prepare("insert into tags (name, value, logid) values (?, ?, ?)");
+            dstTagsQuery.bindValue(0, key);
+            dstTagsQuery.bindValue(1, value);
+            dstTagsQuery.bindValue(2, lastInsertId);
+            if (!dstTagsQuery.exec()) {
+                qCritical() << "LoggerWorker::upgradeDbToDc: Inserting tag" << key << value << "failed:" << dstTagsQuery.lastError().text();
+                break;
+            }
+        }
+    }
+
+    QFile(srcName).remove();
 }

@@ -139,7 +139,7 @@ QUrl Platform::soundUrl(const QString &name) {
 
 QString Platform::dbPath() {
     QString base(QDir::home().absoluteFilePath(STEPS_BASEDIR));
-    return QDir(base).absoluteFilePath("current.db");
+    return QDir(base).absoluteFilePath("current.dc");
 }
 
 bool Platform::dbFull() {

@@ -25,6 +25,9 @@ public:
     /// Close and archive current log file, open new one.
     Q_INVOKABLE void archive();
 
+    /// Upgrade old databases to current format
+    Q_INVOKABLE void upgrade();
+
 protected:
     explicit Logger(QObject *parent = 0);
     virtual ~Logger();
@@ -46,6 +49,9 @@ public slots:
 
     /// Close and archive current log file, open new one.
     void archive();
+
+    /// Upgrade old databases to current format.
+    void upgrade();
 
 protected slots:
     /// Initialize database with schema.
@@ -71,6 +77,9 @@ protected:
 
     /// Return database, create it if doesn't exist.
     Database *db();
+
+    /// Upgrade "B" format database file to "C".
+    void upgradeDbToDc(const QString &srcName);
 
     Database *database;     ///< Database, created on demand.
     int logCount;           ///< The number of times saveLog() has been called.
