@@ -4,6 +4,7 @@ TARGET = Steps
 # Qt packages to use
 CONFIG += mobility
 CONFIG += qt-components
+CONFIG += script
 MOBILITY += sensors
 MOBILITY += multimedia
 QT += sql
@@ -73,7 +74,9 @@ SOURCES += \
     ../o2/o2facebook.cpp \
     ../o2/o2gft.cpp \
     qc.cpp \
-    ../o2/o1.cpp
+    ../o2/o1.cpp \
+    json/json.cpp \
+    ../o2/o1requestor.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -174,7 +177,10 @@ OTHER_FILES += \
     qml/Gap.qml \
     translations/fr.ts \
     qml/QcLoginBrowser.qml \
-    steps_harmattan.desktop
+    steps_harmattan.desktop \
+    json/README \
+    json/LICENSE \
+    json/AUTHORS
 
 HEADERS += \
     preferences.h \
@@ -196,7 +202,9 @@ HEADERS += \
     ../o2/o2facebook.h \
     ../o2/o2gft.h \
     qc.h \
-    ../o2/o1.h
+    ../o2/o1.h \
+    json/json.h \
+    ../o2/o1requestor.h
 
 RESOURCES += \
     common.qrc \
