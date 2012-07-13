@@ -67,7 +67,7 @@ void Gft::upload(const QString &archive_) {
         query.next();
         total = query.value(0).toLongLong();
         if (total == 0) {
-            qDebug() << "Database empty";
+            qDebug() << "No records to upload";
             emit uploadFinished(archive, UploadComplete);
             return;
         }

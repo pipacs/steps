@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QString>
+#include <QList>
 
 #include "../o2/o1.h"
 #include "uploader.h"
@@ -30,6 +31,13 @@ public:
     /// Get tags.
     QMap<QString, QString> getTags(Database &db, qlonglong recordId);
 
+    /// Upload a measurement batch to QC.
+    void uploadBatch(const QVariantMap &batch);
+
+public slots:
+    /// Handle upload batch finished.
+    void onUploadBatchFinished(bool failed);
+
 signals:
     /// Uploading has been enabled or disabled.
     void enabledChanged();
@@ -39,8 +47,12 @@ signals:
     /// @param  result  @see UploadResult.
     void uploadFinished(const QString &archive, int result);
 
+    /// Uploading a batch of measurements has finished.
+    void uploadBatchFinished(bool failed);
+
 public:
     QString archive;
+    QList<qlonglong> uploadedRecords;
 };
 
 #endif // QC_H

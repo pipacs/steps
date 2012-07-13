@@ -91,7 +91,7 @@ void UploaderWorker::upload() {
 }
 
 void UploaderWorker::onUploadFinished(const QString &archive, int result) {
-    Trace _("UploaderWorker::onGftUploadFinished");
+    Trace _("UploaderWorker::onUploadFinished");
     if (result == UploadComplete) {
         deleteArchiveIfUploaded(archive);
         if (listArchives().length() > 1) {
@@ -105,7 +105,7 @@ void UploaderWorker::onUploadFinished(const QString &archive, int result) {
 
 QStringList UploaderWorker::listArchives() {
     QString dbDir = QFileInfo(Platform::instance()->dbPath()).absolutePath();
-    QStringList nameFilters(QString("*.adb"));
+    QStringList nameFilters(QString("*.adc"));
     QStringList ret;
     foreach (QString dbFile, QDir(dbDir).entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name)) {
         ret.append(dbDir + "/" + dbFile);
@@ -115,16 +115,30 @@ QStringList UploaderWorker::listArchives() {
 
 void UploaderWorker::deleteArchiveIfUploaded(const QString &archive) {
     Trace _("UploaderWorker::deleteArchiveIfUploaded");
-    Database db(archive);
+    qDebug() << archive;
 
-    QSqlQuery query("select count(*) from log", db.db());
+    if (!QFileInfo(archive).exists()) {
+        return;
+    }
+
+    Database db(archive);
+    QSqlQuery query(db.db());
+    if (!query.exec("select count(*) from log")) {
+        qCritical() << "UploadWorker::deleteArchiveIfUploaded:" << query.lastError().text();
+        return;
+    }
     query.next();
     qlonglong total = query.value(0).toLongLong();
+    qDebug() << archive << total << "records total";
 
     query.clear();
-    query.exec("select count(*) from log where inqc = 1 and ingft = 1");
+    if (!query.exec("select count(*) from log where inqc = 1 and ingft = 1")) {
+        qCritical() << "UploadWorker::deleteArchiveIfUploaded:" << query.lastError().text();
+        return;
+    }
     query.next();
     qlonglong totalUploaded = query.value(0).toLongLong();
+    qDebug() << archive << totalUploaded << "records uploaded";
 
     db.close();
     if (total == totalUploaded) {

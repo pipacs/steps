@@ -7,6 +7,8 @@
 #include "platform.h"
 #include "trace.h"
 
+using namespace QtJson;
+
 static Qc *instance_;
 static const int recordsPerUpload = 150;
 
@@ -16,6 +18,8 @@ Qc::Qc(QObject *parent): O1(parent) {
     setAccessTokenUrl(QUrl(QC_ACCESS_TOKEN_URL));
     setClientId(QC_OAUTH_CLIENT_ID);
     setClientSecret(QC_OAUTH_CLIENT_SECRET);
+
+    connect(this, SIGNAL(uploadBatchFinished(bool)), this, SLOT(onUploadBatchFinished(bool)));
 }
 
 Qc::~Qc() {
@@ -43,11 +47,11 @@ void Qc::upload(const QString &archive_) {
     // Do nothing if database is empty
     {
         qlonglong total = -1;
-        QSqlQuery query("select count(*) from log where ingft = 0", db.db());
+        QSqlQuery query("select count(*) from log where inqc = 0", db.db());
         query.next();
         total = query.value(0).toLongLong();
         if (total == 0) {
-            qDebug() << "Database empty";
+            qDebug() << "No records to upload";
             emit uploadFinished(archive, UploadComplete);
             return;
         }
@@ -55,8 +59,8 @@ void Qc::upload(const QString &archive_) {
 
     // Mark all records as uploaded if QC is not enabled, then succeed
     if (!enabled()) {
-        qDebug() << "GFT not enabled";
-        QSqlQuery query("update log set ingft = 1", db.db());
+        qDebug() << "QC not enabled";
+        QSqlQuery query("update log set ingqc = 1", db.db());
         query.exec();
         emit uploadFinished(archive, UploadComplete);
         return;
@@ -76,22 +80,56 @@ void Qc::upload(const QString &archive_) {
         emit uploadFinished(archive, UploadFailed);
         return;
     }
+
     int numRecords = 0;
-    QString sql;
-    QList<qlonglong> idList;
+    QVariantMap input;
+    input["dev"] = Platform::instance()->deviceId();
+    input["schema"] = "steps";
+    QVariantList measurements;
+    uploadedRecords.clear();
+
     while (query.next()) {
         if (++numRecords > recordsPerUpload) {
             break;
         }
         qlonglong id = query.value(0).toLongLong();
+        uploadedRecords.append(id);
         QString date = query.value(1).toString();
         int steps = query.value(2).toInt();
         QMap<QString, QString> tags = getTags(db, id);
-        QString device = Platform::instance()->deviceId();
 
-        // FIXME: ...
+        QVariantMap measurement;
+        measurement["at"] = date;
+        measurement["count"] = steps;
+        foreach (QString key, tags.keys()) {
+            if (key == "detectedActivity") {
+                QString activity = tags["detectedActivity"];
+                if (activity == "0") {
+                    measurement["activity"] = "idle";
+                } else if (activity == "2") {
+                    measurement["activity"] = "walking";
+                } else {
+                    measurement["activity"] = "running";
+                }
+            } else if (key.startsWith("x-")) {
+                measurement[key] = tags[key];
+            } else {
+                measurement["x-" + key] = tags[key];
+            }
+        }
+        measurements.append(measurement);
     }
 
+    input["m"] = measurements;
+    qDebug() << Json::serialize(input);
+
+    uploadBatch(input);
+}
+
+void Qc::uploadBatch(const QVariantMap &batch) {
+    Trace _("Qc::uploadBatch");
+    // FIXME: Implement me
+    emit uploadBatchFinished(false);
 }
 
 bool Qc::enabled() {
@@ -118,4 +156,41 @@ QMap<QString, QString> Qc::getTags(Database &db, qlonglong id) {
         ret.insert(name, value);
     }
     return ret;
+}
+
+void Qc::onUploadBatchFinished(bool failed) {
+    Trace _("Qc::onUploadBatchFinished");
+
+    if (failed) {
+        qDebug() << "Result: Failed";
+        emit uploadFinished(archive, UploadFailed);
+        return;
+    }
+
+    // Mark uploaded records in the local archive
+    Database db(archive);
+    db.transaction();
+    foreach (qlonglong id, uploadedRecords) {
+        QSqlQuery query(db.db());
+        query.prepare("update log set inqc = 1 where id = ?");
+        query.bindValue(0, id);
+        query.exec();
+    }
+    db.commit();
+
+    // Determine upload result: Are there any records left in the archive?
+    int result = UploadIncomplete;
+    qlonglong total = -1;
+    QSqlQuery query("select count(*) from log where inqc = 0", db.db());
+    query.next();
+    total = query.value(0).toLongLong();
+    qDebug() << total << "records left";
+    if (total == 0) {
+        qDebug() << "Result: Complete";
+        result = UploadComplete;
+    } else {
+        qDebug() << "Result: Incomplete";
+        result = UploadIncomplete;
+    }
+    emit uploadFinished(archive, result);
 }
