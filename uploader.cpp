@@ -114,10 +114,13 @@ QStringList UploaderWorker::listArchives() {
 }
 
 void UploaderWorker::deleteArchiveIfUploaded(const QString &archive) {
-    Trace _("UploaderWorker::deleteArchiveIfUploaded");
-    qDebug() << archive;
-
-    if (!QFileInfo(archive).exists()) {
+    QFileInfo info(archive);
+    if (!info.exists()) {
+        return;
+    }
+    if (info.size() == 0) {
+        qWarning() << "UploadWorker::deleteArchiveIfUploaded: Empty archive" << archive;
+        QFile(archive).remove();
         return;
     }
 
@@ -129,8 +132,6 @@ void UploaderWorker::deleteArchiveIfUploaded(const QString &archive) {
     }
     query.next();
     qlonglong total = query.value(0).toLongLong();
-    qDebug() << archive << total << "records total";
-
     query.clear();
     if (!query.exec("select count(*) from log where inqc = 1 and ingft = 1")) {
         qCritical() << "UploadWorker::deleteArchiveIfUploaded:" << query.lastError().text();
@@ -138,11 +139,8 @@ void UploaderWorker::deleteArchiveIfUploaded(const QString &archive) {
     }
     query.next();
     qlonglong totalUploaded = query.value(0).toLongLong();
-    qDebug() << archive << totalUploaded << "records uploaded";
-
     db.close();
     if (total == totalUploaded) {
-        qDebug() << "All records uploaded, deleting" << archive;
         QFile(archive).remove();
     }
 }

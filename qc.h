@@ -4,10 +4,14 @@
 #include <QMap>
 #include <QString>
 #include <QList>
+#include <QNetworkReply>
 
 #include "../o2/o1.h"
 #include "uploader.h"
 #include "database.h"
+
+class QNetworkAccessManager;
+class O1Requestor;
 
 /// QC connector and uploader.
 class Qc: public O1 {
@@ -34,9 +38,15 @@ public:
     /// Upload a measurement batch to QC.
     void uploadBatch(const QVariantMap &batch);
 
+    /// Finish uploading a batch.
+    void finishBatch(bool failed);
+
 public slots:
-    /// Handle upload batch finished.
-    void onUploadBatchFinished(bool failed);
+    /// Handle network reply error.
+    void onError(QNetworkReply::NetworkError error);
+
+    /// Handle network reply completion.
+    void onFinished();
 
 signals:
     /// Uploading has been enabled or disabled.
@@ -47,12 +57,11 @@ signals:
     /// @param  result  @see UploadResult.
     void uploadFinished(const QString &archive, int result);
 
-    /// Uploading a batch of measurements has finished.
-    void uploadBatchFinished(bool failed);
-
 public:
     QString archive;
     QList<qlonglong> uploadedRecords;
+    QNetworkAccessManager *manager;
+    O1Requestor *requestor;
 };
 
 #endif // QC_H

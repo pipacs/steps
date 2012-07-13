@@ -1,11 +1,15 @@
 #include <QUrl>
 #include <QSettings>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 
 #include "qc.h"
 #include "qcsecret.h"
 #include "json/json.h"
 #include "platform.h"
 #include "trace.h"
+#include "../o2/o1requestor.h"
 
 using namespace QtJson;
 
@@ -13,13 +17,14 @@ static Qc *instance_;
 static const int recordsPerUpload = 150;
 
 Qc::Qc(QObject *parent): O1(parent) {
+    manager = 0;
+    requestor = 0;
+
     setRequestTokenUrl(QUrl(QC_REQUEST_TOKEN_URL));
     setAuthorizeUrl(QUrl(QC_AUTHORIZE_URL));
     setAccessTokenUrl(QUrl(QC_ACCESS_TOKEN_URL));
     setClientId(QC_OAUTH_CLIENT_ID);
     setClientSecret(QC_OAUTH_CLIENT_SECRET);
-
-    connect(this, SIGNAL(uploadBatchFinished(bool)), this, SLOT(onUploadBatchFinished(bool)));
 }
 
 Qc::~Qc() {
@@ -99,7 +104,7 @@ void Qc::upload(const QString &archive_) {
         QMap<QString, QString> tags = getTags(db, id);
 
         QVariantMap measurement;
-        measurement["at"] = date;
+        measurement["at"] = QDateTime::fromString(date, Qt::ISODate).toMSecsSinceEpoch() / 1000.;
         measurement["count"] = steps;
         foreach (QString key, tags.keys()) {
             if (key == "detectedActivity") {
@@ -128,8 +133,64 @@ void Qc::upload(const QString &archive_) {
 
 void Qc::uploadBatch(const QVariantMap &batch) {
     Trace _("Qc::uploadBatch");
-    // FIXME: Implement me
-    emit uploadBatchFinished(false);
+
+    if (!manager) {
+        manager = new QNetworkAccessManager(this);
+    }
+    if (!requestor) {
+        requestor = new O1Requestor(manager, this, this);
+    }
+
+    // Collect parameters participating in request signing
+    QList<O1RequestParameter> parameters;
+    parameters.append(O1RequestParameter("in", Json::serialize(batch)));
+
+    // Add these parameters to the request body, too
+    QByteArray body;
+    bool first = true;
+    foreach (O1RequestParameter p, parameters) {
+        if (first) {
+            first = false;
+        } else {
+            body.append("&");
+        }
+        body.append(QUrl::toPercentEncoding(p.name));
+        body.append("=");
+        body.append(QUrl::toPercentEncoding(p.value));
+    }
+
+    // Set up HTTP request
+    QNetworkRequest request;
+    request.setUrl(QUrl(QC_INPUT_URL));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::ContentLengthHeader, body.length());
+
+    // ...And post it
+    QNetworkReply *reply = requestor->post(request, parameters, body);
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), this, SLOT(onFinished()));
+}
+
+void Qc::onError(QNetworkReply::NetworkError error) {
+    Trace _("Qc::onError");
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (!reply) {
+        return;
+    }
+    qDebug() << error << reply->errorString();
+    finishBatch(true);
+}
+
+void Qc::onFinished() {
+    Trace _("Qc::onFinished");
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (!reply) {
+        return;
+    }
+    if (reply->error() == QNetworkReply::NoError) {
+        finishBatch(false);
+    }
+    reply->deleteLater();
 }
 
 bool Qc::enabled() {
@@ -158,8 +219,8 @@ QMap<QString, QString> Qc::getTags(Database &db, qlonglong id) {
     return ret;
 }
 
-void Qc::onUploadBatchFinished(bool failed) {
-    Trace _("Qc::onUploadBatchFinished");
+void Qc::finishBatch(bool failed) {
+    Trace _("Qc::finishBatch");
 
     if (failed) {
         qDebug() << "Result: Failed";
