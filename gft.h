@@ -23,17 +23,16 @@ public:
     /// Is upload enabled?
     bool enabled();
 
-    /// Start uploading some records from an archive.
-    void upload(const QString &archive);
+    /// Start uploading some records from the log.
+    void upload();
 
 signals:
     /// Emitted when enabling/disabling uploads.
     void enabledChanged();
 
     /// Emitted when an upload batch has finished.
-    /// @param  archive Database archive name.
     /// @param  result  Status of the finished upload, @see UploadResult.
-    void uploadFinished(const QString &archive, int result);
+    void uploadFinished(int result);
 
 public slots:
     /// Enable/disable uploads.

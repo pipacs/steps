@@ -79,6 +79,9 @@ public:
     /// Delete trace file and disable tracing.
     Q_INVOKABLE void deleteTraceFile();
 
+    /// Current time (seconds from Epoch).
+    Q_INVOKABLE qint64 time();
+
 signals:
     void savePowerChanged();
 

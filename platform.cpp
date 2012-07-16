@@ -13,6 +13,7 @@
 #include <QUuid>
 #include <QDesktopServices>
 #include <QLocale>
+#include <QDateTime>
 
 #if defined(Q_OS_SYMBIAN)
 #   include <sysutil.h>
@@ -228,4 +229,8 @@ void Platform::traceToFile(bool enable) {
 void Platform::deleteTraceFile() {
     Trace::setFileName("");
     QFile(traceFileName()).remove();
+}
+
+qint64 Platform::time() {
+    return QDateTime::currentMSecsSinceEpoch() / 1000;
 }

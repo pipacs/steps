@@ -115,7 +115,6 @@ OTHER_FILES += \
     qml/symbian/StepsSlider.qml \
     qml/symbian/StepsDialog.qml \
     steps256.png \
-    qml/ActionsPage.qml \
     qml/meego/StepsButton.qml \
     qml/BigButton.qml \
     qml/symbian/StepsButton.qml \

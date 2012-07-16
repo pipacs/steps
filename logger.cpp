@@ -51,12 +51,6 @@ void Logger::log(int steps, const QVariantMap &tags) {
     }
 }
 
-void Logger::archive() {
-    if (!QMetaObject::invokeMethod(worker, "archive")) {
-        qCritical() << "Logger::archive: Invoking remote logger failed";
-    }
-}
-
 void Logger::upgrade() {
     if (!QMetaObject::invokeMethod(worker, "upgrade")) {
         qCritical() << "Logger::upgrade: Invoking remote logger failed";
@@ -79,27 +73,16 @@ Database *LoggerWorker::db() {
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
-    archiveIfOld();
-    saveLog(steps, tags);
-}
-
-void LoggerWorker::archiveIfOld() {
-    if (QDate::currentDate() != Preferences::instance()->logDate()) {
-        archive();
-    }
-}
-
-void LoggerWorker::saveLog(int steps, const QVariantMap &tags) {
     // Return if nothing to log
     if ((steps == 0) && !tags.size()) {
         return;
     }
 
     // Check disk space every now and then
-    if ((logCount++ % 50) == 0) {
+    if ((logCount++ % 500) == 0) {
         diskFull = Platform::instance()->dbFull();
         if (diskFull) {
-            qCritical() << "LoggerWorker::saveLog: Disk full";
+            qCritical() << "LoggerWorker::log: Disk full";
         }
     }
 
@@ -180,21 +163,6 @@ void LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap 
     }
 }
 
-void LoggerWorker::archive() {
-    QString dbName = Platform::instance()->dbPath();
-    QFile file(dbName);
-    if (!file.exists()) {
-        qWarning() << "LoggerWorker::archive: No database:" << dbName << "does not exist";
-        return;
-    }
-    db()->close();
-    lastInsertId = 0;
-    QString archiveName = getArchiveName();
-    if (!file.rename(archiveName)) {
-        qCritical() << "LoggerWorker::archive: Error" << file.error() << ":" << file.errorString() << ": Failed to rename" << dbName << "to" << archiveName;
-    }
-}
-
 void LoggerWorker::onAddSchema() {
     Trace _("LoggerWorker::onAddSchema");
 
@@ -220,18 +188,7 @@ void LoggerWorker::onAddSchema() {
     QDateTime nowUtc(now);
     nowUtc.setTimeSpec(Qt::UTC);
     tags.insert("secondsFromUtc", now.secsTo(nowUtc));
-    saveLog(0, tags);
-}
-
-QString LoggerWorker::getArchiveName() {
-    QString dir = QFileInfo(Platform::instance()->dbPath()).absolutePath();
-    QString base = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
-    QString archiveName = dir + "/" + base + ".adc";
-    if (QFileInfo(archiveName).exists()) {
-        qCritical() << "LoggerWorker::getArchiveName: Archive" << archiveName << "exists already";
-        return QString();
-    }
-    return archiveName;
+    log(0, tags);
 }
 
 void LoggerWorker::upgrade() {
@@ -243,10 +200,13 @@ void LoggerWorker::upgrade() {
         upgradeDbToDc(dirName + "/current.db");
     }
 
-    // Upgrade archives
+    // Delete old archives
     QDir dir(dirName);
-    foreach (QString srcName, dir.entryList(QStringList("*.adb"), QDir::Files | QDir::Readable)) {
-        upgradeDbToDc(dirName + "/" + srcName);
+    QStringList nameList;
+    nameList << "*.adb";
+    nameList << "*.adc";
+    foreach (QString srcName, dir.entryList(nameList, QDir::Files | QDir::Readable)) {
+        QFile(dirName + "/" + srcName).remove();
     }
 }
 

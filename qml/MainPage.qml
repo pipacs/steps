@@ -48,24 +48,14 @@ StepsPage {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        // Name of current activity
+        // Running/paused label
         StepsLabel {
             id: pausedLabel
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            text: main.activityNames[main.activity] + (detector.running? "": qsTr(" (Paused)"))
+            text: detector.running? "": qsTr(" (Paused)")
             font.pixelSize: 45
             color: "#ff9999"
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        }
-
-        // Help text
-        StepsLabel {
-            visible: platform.osName === "meego"
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width
-            text: qsTr("Press Volume Up to start/pause activity, Volume Down to show more options")
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
@@ -86,6 +76,7 @@ StepsPage {
         StepsToolIcon {
             iconId: "toolbar-back"
             onClicked: Qt.quit()
+            visible: platform.osName === "symbian"
         }
         StepsToolIcon {
             id: play
@@ -93,8 +84,12 @@ StepsPage {
             onClicked: detector.running = !detector.running
         }
         StepsToolIcon {
-            iconId: "toolbar-list"
-            onClicked: main.pageStack.push(actionsPage)
+            iconId: "toolbar-settings"
+            onClicked: main.pageStack.push(settingsPage)
+        }
+        StepsToolIcon {
+            iconId: (platform.osName === "symbian")? ":/images/about.png": "toolbar-new-message"
+            onClicked: main.pageStack.push(aboutPage)
         }
     }
 
@@ -104,12 +99,7 @@ StepsPage {
     }
 
     Component.onCompleted: {
-        if (platform.osName === "meego") {
-            mediaKey.volumeUpPressed.connect(onVolumeUpPressed)
-            mediaKey.volumeDownPressed.connect(onVolumeDownPressed)
-        } else {
-            setToolBar(myTools)
-        }
+        setToolBar(myTools)
         detector.runningChanged.connect(onCounterRunningChanged)
     }
 
@@ -119,22 +109,6 @@ StepsPage {
         } else {
             detectorWasRunning = detector.running
             detector.running = false
-        }
-    }
-
-    function onActivityChanged() {
-        pausedLabel.text = main.activityNames[main.activity] + (detector.running? "": qsTr(" (Paused)"))
-    }
-
-    function onVolumeUpPressed() {
-        if (active) {
-            detector.running = !detector.running
-        }
-    }
-
-    function onVolumeDownPressed() {
-        if (active) {
-            main.pageStack.push(actionsPage)
         }
     }
 }

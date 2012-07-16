@@ -29,8 +29,8 @@ public:
     static Qc *instance();
     static void close();
 
-    /// Start uploading some records from an archive.
-    void upload(const QString &archive);
+    /// Start uploading some records from the log database.
+    void upload();
 
     /// Get tags.
     QMap<QString, QString> getTags(Database &db, qlonglong recordId);
@@ -53,12 +53,10 @@ signals:
     void enabledChanged();
 
     /// Upload has finished.
-    /// @param  archive Database archive file name.
     /// @param  result  @see UploadResult.
-    void uploadFinished(const QString &archive, int result);
+    void uploadFinished(int result);
 
 public:
-    QString archive;
     QList<qlonglong> uploadedRecords;
     QNetworkAccessManager *manager;
     O1Requestor *requestor;

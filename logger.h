@@ -22,9 +22,6 @@ public:
     /// Log step count, with optional tags.
     Q_INVOKABLE void log(int steps, const QVariantMap &tags);
 
-    /// Close and archive current log file, open new one.
-    Q_INVOKABLE void archive();
-
     /// Upgrade old databases to current format
     Q_INVOKABLE void upgrade();
 
@@ -47,9 +44,6 @@ public slots:
     /// Log step count, with optional tags.
     void log(int steps, const QVariantMap &tags);
 
-    /// Close and archive current log file, open new one.
-    void archive();
-
     /// Upgrade old databases to current format.
     void upgrade();
 
@@ -58,12 +52,6 @@ protected slots:
     void onAddSchema();
 
 protected:
-    /// Archive database if it is older than one day.
-    void archiveIfOld();
-
-    /// Save log entry into an existing database: Insert new record or update the last one.
-    void saveLog(int steps, const QVariantMap &tags);
-
     /// Insert a log entry into an existing database.
     /// If logging was successful, set lastInsertId to the last record ID and totalSteps to steps.
     void insertLog(const QDateTime &now, int steps, const QVariantMap &tags);
@@ -71,9 +59,6 @@ protected:
     /// Update last log entry in an existing database.
     /// If logging was successful, increase totalSteps by steps.
     void updateLog(const QDateTime &now, int steps);
-
-    /// Get the name of new archive file.
-    QString getArchiveName();
 
     /// Return database, create it if doesn't exist.
     Database *db();

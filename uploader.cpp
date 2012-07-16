@@ -13,7 +13,7 @@
 
 static Uploader *instance_;
 const int UPLOADER_IDLE = 1000 * 60 * 30; ///< Idle time between complete/failed uploads (ms).
-const int UPLOADER_IDLE_INCOMPLETE = 1000 * 3; ///< Idle time between incomplete uploads (ms).
+const int UPLOADER_IDLE_INCOMPLETE = 1000 * 60; ///< Idle time between incomplete uploads (ms).
 
 Uploader *Uploader::instance() {
     if (!instance_) {
@@ -70,8 +70,8 @@ void Uploader::onUploadComplete(int result) {
 }
 
 UploaderWorker::UploaderWorker(QObject *parent): QObject(parent) {
-    connect(Gft::instance(), SIGNAL(uploadFinished(QString, int)), this, SLOT(onUploadFinished(QString, int)));
-    connect(Qc::instance(), SIGNAL(uploadFinished(QString, int)), this, SLOT(onUploadFinished(QString, int)));
+    connect(Gft::instance(), SIGNAL(uploadFinished(int)), this, SLOT(onUploadFinished(int)));
+    connect(Qc::instance(), SIGNAL(uploadFinished(int)), this, SLOT(onUploadFinished(int)));
 }
 
 UploaderWorker::~UploaderWorker() {
@@ -79,68 +79,61 @@ UploaderWorker::~UploaderWorker() {
 
 void UploaderWorker::upload() {
     Trace _("UploaderWorker::upload");
-    QStringList archives = listArchives();
-    if (!archives.count()) {
-        qDebug() << "No archives";
-        emit uploadComplete(UploadComplete);
-        return;
-    }
-    QString archive = archives[0];
-    Gft::instance()->upload(archive);
-    Qc::instance()->upload(archive);
+    Gft::instance()->upload();
+    Qc::instance()->upload();
 }
 
-void UploaderWorker::onUploadFinished(const QString &archive, int result) {
+void UploaderWorker::onUploadFinished(int result) {
     Trace _("UploaderWorker::onUploadFinished");
     if (result == UploadComplete) {
-        deleteArchiveIfUploaded(archive);
-        if (listArchives().length() > 1) {
-            qDebug() << "There are more archives to upload";
-            result = UploadIncomplete;
-        }
+        result = deleteUploadedRecords();
     }
     qDebug() << "Result" << (int)result;
     emit uploadComplete(result);
 }
 
-QStringList UploaderWorker::listArchives() {
-    QString dbDir = QFileInfo(Platform::instance()->dbPath()).absolutePath();
-    QStringList nameFilters(QString("*.adc"));
-    QStringList ret;
-    foreach (QString dbFile, QDir(dbDir).entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name)) {
-        ret.append(dbDir + "/" + dbFile);
-    }
-    return ret;
-}
-
-void UploaderWorker::deleteArchiveIfUploaded(const QString &archive) {
-    QFileInfo info(archive);
+int UploaderWorker::deleteUploadedRecords() {
+    QFileInfo info(Platform::instance()->dbPath());
     if (!info.exists()) {
-        return;
+        return UploadComplete;
     }
     if (info.size() == 0) {
-        qWarning() << "UploadWorker::deleteArchiveIfUploaded: Empty archive" << archive;
-        QFile(archive).remove();
-        return;
+        qWarning() << "UploadWorker::deleteUploadedRecords: Empty log";
+        return UploadComplete;
     }
 
-    Database db(archive);
+    Database db(Platform::instance()->dbPath());
+
+    // Get total number of records
     QSqlQuery query(db.db());
     if (!query.exec("select count(*) from log")) {
-        qCritical() << "UploadWorker::deleteArchiveIfUploaded:" << query.lastError().text();
-        return;
+        qCritical() << "UploadWorker::deleteUploadedRecords:" << query.lastError().text();
+        return UploadFailed;
     }
     query.next();
     qlonglong total = query.value(0).toLongLong();
+
+    // Get number of uploaded records
     query.clear();
     if (!query.exec("select count(*) from log where inqc = 1 and ingft = 1")) {
-        qCritical() << "UploadWorker::deleteArchiveIfUploaded:" << query.lastError().text();
-        return;
+        qCritical() << "UploadWorker::deleteUploadedRecords:" << query.lastError().text();
+        return UploadFailed;
     }
     query.next();
     qlonglong totalUploaded = query.value(0).toLongLong();
-    db.close();
+
+    // Delete completely uploaded records
+    query.clear();
+    if (!query.exec("delete from log where inqc = 1 and ingft = 1")) {
+        qCritical() << "UploadWorker::deleteUploadedRecords:" << query.lastError().text();
+        return UploadFailed;
+    }
+
     if (total == totalUploaded) {
-        QFile(archive).remove();
+        query.clear();
+        (void)query.exec("vacuum");
+        return UploadComplete;
+    } else {
+        return UploadIncomplete;
     }
 }

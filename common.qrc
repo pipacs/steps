@@ -4,7 +4,6 @@
         <file>qml/main.qml</file>
         <file>qml/MainPage.qml</file>
         <file>qml/SettingsPage.qml</file>
-        <file>qml/ActionsPage.qml</file>
         <file>qml/BigButton.qml</file>
         <file>qml/AboutPage.qml</file>
         <file>qml/BigRedButton.qml</file>

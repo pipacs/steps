@@ -8,20 +8,18 @@ StepsPageStackWindow {
     property int totalCount: 0
     property int dailyCount: 0
     property int activityCount: 0
-    property int activity: 0
-    property variant activityNames: [
-        qsTr("Walking") + "/" + qsTr("Running"),
-        qsTr("Walking") + "/" + qsTr("Running"),
-        prefs.value("activity2Name", qsTr("Custom 1")),
-        prefs.value("activity3Name", qsTr("Custom 2"))
-    ]
+    property int lastActivityTime: -1
 
     MainPage {
         id: mainPage
     }
 
-    ActionsPage {
-        id: actionsPage
+    SettingsPage {
+        id: settingsPage
+    }
+
+    AboutPage {
+        id: aboutPage
     }
 
     Splash {
@@ -66,8 +64,6 @@ StepsPageStackWindow {
 
         // Register daily step count
         setDailyCount(dailyCount + count)
-
-        //stepSound.beep()
     }
 
     // Set current activity step count
@@ -111,17 +107,12 @@ StepsPageStackWindow {
         }
     }
 
-    function setActivity(a) {
-        if (a !== activity) {
-            logger.log(0, {"activity": a})
-            activity = a
-            prefs.activity = a
-            resetActivityCount()
-        }
-    }
-
     function onDetectedActivityChanged() {
-        logger.log(0, {"detectedActivity": detector.activity})
+        now = platform.time()
+        if ((now - lastActivityTime) > (5 * 50)) {
+            logger.log(0, {"detectedActivity": detector.activity})
+            lastActivityTime = now
+        }
         if (detector.activity === 2) {
             walkingSound.beep()
         } else if (detector.activity === 3) {
@@ -129,11 +120,6 @@ StepsPageStackWindow {
         } else {
             idleSound.beep()
         }
-    }
-
-    onActivityNamesChanged: {
-        prefs.setValue("activity2Name", activityNames[2])
-        prefs.setValue("activity3Name", activityNames[3])
     }
 
     Component.onCompleted: {
@@ -147,7 +133,6 @@ StepsPageStackWindow {
         // Restore step counts from settings
         totalCount = prefs.rawCount
         setDailyCount(prefs.dailyCount)
-        setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
 
         gft.linkedChanged.connect(linkInfo.show)
