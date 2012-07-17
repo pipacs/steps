@@ -21,9 +21,11 @@ Database::~Database() {
 
 void Database::initialize() {
     bool schemaRequired = false;
+    static int serial = 0;
+    QMutexLocker lock(&mutex_);
 
     if (!db_.isValid()) {
-        QString connectionName = QString::number(qrand());
+        QString connectionName = QString::number(serial++);
         db_ = QSqlDatabase::addDatabase("QSQLITE", connectionName);
     }
 

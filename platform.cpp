@@ -234,3 +234,7 @@ void Platform::deleteTraceFile() {
 qint64 Platform::time() {
     return QDateTime::currentMSecsSinceEpoch() / 1000;
 }
+
+QString Platform::buildDate() {
+    return __DATE__ " " __TIME__;
+}

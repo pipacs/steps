@@ -7,6 +7,7 @@
 #include <QSqlQuery>
 #include <QString>
 #include <QDebug>
+#include <QMutex>
 
 /// SQLite database with on-demand initialization
 class Database: public QObject {
@@ -42,6 +43,7 @@ protected:
 
     QSqlDatabase db_;
     QString name_;
+    mutable QMutex mutex_;
 };
 
 #endif // DATABASE_H

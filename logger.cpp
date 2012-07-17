@@ -5,6 +5,8 @@
 #include <QFileInfo>
 #include <QDateTime>
 
+#include <sqlite3.h>
+
 #include "logger.h"
 #include "platform.h"
 #include "preferences.h"
