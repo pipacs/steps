@@ -54,11 +54,7 @@ protected slots:
 protected:
     /// Insert a log entry into an existing database.
     /// If logging was successful, set lastInsertId to the last record ID and totalSteps to steps.
-    void insertLog(const QDateTime &now, int steps, const QVariantMap &tags);
-
-    /// Update last log entry in an existing database.
-    /// If logging was successful, increase totalSteps by steps.
-    void updateLog(const QDateTime &now, int steps);
+    void insertLog(int steps, const QVariantMap &tags);
 
     /// Return database, create it if doesn't exist.
     Database *db();
@@ -67,11 +63,8 @@ protected:
     void upgradeDbToDc(const QString &srcName);
 
     Database *database;     ///< Database, created on demand.
-    int logCount;           ///< The number of times saveLog() has been called.
+    int logCount;           ///< The number of times log() has been called.
     bool diskFull;          ///< Was the disk full when we last checked.
-    qlonglong lastInsertId; ///< Record ID of the last insert.
-    int totalSteps;         ///< Total number of steps inserted in the last insert.
-    QDateTime lastLogTime;  ///< Time of last logging.
 };
 
 #endif // LOGGER_H

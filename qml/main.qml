@@ -8,7 +8,9 @@ StepsPageStackWindow {
     property int totalCount: 0
     property int dailyCount: 0
     property int activityCount: 0
-    property int lastActivityTime: -1
+    property int lastActivity: 0
+    property int unsavedCount: 0
+    property int lastSaveTime: 0
 
     MainPage {
         id: mainPage
@@ -54,10 +56,19 @@ StepsPageStackWindow {
     }
 
     function onStepDetected(count) {
-        // Register step count
-        logger.log(count, {})
+        // Accumulate unsaved step count
+        unsavedCount += count
         totalCount += count
         prefs.rawCount = totalCount
+
+        // Log step count to database
+        var now = platform.time()
+        if ((unsavedCount > 50) || ((now - lastSaveTime) > 300)) {
+            console.log("* main.onStepDetected: Logging " + unsavedCount + " steps")
+            logger.log(unsavedCount, {})
+            unsavedCount = 0
+            lastSaveTime = now
+        }
 
         // Register activity step count
         setActivityCount(activityCount + count)
@@ -89,29 +100,25 @@ StepsPageStackWindow {
     // Reset current activity counter
     function resetActivityCount() {
         setActivityCount(0)
-        logger.log(0, {"resetActivityCount": 0})
     }
 
     // Reset all counters
     function resetCount() {
         detector.reset()
-        logger.log(0, {"reset": 0})
         resetActivityCount()
         setDailyCount(0)
     }
 
     function runningChanged() {
-        logger.log(0, {"counting": detector.running})
         if (prefs.savePower) {
             platform.savePower = detector.running
         }
     }
 
     function onDetectedActivityChanged() {
-        now = platform.time()
-        if ((now - lastActivityTime) > (5 * 50)) {
+        if ((detector.activity > 1) && (detector.activity !== lastActivity)) {
+            lastActivity = detector.activity
             logger.log(0, {"detectedActivity": detector.activity})
-            lastActivityTime = now
         }
         if (detector.activity === 2) {
             walkingSound.beep()
@@ -140,6 +147,9 @@ StepsPageStackWindow {
 
     Component.onDestruction: {
         detector.running = false
-        logger.log(0, {"counting": false, "appStopped": "com.pipacs.steps"})
+        if (unsavedCount) {
+            logger.log(unsavedCount, {})
+            unsavedCount = 0
+        }
     }
 }

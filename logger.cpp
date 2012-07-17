@@ -57,7 +57,7 @@ void Logger::upgrade() {
     }
 }
 
-LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false), lastInsertId(0), totalSteps(0), lastLogTime(QDate(1965, 06, 29)) {
+LoggerWorker::LoggerWorker(QObject *parent): QObject(parent), database(0), logCount(0), diskFull(false) {
 }
 
 LoggerWorker::~LoggerWorker() {
@@ -73,8 +73,11 @@ Database *LoggerWorker::db() {
 }
 
 void LoggerWorker::log(int steps, const QVariantMap &tags) {
+    Trace _("LoggerWorker::log");
+
     // Return if nothing to log
     if ((steps == 0) && !tags.size()) {
+        qDebug() << "Nothing to do";
         return;
     }
 
@@ -91,52 +94,26 @@ void LoggerWorker::log(int steps, const QVariantMap &tags) {
         return;
     }
 
-    // Insert new record or update the last one
-    QDateTime now = QDateTime::currentDateTime();
-    qint64 elapsed = now.toMSecsSinceEpoch() - lastLogTime.toMSecsSinceEpoch();
-    if (!lastInsertId || tags.count() || (elapsed > MinInsertTimeDiff)) {
-        insertLog(now, steps, tags);
-    } else {
-        updateLog(now, steps);
-    }
-
-    // If there were tags to log, force a new insert next time
-    if (tags.count()) {
-        lastInsertId = 0;
-    }
-
-    lastLogTime = now;
+    // Insert new record
+    insertLog(steps, tags);
 }
 
-void LoggerWorker::updateLog(const QDateTime &now, int steps) {
-    QSqlQuery query(db()->db());
-    query.prepare("update log set date=?, steps=? where id=?");
-    query.bindValue(0, now.toString(Qt::ISODate));
-    query.bindValue(1, totalSteps + steps);
-    query.bindValue(2, lastInsertId);
-    if (!query.exec()) {
-        qCritical() << "LoggerWorker::updateLog: Failed to log:" << db()->error();
-    } else {
-        totalSteps += steps;
-    }
-}
-
-void LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap &tags) {
-    lastInsertId = 0;
-    totalSteps = 0;
+void LoggerWorker::insertLog(int steps, const QVariantMap &tags) {
+    Trace _("LoggerWorker::insertLog");
 
     if (!db()->transaction()) {
         qCritical() << "LoggerWorker::insertLog: Can't start transaction:" << db()->error();
         return;
     }
 
+    QDateTime now = QDateTime::currentDateTimeUtc();
     QSqlQuery query(db()->db());
     query.prepare("insert into log (date, steps, inqc, ingft) values (?, ?, 0, 0)");
     query.bindValue(0, now.toString(Qt::ISODate));
     query.bindValue(1, steps);
     bool success = query.exec();
     if (success) {
-        lastInsertId = query.lastInsertId().toLongLong();
+        qlonglong lastInsertId = query.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags[key].toString();
             QSqlQuery tagQuery(db()->db());
@@ -156,10 +133,8 @@ void LoggerWorker::insertLog(const QDateTime &now, int steps, const QVariantMap 
 
     if (success) {
         db()->commit();
-        totalSteps = steps;
     } else {
         db()->rollback();
-        lastInsertId = 0;
     }
 }
 
@@ -193,7 +168,8 @@ void LoggerWorker::onAddSchema() {
 
 void LoggerWorker::upgrade() {
     Trace _("LoggerWorker::upgrade");
-    QString dirName = QFileInfo(Platform::instance()->dbPath()).absolutePath();
+    QString dbName = Platform::instance()->dbPath();
+    QString dirName = QFileInfo(dbName).absolutePath();
 
     // Upgrade current log
     if (QFileInfo(dirName + "/current.db").exists()) {
@@ -206,35 +182,38 @@ void LoggerWorker::upgrade() {
     nameList << "*.adb";
     nameList << "*.adc";
     foreach (QString srcName, dir.entryList(nameList, QDir::Files | QDir::Readable)) {
-        QFile(dirName + "/" + srcName).remove();
+        upgradeDbToDc(dirName + "/" + srcName);
     }
 }
 
 void LoggerWorker::upgradeDbToDc(const QString &srcName) {
     Trace _("LoggerWorker::upgradeDbToDc");
 
-    QFileInfo info(srcName);
-    QString dirName = info.absolutePath();
-    QString baseName = info.baseName();
-    QString suffix = info.suffix();
-    QString dstName = dirName + "/" + baseName + ((suffix == "db")? ".dc": ".adc");
-    qDebug() << srcName << "->" << dstName;
+    qDebug() << srcName << "->" << Platform::instance()->dbPath();
     Database srcDb(srcName);
-    Database dstDb(dstName);
+    Database dstDb(Platform::instance()->dbPath());
 
     QSqlQuery dstQuery(dstDb.db());
     QSqlQuery srcQuery(srcDb.db());
     QSqlQuery srcTagsQuery(srcDb.db());
     QSqlQuery dstTagsQuery(dstDb.db());
 
+    QStringList interestingTags;
+    interestingTags << "appVersion";
+    interestingTags << "detectedActivity";
+    interestingTags << "osName";
+    interestingTags << "secondsFromUtc";
+
+    QString lastActivity;
+
     // Initialize upgraded database
 
-    if (!dstQuery.exec("create table log (id integer primary key, date varchar, steps integer, inqc integer, ingft integer);")) {
+    if (!dstQuery.exec("create table if not exists log (id integer primary key, date varchar, steps integer, inqc integer, ingft integer);")) {
         qCritical() << "LoggerWorker::upgradeDbToDc: Failed to create log table:" << dstQuery.lastError().text();
         return;
     }
     dstQuery.clear();
-    if (!dstQuery.exec("create table tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id));")) {
+    if (!dstQuery.exec("create table if not exists tags (name varchar, value varchar, logid integer, foreign key(logid) references log(id));")) {
         qCritical() << "LoggerWorker::upgradeDbToDc: Failed to create tags table:" << dstQuery.lastError().text();
         return;
     }
@@ -252,7 +231,6 @@ void LoggerWorker::upgradeDbToDc(const QString &srcName) {
         int steps = srcQuery.value(2).toInt();
 
         // Read tags
-
         QMap<QString, QString> tags;
         srcTagsQuery.clear();
         srcTagsQuery.prepare("select name, value from tags where logId = ?");
@@ -264,11 +242,27 @@ void LoggerWorker::upgradeDbToDc(const QString &srcName) {
         while (srcTagsQuery.next()) {
             QString name = srcTagsQuery.value(0).toString();
             QString value = srcTagsQuery.value(1).toString();
-            tags.insert(name, value);
+
+            // Filter out activity flip-flopping
+            if (name == "detectedActivity") {
+                if ((value == "idle") || (value == lastActivity)) {
+                    continue;
+                }
+                lastActivity = value;
+            }
+
+            // Filter out non-interesting tags
+            if (interestingTags.contains(name)) {
+                tags.insert(name, value);
+            }
+        }
+
+        // Escape if there is no step count nor tags
+        if ((steps == 0) && tags.isEmpty()) {
+            continue;
         }
 
         // Save upgraded log record
-
         dstQuery.clear();
         dstQuery.prepare("insert into log (date, steps, inqc, ingft) values (?, ?, 0, 0)");
         dstQuery.bindValue(0, date);
@@ -279,8 +273,7 @@ void LoggerWorker::upgradeDbToDc(const QString &srcName) {
         }
 
         // Save tags
-
-        lastInsertId = dstQuery.lastInsertId().toLongLong();
+        qlonglong lastInsertId = dstQuery.lastInsertId().toLongLong();
         foreach (QString key, tags.keys()) {
             QString value = tags.value(key);
             dstTagsQuery.clear();

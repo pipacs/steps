@@ -28,6 +28,8 @@ Qc::Qc(QObject *parent): O1(parent) {
 }
 
 Qc::~Qc() {
+    delete requestor;
+    delete manager;
 }
 
 Qc *Qc::instance() {
@@ -133,10 +135,10 @@ void Qc::uploadBatch(const QVariantMap &batch) {
     Trace _("Qc::uploadBatch");
 
     if (!manager) {
-        manager = new QNetworkAccessManager(this);
+        manager = new QNetworkAccessManager();
     }
     if (!requestor) {
-        requestor = new O1Requestor(manager, this, this);
+        requestor = new O1Requestor(manager, this);
     }
 
     // Collect parameters participating in request signing
