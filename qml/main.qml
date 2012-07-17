@@ -135,7 +135,7 @@ StepsPageStackWindow {
         detector.step.connect(main.onStepDetected)
         detector.runningChanged.connect(main.runningChanged)
         detector.activityChanged.connect(main.onDetectedActivityChanged)
-        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName, "activity": prefs.activity, "counting": false})
+        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName})
 
         // Restore step counts from settings
         totalCount = prefs.rawCount
