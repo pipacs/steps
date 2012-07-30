@@ -7,8 +7,7 @@ StepsPage {
     StepsFlickable {
         id: flickable
         anchors.fill: parent
-        anchors.margins: 15
-        contentWidth: Math.max(parent.width, column.width)
+        contentWidth: parent.width
         contentHeight: Math.max(parent.height, column.height)
         flickableDirection: Flickable.VerticalFlick
 
@@ -16,7 +15,17 @@ StepsPage {
             id: column
             anchors.top: parent.top
             spacing: 25
-            width: settings.width - 60
+            width: settings.width
+
+            Gap {}
+
+            BigRedButton {
+                text: qsTr("Reset step count")
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: confirmResetActivityDialog.open()
+            }
+
+            Gap {}
 
             StepsCheckBox {
                 id: savePower
@@ -59,30 +68,6 @@ StepsPage {
                     }
                 }
             }
-
-            Gap {}
-
-            StepsLabel {
-                id: custom1Label
-                text: qsTr("Rename activity \"Custom 1\":")
-            }
-
-            StepsTextField {
-                id: custom1Text
-                width: parent.width
-                text: main.activityNames[2]
-            }
-
-            StepsLabel {
-                id: custom2Label
-                text: qsTr("Rename activity \"Custom 2\":")
-            }
-
-            StepsTextField {
-                id: custom2Text
-                width: parent.width
-                text: main.activityNames[3]
-            }
         }
     }
 
@@ -104,6 +89,15 @@ StepsPage {
 
     LoginBrowser {
         id: loginBrowser
+    }
+
+    StepsYesNoDialog {
+        id: confirmResetActivityDialog
+        title: qsTr("Reset current step count?")
+        onDialogAccepted: {
+            main.resetActivityCount()
+            main.pageStack.pop()
+        }
     }
 
     onBack: {

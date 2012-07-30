@@ -45,9 +45,8 @@ void Gft::setEnabled(bool v) {
     emit enabledChanged();
 }
 
-void Gft::upload(const QString &archive_) {
+void Gft::upload() {
     Trace t("Gft::upload");
-    qDebug() << "Archive:" << archive_;
 
     // Create program if doesn't exist
     if (!program) {
@@ -56,9 +55,8 @@ void Gft::upload(const QString &archive_) {
         connect(program, SIGNAL(programCompleted(bool)), this, SLOT(onProgramCompleted(bool)));
     }
 
-    archive = archive_;
     uploadedRecords.clear();
-    Database db(archive);
+    Database db(Platform::instance()->dbPath());
 
     // Do nothing if database is empty
     {
@@ -68,7 +66,7 @@ void Gft::upload(const QString &archive_) {
         total = query.value(0).toLongLong();
         if (total == 0) {
             qDebug() << "No records to upload";
-            emit uploadFinished(archive, UploadComplete);
+            emit uploadFinished(UploadComplete);
             return;
         }
     }
@@ -78,14 +76,14 @@ void Gft::upload(const QString &archive_) {
         qDebug() << "GFT not enabled";
         QSqlQuery query("update log set ingft = 1", db.db());
         query.exec();
-        emit uploadFinished(archive, UploadComplete);
+        emit uploadFinished(UploadComplete);
         return;
     }
 
     // Fail if not logged in
     if (!linked()) {
         qDebug() << "Not logged in";
-        emit uploadFinished(archive, UploadFailed);
+        emit uploadFinished(UploadFailed);
         return;
     }
 
@@ -99,8 +97,8 @@ void Gft::upload(const QString &archive_) {
     QSqlQuery query(db.db());
     query.setForwardOnly(true);
     if (!query.exec("select id, date, steps from log where ingft = 0")) {
-        qCritical() << "Gft::upload: Could not query archive:" << query.lastError().text();
-        emit uploadFinished(archive, UploadFailed);
+        qCritical() << "Gft::upload: Could not query log:" << query.lastError().text();
+        emit uploadFinished(UploadFailed);
         return;
     }
     int numRecords = 0;
@@ -131,7 +129,7 @@ QString Gft::getTags(Database &db, qlonglong id) {
     query.prepare("select name, value from tags where logId = ?");
     query.bindValue(0, id);
     if (!query.exec()) {
-        qCritical() << "Gft::getTags: Could not query archive:" << query.lastError().text();
+        qCritical() << "Gft::getTags: Could not query log:" << query.lastError().text();
         return ret;
     }
     QSqlRecord record = query.record();
@@ -170,8 +168,8 @@ void Gft::onProgramCompleted(bool failed) {
     Trace _("Gft::onProgramCompleted");
     int result = UploadFailed;
 
-    // Mark uploaded records in the local archive
-    Database db(archive);
+    // Mark uploaded records in the log database
+    Database db(Platform::instance()->dbPath());
     db.transaction();
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query(db.db());
@@ -186,7 +184,7 @@ void Gft::onProgramCompleted(bool failed) {
         qDebug() << "Result: Failed";
         result = UploadFailed;
     } else {
-        // Are there any records left in the archive?
+        // Are there any records left?
         qlonglong total = -1;
         QSqlQuery query("select count(*) from log where ingft = 0", db.db());
         query.next();
@@ -201,5 +199,5 @@ void Gft::onProgramCompleted(bool failed) {
             result = UploadIncomplete;
         }
     }
-    emit uploadFinished(archive, result);
+    emit uploadFinished(result);
 }

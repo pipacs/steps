@@ -54,20 +54,18 @@ signals:
 public:
     explicit UploaderWorker(QObject *parent = 0);
     virtual ~UploaderWorker();
-    QStringList listArchives();
-    void deleteArchiveIfUploaded(const QString &archive);
+
+    /// Delete records where upload is complete.
+    /// @return Qsee UploadResult.
+    int deleteUploadedRecords();
 
 public slots:
     /// Upload some data.
     void upload();
 
     /// An upload batch has finished.
-    /// @param  archive     Name of the uploaded archive file.
     /// @param  complete    @see UploadResult.
-    void onUploadFinished(const QString &archive, int result);
-
-public:
-    QString archive;
+    void onUploadFinished(int result);
 };
 
 #endif // UPLOADER_H

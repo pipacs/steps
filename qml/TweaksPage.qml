@@ -27,6 +27,12 @@ StepsPage {
                 enabled: qc.linked
             }
 
+            StepsCheckBox {
+                text: qsTr("Use development server")
+                id: saveToDev
+                checked: prefs.saveToDev
+            }
+
             StepsButton {
                 text: qc.linked? qsTr("Logout from Quantis"): qsTr("Login to Quantis")
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -164,6 +170,7 @@ StepsPage {
         detector.minReadingDiff = readingDiff.value
         prefs.minReadingDiff = readingDiff.value
         qc.enabled = enableSharing.checked
+        prefs.saveToDev = saveToDev.checked
     }
 
     Component.onCompleted: {

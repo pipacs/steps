@@ -23,7 +23,7 @@ StepsPage {
                 font.pixelSize: (platform.osName === "harmattan")? 30: 26
                 textFormat: Text.RichText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + qsTr("<p>") + qsTr("Device ID: ") + platform.deviceId + qsTr("</p>") + platform.text("about.html")
+                text: qsTr("<b>Steps</b><p>Version ") + platform.appVersion + " " + platform.buildDate + qsTr("<p>") + qsTr("Device ID: ") + platform.deviceId + qsTr("</p>") + platform.text("about.html")
                 onLinkActivated: Qt.openUrlExternally(link)
             }
         }

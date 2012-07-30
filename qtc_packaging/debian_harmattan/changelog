@@ -1,6 +1,8 @@
 steps (0.1.9) unstable; urgency=low
 
   * QC tweaks
+  * Optimize logging
+  * Simplify UI
 
  -- Akos Polster <akos@pipacs.com>  Sun, 11 Jul 2012 12:02:00 +0200
 

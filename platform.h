@@ -32,6 +32,9 @@ class Platform: public QObject {
     /// Trace file name.
     Q_PROPERTY(QString traceFileName READ traceFileName CONSTANT)
 
+    /// Build date.
+    Q_PROPERTY(QString buildDate READ buildDate CONSTANT)
+
 public:
     static Platform *instance();
     static void close();
@@ -78,6 +81,12 @@ public:
 
     /// Delete trace file and disable tracing.
     Q_INVOKABLE void deleteTraceFile();
+
+    /// Current time (seconds from Epoch).
+    Q_INVOKABLE qint64 time();
+
+    /// Build date.
+    QString buildDate();
 
 signals:
     void savePowerChanged();

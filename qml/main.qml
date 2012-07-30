@@ -8,20 +8,20 @@ StepsPageStackWindow {
     property int totalCount: 0
     property int dailyCount: 0
     property int activityCount: 0
-    property int activity: 0
-    property variant activityNames: [
-        qsTr("Walking") + "/" + qsTr("Running"),
-        qsTr("Walking") + "/" + qsTr("Running"),
-        prefs.value("activity2Name", qsTr("Custom 1")),
-        prefs.value("activity3Name", qsTr("Custom 2"))
-    ]
+    property int lastActivity: 0
+    property int unsavedCount: 0
+    property int lastSaveTime: 0
 
     MainPage {
         id: mainPage
     }
 
-    ActionsPage {
-        id: actionsPage
+    SettingsPage {
+        id: settingsPage
+    }
+
+    AboutPage {
+        id: aboutPage
     }
 
     Splash {
@@ -56,18 +56,25 @@ StepsPageStackWindow {
     }
 
     function onStepDetected(count) {
-        // Register step count
-        logger.log(count, {})
+        // Accumulate unsaved step count
+        unsavedCount += count
         totalCount += count
         prefs.rawCount = totalCount
+
+        // Log step count to database
+        var now = platform.time()
+        if ((unsavedCount > 50) || ((now - lastSaveTime) > 300)) {
+            console.log("* main.onStepDetected: Logging " + unsavedCount + " steps")
+            logger.log(unsavedCount, {})
+            unsavedCount = 0
+            lastSaveTime = now
+        }
 
         // Register activity step count
         setActivityCount(activityCount + count)
 
         // Register daily step count
         setDailyCount(dailyCount + count)
-
-        //stepSound.beep()
     }
 
     // Set current activity step count
@@ -93,35 +100,26 @@ StepsPageStackWindow {
     // Reset current activity counter
     function resetActivityCount() {
         setActivityCount(0)
-        logger.log(0, {"resetActivityCount": 0})
     }
 
     // Reset all counters
     function resetCount() {
         detector.reset()
-        logger.log(0, {"reset": 0})
         resetActivityCount()
         setDailyCount(0)
     }
 
     function runningChanged() {
-        logger.log(0, {"counting": detector.running})
         if (prefs.savePower) {
             platform.savePower = detector.running
         }
     }
 
-    function setActivity(a) {
-        if (a !== activity) {
-            logger.log(0, {"activity": a})
-            activity = a
-            prefs.activity = a
-            resetActivityCount()
-        }
-    }
-
     function onDetectedActivityChanged() {
-        logger.log(0, {"detectedActivity": detector.activity})
+        if ((detector.activity > 1) && (detector.activity !== lastActivity)) {
+            lastActivity = detector.activity
+            logger.log(0, {"detectedActivity": detector.activity})
+        }
         if (detector.activity === 2) {
             walkingSound.beep()
         } else if (detector.activity === 3) {
@@ -131,23 +129,17 @@ StepsPageStackWindow {
         }
     }
 
-    onActivityNamesChanged: {
-        prefs.setValue("activity2Name", activityNames[2])
-        prefs.setValue("activity3Name", activityNames[3])
-    }
-
     Component.onCompleted: {
         detector.runningStepTimeDiff = prefs.runningStepTimeDiff
         detector.minReadingDiff = prefs.minReadingDiff
         detector.step.connect(main.onStepDetected)
         detector.runningChanged.connect(main.runningChanged)
         detector.activityChanged.connect(main.onDetectedActivityChanged)
-        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName, "activity": prefs.activity, "counting": false})
+        logger.log(0, {"appStarted": "com.pipacs.steps", "appVersion": platform.appVersion, "osName": platform.osName})
 
         // Restore step counts from settings
         totalCount = prefs.rawCount
         setDailyCount(prefs.dailyCount)
-        setActivity(prefs.activity)
         setActivityCount(prefs.activityCount)
 
         gft.linkedChanged.connect(linkInfo.show)
@@ -155,6 +147,9 @@ StepsPageStackWindow {
 
     Component.onDestruction: {
         detector.running = false
-        logger.log(0, {"counting": false, "appStopped": "com.pipacs.steps"})
+        if (unsavedCount) {
+            logger.log(unsavedCount, {})
+            unsavedCount = 0
+        }
     }
 }

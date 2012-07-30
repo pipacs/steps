@@ -45,6 +45,9 @@ class Preferences: public QObject {
     /// Minimum difference between accelerometer readings to consider a step.
     Q_PROPERTY(int minReadingDiff READ minReadingDiff WRITE setMinReadingDiff NOTIFY valueChanged)
 
+    /// Save to the development server or to the production one?
+    Q_PROPERTY(bool saveToDev READ saveToDev WRITE setSaveToDev NOTIFY saveToDevChanged)
+
 public:
     static Preferences *instance();
     static void close();
@@ -95,8 +98,12 @@ public:
     int minReadingDiff() {return value("minreadingdiff").toInt();}
     void setMinReadingDiff(int v) {setValue("minreadingdiff", v);}
 
+    bool saveToDev() {return value("savetodev", true).toBool();}
+    void setSaveToDev(bool v) {setValue("savetodev", v); emit saveToDevChanged();}
+
 signals:
     void valueChanged(const QString &key);
+    void saveToDevChanged();
 
 protected:
     Preferences();

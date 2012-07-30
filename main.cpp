@@ -134,8 +134,7 @@ int main(int argc, char *argv[]) {
     // Upgrade old databases
     logger->upgrade();
 
-    // Archive current log, and schedule first upload
-    logger->archive();
+    // Schedule first upload
     QTimer::singleShot(30000, uploader, SLOT(upload()));
 
     // Set up and show QML viewer

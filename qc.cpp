@@ -28,6 +28,8 @@ Qc::Qc(QObject *parent): O1(parent) {
 }
 
 Qc::~Qc() {
+    delete requestor;
+    delete manager;
 }
 
 Qc *Qc::instance() {
@@ -42,12 +44,10 @@ void Qc::close() {
     instance_ = 0;
 }
 
-void Qc::upload(const QString &archive_) {
+void Qc::upload() {
     Trace _("Qc::upload");
-    qDebug() << "Archive:" << archive_;
 
-    archive = archive_;
-    Database db(archive);
+    Database db(Platform::instance()->dbPath());
 
     // Do nothing if database is empty
     {
@@ -57,7 +57,7 @@ void Qc::upload(const QString &archive_) {
         total = query.value(0).toLongLong();
         if (total == 0) {
             qDebug() << "No records to upload";
-            emit uploadFinished(archive, UploadComplete);
+            emit uploadFinished(UploadComplete);
             return;
         }
     }
@@ -67,22 +67,22 @@ void Qc::upload(const QString &archive_) {
         qDebug() << "QC not enabled";
         QSqlQuery query("update log set ingqc = 1", db.db());
         query.exec();
-        emit uploadFinished(archive, UploadComplete);
+        emit uploadFinished(UploadComplete);
         return;
     }
 
     // Fail if not logged in
     if (!linked()) {
         qDebug() << "Not logged in";
-        emit uploadFinished(archive, UploadFailed);
+        emit uploadFinished(UploadFailed);
         return;
     }
 
     QSqlQuery query(db.db());
     query.setForwardOnly(true);
     if (!query.exec("select id, date, steps from log where inqc = 0")) {
-        qCritical() << "Qc::upload: Could not query archive:" << query.lastError().text();
-        emit uploadFinished(archive, UploadFailed);
+        qCritical() << "Qc::upload: Could not query log:" << query.lastError().text();
+        emit uploadFinished(UploadFailed);
         return;
     }
 
@@ -135,10 +135,10 @@ void Qc::uploadBatch(const QVariantMap &batch) {
     Trace _("Qc::uploadBatch");
 
     if (!manager) {
-        manager = new QNetworkAccessManager(this);
+        manager = new QNetworkAccessManager();
     }
     if (!requestor) {
-        requestor = new O1Requestor(manager, this, this);
+        requestor = new O1Requestor(manager, this);
     }
 
     // Collect parameters participating in request signing
@@ -208,7 +208,7 @@ QMap<QString, QString> Qc::getTags(Database &db, qlonglong id) {
     query.prepare("select name, value from tags where logId = ?");
     query.bindValue(0, id);
     if (!query.exec()) {
-        qCritical() << "Qc::getTags: Could not query archive:" << query.lastError().text();
+        qCritical() << "Qc::getTags: Could not query log:" << query.lastError().text();
         return ret;
     }
     while (query.next()) {
@@ -224,12 +224,12 @@ void Qc::finishBatch(bool failed) {
 
     if (failed) {
         qDebug() << "Result: Failed";
-        emit uploadFinished(archive, UploadFailed);
+        emit uploadFinished(UploadFailed);
         return;
     }
 
-    // Mark uploaded records in the local archive
-    Database db(archive);
+    // Mark uploaded records in the log
+    Database db(Platform::instance()->dbPath());
     db.transaction();
     foreach (qlonglong id, uploadedRecords) {
         QSqlQuery query(db.db());
@@ -239,7 +239,7 @@ void Qc::finishBatch(bool failed) {
     }
     db.commit();
 
-    // Determine upload result: Are there any records left in the archive?
+    // Determine upload result: Are there any records left in the log?
     int result = UploadIncomplete;
     qlonglong total = -1;
     QSqlQuery query("select count(*) from log where inqc = 0", db.db());
@@ -253,5 +253,5 @@ void Qc::finishBatch(bool failed) {
         qDebug() << "Result: Incomplete";
         result = UploadIncomplete;
     }
-    emit uploadFinished(archive, result);
+    emit uploadFinished(result);
 }
