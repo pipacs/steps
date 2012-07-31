@@ -12,7 +12,7 @@
 #include "qc.h"
 
 static Uploader *instance_;
-const int UPLOADER_IDLE = 1000 * 60 * 30; ///< Idle time between complete/failed uploads (ms).
+const int UPLOADER_IDLE = 1000 * 60 * 60; ///< Idle time between complete/failed uploads (ms).
 const int UPLOADER_IDLE_INCOMPLETE = 1000 * 60; ///< Idle time between incomplete uploads (ms).
 
 Uploader *Uploader::instance() {

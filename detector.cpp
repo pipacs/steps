@@ -28,7 +28,7 @@ const qreal RUNNING_READING_LIMIT = 300; ///< Accelerations larger than this are
 const qint64 IDLE_TIME = 5000; ///< Set activity to Idle after this time (ms).
 const int REPORTER_INTERVAL = 300; ///< How often steps are reported.
 
-Detector::Detector(QObject *parent): QObject(parent), running_(false), runningStepTimeDiff_(MIN_RUNNING_STEP_TIME_DIFF), minReadingDiff_(MIN_READING_DIFF), accelerometer_(0) {
+Detector::Detector(QObject *parent): QObject(parent), accelerometer_(0), running_(false), runningStepTimeDiff_(MIN_RUNNING_STEP_TIME_DIFF), minReadingDiff_(MIN_READING_DIFF) {
     reset();
     reporter_ = new QTimer(this);
     reporter_->setSingleShot(false);

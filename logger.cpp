@@ -13,9 +13,6 @@
 #include "database.h"
 #include "trace.h"
 
-/// Minimum time difference to force logging a new record (otherwise the last record gets updated; ms)
-const qint64 MinInsertTimeDiff = 5 * 60 * 1000;
-
 Logger *instance_;
 
 Logger *Logger::instance() {
