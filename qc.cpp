@@ -141,32 +141,14 @@ void Qc::uploadBatch(const QVariantMap &batch) {
         requestor = new O1Requestor(manager, this);
     }
 
-    // Collect parameters participating in request signing
-    QList<O1RequestParameter> parameters;
-    parameters.append(O1RequestParameter("in", Json::serialize(batch)));
-
-    // Add these parameters to the request body, too
-    QByteArray body;
-    bool first = true;
-    foreach (O1RequestParameter p, parameters) {
-        if (first) {
-            first = false;
-        } else {
-            body.append("&");
-        }
-        body.append(QUrl::toPercentEncoding(p.name));
-        body.append("=");
-        body.append(QUrl::toPercentEncoding(p.value));
-    }
-
     // Set up HTTP request
+    QByteArray body = Json::serialize(batch);
     QNetworkRequest request;
     request.setUrl(QUrl(QC_INPUT_URL));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setHeader(QNetworkRequest::ContentLengthHeader, body.length());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     // ...And post it
-    QNetworkReply *reply = requestor->post(request, parameters, body);
+    QNetworkReply *reply = requestor->post(request, QList<O1RequestParameter>(), body);
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), this, SLOT(onFinished()));
 }
