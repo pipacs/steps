@@ -63,7 +63,7 @@ StepsPageStackWindow {
 
         // Log step count to database
         var now = platform.time()
-        if ((unsavedCount > 50) || ((now - lastSaveTime) > 300)) {
+        if ((unsavedCount > 100) || ((now - lastSaveTime) > 600)) {
             console.log("* main.onStepDetected: Logging " + unsavedCount + " steps")
             logger.log(unsavedCount, {})
             unsavedCount = 0
